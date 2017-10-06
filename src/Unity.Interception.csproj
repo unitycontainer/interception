@@ -26,21 +26,17 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <DebugType Condition="'$(TargetFramework)' != '' AND !$(TargetFramework.StartsWith('netcoreapp'))">Full</DebugType>
+    <DebugType>Full</DebugType>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' != '' AND '$(TargetFramework)' != 'net40' ">
-    <Compile Remove="net40\**" />
-    <EmbeddedResource Remove="net40\**" />
-    <None Remove="net40\**" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' != '' AND '$(TargetFramework)' == 'net40' ">
-    <Compile Remove="Utilities\StaticReflection.cs" />
+    <Compile Remove="Utilities\net 4.0\**" />
+    <EmbeddedResource Remove="Utilities\net 4.0\**" />
+    <None Remove="Utilities\net 4.0\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Unity\Unity.csproj" />
+    <ProjectReference Include="..\..\Unity\src\Unity.csproj" />
   </ItemGroup>
   
   <ItemGroup>

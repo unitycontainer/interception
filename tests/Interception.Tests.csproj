@@ -1,14 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net45</TargetFramework>
+    <TargetFramework>net47</TargetFramework>
     <IsPackable>false</IsPackable>
     <RootNamespace>Unity.Interception.Tests</RootNamespace>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="MatchingRules\AssemblyMatchingRuleFixture.2008.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
@@ -17,8 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Unity.Interception\Unity.Interception.csproj" />
-    <ProjectReference Include="..\..\src\Unity\Unity.csproj" />
+    <ProjectReference Include="..\..\Unity\src\Unity.csproj" />
+    <ProjectReference Include="..\src\Unity.Interception.csproj" />
   </ItemGroup>
 
 </Project>

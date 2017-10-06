@@ -789,7 +789,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         {
             char[] chars = obj.ToString().ToCharArray();
             Array.Reverse(chars);
-            return chars.JoinStrings(String.Empty);
+            return string.Join(string.Empty, chars);
         }
     }
 

@@ -248,13 +248,19 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void AttemptingToInterceptInvalidClassThrows()
         {
             PostCallCountHandler handler = new PostCallCountHandler();
             VirtualMethodInterceptor interceptor = new VirtualMethodInterceptor();
-
-            interceptor.CreateProxyType(typeof(CantTouchThis));
+            try
+            {
+                interceptor.CreateProxyType(typeof(CantTouchThis));
+                Assert.Fail();
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(InvalidOperationException));
+            }
         }
 
         [TestMethod]
@@ -789,7 +795,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         {
             char[] chars = obj.ToString().ToCharArray();
             Array.Reverse(chars);
-            return string.Join(string.Empty, chars);
+            return chars.JoinStrings(String.Empty);
         }
     }
 

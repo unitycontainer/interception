@@ -3,7 +3,7 @@
 using System;
 using System.Globalization;
 using Microsoft.Practices.ObjectBuilder2;
-using Microsoft.Practices.Unity.InterceptionExtension.Properties;
+using Unity.Interception.Properties;
 using Microsoft.Practices.Unity.ObjectBuilder;
 using Guard = Microsoft.Practices.Unity.Utility.Guard;
 

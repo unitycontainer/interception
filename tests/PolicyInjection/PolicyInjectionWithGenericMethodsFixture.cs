@@ -2,6 +2,7 @@
 
 using Microsoft.Practices.Unity.TestSupport;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Unity;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.PolicyInjection
 {

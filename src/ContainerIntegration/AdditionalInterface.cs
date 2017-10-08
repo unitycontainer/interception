@@ -5,6 +5,7 @@ using System.Globalization;
 using Microsoft.Practices.ObjectBuilder2;
 using Unity.Interception.Properties;
 using Microsoft.Practices.Unity.Utility;
+using Unity;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension
 {

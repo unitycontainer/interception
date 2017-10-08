@@ -11,6 +11,7 @@ using Microsoft.Practices.Unity.InterceptionExtension.Tests.MatchingRules;
 using Microsoft.Practices.Unity.InterceptionExtension.Tests.ObjectsUnderTest;
 using Microsoft.Practices.Unity.TestSupport;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Unity;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterception
 {

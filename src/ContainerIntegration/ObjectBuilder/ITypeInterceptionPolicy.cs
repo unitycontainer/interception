@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Practices.ObjectBuilder2;
+using Unity;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension
 {

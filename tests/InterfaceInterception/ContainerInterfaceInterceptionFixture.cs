@@ -6,6 +6,7 @@ using System.Linq;
 using Microsoft.Practices.Unity.InterceptionExtension.Tests.ObjectsUnderTest;
 using Microsoft.Practices.Unity.TestSupport;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Unity;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterception
 {

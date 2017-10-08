@@ -7,6 +7,7 @@ using System.Runtime.Remoting;
 using System.Text;
 using Microsoft.Practices.Unity.TestSupport;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Unity;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
 {

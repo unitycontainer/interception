@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Practices.Unity.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Unity;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
 {

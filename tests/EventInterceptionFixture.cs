@@ -7,6 +7,7 @@ using System.Text;
 using Microsoft.Practices.Unity.TestSupport;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Unity;
+using Unity.Lifetime;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
 {

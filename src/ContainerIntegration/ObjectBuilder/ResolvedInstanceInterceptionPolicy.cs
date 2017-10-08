@@ -3,6 +3,7 @@
 using Microsoft.Practices.ObjectBuilder2;
 using Microsoft.Practices.Unity.Utility;
 using Unity;
+using Unity.Builder;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension
 {

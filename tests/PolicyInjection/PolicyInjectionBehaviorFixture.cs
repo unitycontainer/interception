@@ -61,23 +61,24 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.PolicyInjection
             Instance = Container.Resolve<BaseClass>("derived-nooverride");
         }
 
-        [TestMethod]
-        [Ignore] // not supported yet
-        public void WhenInvokingMethodFromReferenceToTheBaseClass_ThenInterceptorsForTheBaseAndDerivedClassAreApplied()
-        {
-            var result = ((BaseClass)Instance).InterceptedMethod();
+        // TODO: New Feature
+        //[TestMethod]
+        //[Ignore] // not supported yet
+        //public void WhenInvokingMethodFromReferenceToTheBaseClass_ThenInterceptorsForTheBaseAndDerivedClassAreApplied()
+        //{
+        //    var result = ((BaseClass)Instance).InterceptedMethod();
 
-            Assert.AreEqual("base-derivednooverridehandler-basehandler", result);
-        }
+        //    Assert.AreEqual("base-derivednooverridehandler-basehandler", result);
+        //}
 
-        [TestMethod]
-        [Ignore] // not supported yet
-        public void WhenInvokingMethodFromReferenceToTheDerivedClass_ThenInterceptorsForTheBaseAndDerivedClassAreApplied()
-        {
-            var result = ((DerivedWithNoOverrideClass)Instance).InterceptedMethod();
+        //[TestMethod]
+        //[Ignore] // not supported yet
+        //public void WhenInvokingMethodFromReferenceToTheDerivedClass_ThenInterceptorsForTheBaseAndDerivedClassAreApplied()
+        //{
+        //    var result = ((DerivedWithNoOverrideClass)Instance).InterceptedMethod();
 
-            Assert.AreEqual("base-derivednooverridehandler-basehandler", result);
-        }
+        //    Assert.AreEqual("base-derivednooverridehandler-basehandler", result);
+        //}
     }
 
     [TestClass]
@@ -92,23 +93,24 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.PolicyInjection
             Instance = Container.Resolve<BaseClass>("derived");
         }
 
-        [TestMethod]
-        [Ignore] // not supported yet
-        public void WhenInvokingMethodFromReferenceToTheBaseClass_ThenInterceptorsForTheBaseAndDerivedClassAreApplied()
-        {
-            var result = ((BaseClass)Instance).InterceptedMethod();
+        // TODO: New Feature
+        //[TestMethod]
+        //[Ignore] // not supported yet
+        //public void WhenInvokingMethodFromReferenceToTheBaseClass_ThenInterceptorsForTheBaseAndDerivedClassAreApplied()
+        //{
+        //    var result = ((BaseClass)Instance).InterceptedMethod();
 
-            Assert.AreEqual("base-derivedhandler-basehandler", result);
-        }
+        //    Assert.AreEqual("base-derivedhandler-basehandler", result);
+        //}
 
-        [TestMethod]
-        [Ignore] // not supported yet
-        public void WhenInvokingMethodFromReferenceToTheDerivedClass_ThenInterceptorsForTheBaseAndDerivedClassAreApplied()
-        {
-            var result = ((DerivedClass)Instance).InterceptedMethod();
+        //[TestMethod]
+        //[Ignore] // not supported yet
+        //public void WhenInvokingMethodFromReferenceToTheDerivedClass_ThenInterceptorsForTheBaseAndDerivedClassAreApplied()
+        //{
+        //    var result = ((DerivedClass)Instance).InterceptedMethod();
 
-            Assert.AreEqual("base-derivedhandler-basehandler", result);
-        }
+        //    Assert.AreEqual("base-derivedhandler-basehandler", result);
+        //}
     }
 
     public class BaseClass

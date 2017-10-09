@@ -6,6 +6,7 @@ using Microsoft.Practices.ObjectBuilder2;
 using Unity;
 using Unity.Builder;
 using Unity.Policy;
+using Unity.Resolution;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension
 {

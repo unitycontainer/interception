@@ -7,6 +7,7 @@ using Microsoft.Practices.Unity.InterceptionExtension.Tests.ObjectsUnderTest;
 using Microsoft.Practices.Unity.TestSupport;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Unity;
+using Unity.Injection;
 using Unity.Lifetime;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests

@@ -7,6 +7,7 @@ using Unity.Interception.Properties;
 using Microsoft.Practices.Unity.ObjectBuilder;
 using Unity;
 using Unity.Extension;
+using Unity.Policy;
 using Guard = Microsoft.Practices.Unity.Utility.Guard;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension

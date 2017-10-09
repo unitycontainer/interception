@@ -2,6 +2,7 @@
 
 using System.Reflection;
 using Microsoft.Practices.Unity.InterceptionExtension;
+using Unity.Attributes;
 
 namespace Microsoft.Practices.Unity.TestSupport
 {

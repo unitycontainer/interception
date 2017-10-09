@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using Microsoft.Practices.Unity.InterceptionExtension;
+using Unity.Attributes;
 
 namespace Microsoft.Practices.Unity.TestSupport
 {

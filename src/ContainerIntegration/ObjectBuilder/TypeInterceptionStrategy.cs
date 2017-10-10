@@ -9,6 +9,7 @@ using Microsoft.Practices.Unity.Utility;
 using Unity;
 using Unity.Builder;
 using Unity.Builder.Selection;
+using Unity.Builder.Strategy;
 using Unity.Policy;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension

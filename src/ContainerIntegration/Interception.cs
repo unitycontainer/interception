@@ -4,7 +4,6 @@ using System;
 using System.Globalization;
 using Microsoft.Practices.ObjectBuilder2;
 using Unity.Interception.Properties;
-using Microsoft.Practices.Unity.ObjectBuilder;
 using Unity;
 using Unity.Builder;
 using Unity.Extension;

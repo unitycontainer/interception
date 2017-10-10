@@ -10,6 +10,7 @@ using Unity.Builder;
 using Unity.Extension;
 using Unity.Policy;
 using Guard = Microsoft.Practices.Unity.Utility.Guard;
+using Unity.Strategy;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension
 {

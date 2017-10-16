@@ -10,7 +10,6 @@
 
 namespace Unity.Interception.Properties {
     using System;
-    using System.Reflection;
     
     
     /// <summary>

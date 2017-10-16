@@ -1,8 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net47</TargetFramework>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Description>Unity Interception</Description>
     <Version>5.0.0-beta</Version>
     <AssemblyVersion>5.0.0.0</AssemblyVersion>
@@ -17,27 +15,8 @@
     <PackageId>Unity.Interception</PackageId>
     <Authors>Microsoft.Practices.Unity</Authors>
     <Company>Microsoft.Practices.Unity</Company>
+    <Configurations>Debug;Release;Package</Configurations>
   </PropertyGroup>
-  
-  <PropertyGroup Condition="Exists('..\..\package.snk')">
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\..\package.snk</AssemblyOriginatorKeyFile>
-    <DelaySign>false</DelaySign>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <DebugType>Full</DebugType>
-  </PropertyGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' != '' AND '$(TargetFramework)' != 'net40' ">
-    <Compile Remove="Utilities\net 4.0\**" />
-    <EmbeddedResource Remove="Utilities\net 4.0\**" />
-    <None Remove="Utilities\net 4.0\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\Container\src\Unity.Container.csproj" />
-  </ItemGroup>
   
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
@@ -52,6 +31,44 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>package.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>false</DelaySign>
+  </PropertyGroup>
+
+
+  <ItemGroup Condition="'$(TargetFramework)' != '' AND '$(TargetFramework)' != 'net40' ">
+    <Compile Remove="Utilities\net 4.0\**" />
+    <EmbeddedResource Remove="Utilities\net 4.0\**" />
+    <None Remove="Utilities\net 4.0\**" />
+  </ItemGroup>
+  
+  
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <TargetFrameworks>net47;net45;net40</TargetFrameworks>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)'=='Package'">
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <TargetFrameworks>net47;net45;net40</TargetFrameworks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugType>Full</DebugType>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <TargetFramework>net47</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(Configuration)'!='Release'">
+    <ProjectReference Include="..\..\Abstractions\src\Unity.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(Configuration)' == 'Release' ">
+    <PackageReference Include="Unity.Abstractions" Version="2.0.0-RC3" />
   </ItemGroup>
 
 

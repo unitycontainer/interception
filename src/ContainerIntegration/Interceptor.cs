@@ -1,13 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 
 using System;
-using Microsoft.Practices.ObjectBuilder2;
-using Microsoft.Practices.Unity.Utility;
-using Unity;
 using Unity.Builder;
+using Unity.Interception.ContainerIntegration.ObjectBuilder;
+using Unity.Interception.Interceptors;
+using Unity.Interception.Interceptors.InstanceInterceptors;
+using Unity.Interception.Interceptors.TypeInterceptors;
+using Unity.Interception.Utilities;
 using Unity.Policy;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.ContainerIntegration
 {
     /// <summary>
     /// Stores information about the <see cref="IInterceptor"/> to be used to intercept an object and
@@ -16,8 +18,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
     /// <seealso cref="IInterceptionBehavior"/>
     public class Interceptor : InterceptionMember
     {
-        private readonly IInterceptor interceptor;
-        private readonly NamedTypeBuildKey buildKey;
+        private readonly IInterceptor _interceptor;
+        private readonly NamedTypeBuildKey _buildKey;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Interceptor"/> class with an interceptor instance.
@@ -27,9 +29,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <see langword="null"/>.</exception>
         public Interceptor(IInterceptor interceptor)
         {
-            Guard.ArgumentNotNull(interceptor, "interceptor");
-
-            this.interceptor = interceptor;
+            _interceptor = interceptor ?? throw new ArgumentNullException(nameof(interceptor));
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
             Guard.ArgumentNotNull(interceptorType, "interceptorType");
             Guard.TypeIsAssignable(typeof(IInterceptor), interceptorType, "interceptorType");
 
-            this.buildKey = new NamedTypeBuildKey(interceptorType, name);
+            _buildKey = new NamedTypeBuildKey(interceptorType, name);
         }
 
         /// <summary>
@@ -67,16 +67,16 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         public override void AddPolicies(Type serviceType, Type implementationType, string name, IPolicyList policies)
         {
             var key = new NamedTypeBuildKey(implementationType, name);
-            if (this.IsInstanceInterceptor)
+            if (IsInstanceInterceptor)
             {
-                var policy = this.CreateInstanceInterceptionPolicy();
-                policies.Set<IInstanceInterceptionPolicy>(policy, key);
+                var policy = CreateInstanceInterceptionPolicy();
+                policies.Set(policy, key);
                 policies.Clear<ITypeInterceptionPolicy>(key);
             }
             else
             {
-                var policy = this.CreateTypeInterceptionPolicy();
-                policies.Set<ITypeInterceptionPolicy>(policy, key);
+                var policy = CreateTypeInterceptionPolicy();
+                policies.Set(policy, key);
                 policies.Clear<IInstanceInterceptionPolicy>(key);
             }
         }
@@ -85,30 +85,30 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         {
             get
             {
-                if (this.interceptor != null)
+                if (_interceptor != null)
                 {
-                    return this.interceptor is IInstanceInterceptor;
+                    return _interceptor is IInstanceInterceptor;
                 }
-                return typeof(IInstanceInterceptor).IsAssignableFrom(this.buildKey.Type);
+                return typeof(IInstanceInterceptor).IsAssignableFrom(_buildKey.Type);
             }
         }
 
         private IInstanceInterceptionPolicy CreateInstanceInterceptionPolicy()
         {
-            if (this.interceptor != null)
+            if (_interceptor != null)
             {
-                return new FixedInstanceInterceptionPolicy((IInstanceInterceptor)this.interceptor);
+                return new FixedInstanceInterceptionPolicy((IInstanceInterceptor)_interceptor);
             }
-            return new ResolvedInstanceInterceptionPolicy(this.buildKey);
+            return new ResolvedInstanceInterceptionPolicy(_buildKey);
         }
 
         private ITypeInterceptionPolicy CreateTypeInterceptionPolicy()
         {
-            if (this.interceptor != null)
+            if (_interceptor != null)
             {
-                return new FixedTypeInterceptionPolicy((ITypeInterceptor)this.interceptor);
+                return new FixedTypeInterceptionPolicy((ITypeInterceptor)_interceptor);
             }
-            return new ResolvedTypeInterceptionPolicy(this.buildKey);
+            return new ResolvedTypeInterceptionPolicy(_buildKey);
         }
     }
 

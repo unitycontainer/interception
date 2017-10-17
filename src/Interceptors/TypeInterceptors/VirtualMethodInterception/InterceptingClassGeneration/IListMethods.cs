@@ -3,13 +3,10 @@
 using System.Collections;
 using System.Reflection;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration
 {
     internal static class IListMethods
     {
-        internal static MethodInfo GetItem
-        {
-            get { return typeof(IList).GetProperty("Item").GetGetMethod(); }
-        }
+        internal static MethodInfo GetItem => typeof(IList).GetProperty("Item")?.GetGetMethod();
     }
 }

@@ -3,9 +3,12 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Unity;
+using Unity.Interception.Interceptors;
+using Unity.Interception.PolicyInjection.MatchingRules;
+using Unity.Interception.PolicyInjection.Pipeline;
+using Unity.Interception.Utilities;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.PolicyInjection.Policies
 {
     /// <summary>
     /// Base class for Policies that specifies which handlers apply to which methods of an object.
@@ -18,8 +21,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
     /// <para>It also means that derived classes cannot override this rule. This is considered a feature.</para></remarks>
     public abstract class InjectionPolicy
     {
-        private readonly string name;
-        private readonly IMatchingRule doesNotHaveNoPoliciesAttributeRule;
+        private readonly string _name;
+        private readonly IMatchingRule _doesNotHaveNoPoliciesAttributeRule;
 
         /// <summary>
         /// Creates a new empty Policy.
@@ -35,8 +38,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <param name="name">Name of the policy.</param>
         protected InjectionPolicy(string name)
         {
-            this.name = name;
-            doesNotHaveNoPoliciesAttributeRule = new ApplyNoPoliciesMatchingRule();
+            _name = name;
+            _doesNotHaveNoPoliciesAttributeRule = new ApplyNoPoliciesMatchingRule();
         }
 
         /// <summary>
@@ -45,7 +48,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <value>The name of the policy.</value>
         public string Name
         {
-            get { return name; }
+            get { return _name; }
         }
 
         /// <summary>
@@ -62,8 +65,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         private bool DoesNotHaveNoPoliciesAttributeRule(MethodImplementationInfo method)
         {
             bool doesNotHaveRule = true;
-            doesNotHaveRule &= method.InterfaceMethodInfo != null ? doesNotHaveNoPoliciesAttributeRule.Matches(method.InterfaceMethodInfo) : true;
-            doesNotHaveRule &= doesNotHaveNoPoliciesAttributeRule.Matches(method.ImplementationMethodInfo);
+            doesNotHaveRule &= method.InterfaceMethodInfo != null ? _doesNotHaveNoPoliciesAttributeRule.Matches(method.InterfaceMethodInfo) : true;
+            doesNotHaveRule &= _doesNotHaveNoPoliciesAttributeRule.Matches(method.ImplementationMethodInfo);
             return doesNotHaveRule;
         }
 
@@ -85,7 +88,6 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
                     {
                         yield return handler;
                     }
-                    yield break;
                 }
             }
         }
@@ -96,13 +98,11 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// </summary>
         /// <param name="member">Member to get Method Set for.</param>
         /// <returns>The set of methods</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
-            Justification = "Validation done by Guard class")]
         protected static IEnumerable<MethodBase> GetMethodSet(MethodBase member)
         {
-            Microsoft.Practices.Unity.Utility.Guard.ArgumentNotNull(member, "member");
+            Guard.ArgumentNotNull(member, "member");
 
-            List<MethodBase> methodSet = new List<MethodBase>(new MethodBase[] { member });
+            List<MethodBase> methodSet = new List<MethodBase>(new[] { member });
             if (member.DeclaringType != null && !member.DeclaringType.IsInterface)
             {
                 foreach (Type itf in member.DeclaringType.GetInterfaces())

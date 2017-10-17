@@ -1,9 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
-using Microsoft.Practices.Unity.Utility;
+using Unity.Interception.PolicyInjection.Pipeline;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.InterceptionBehaviors
 {
     /// <summary>
     /// The InterceptionBehaviorPipeline class encapsulates a list of <see cref="IInterceptionBehavior"/>s
@@ -11,14 +12,14 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
     /// </summary>
     public class InterceptionBehaviorPipeline
     {
-        private readonly List<IInterceptionBehavior> interceptionBehaviors;
+        private readonly List<IInterceptionBehavior> _interceptionBehaviors;
 
         /// <summary>
         /// Creates a new <see cref="HandlerPipeline"/> with an empty pipeline.
         /// </summary>
         public InterceptionBehaviorPipeline()
         {
-            interceptionBehaviors = new List<IInterceptionBehavior>();
+            _interceptionBehaviors = new List<IInterceptionBehavior>();
         }
 
         /// <summary>
@@ -28,17 +29,13 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <param name="interceptionBehaviors">Collection of interception behaviors to add to the pipeline.</param>
         public InterceptionBehaviorPipeline(IEnumerable<IInterceptionBehavior> interceptionBehaviors)
         {
-            Guard.ArgumentNotNull(interceptionBehaviors, "interceptionBehaviors");
-            this.interceptionBehaviors = new List<IInterceptionBehavior>(interceptionBehaviors);
+            _interceptionBehaviors = new List<IInterceptionBehavior>(interceptionBehaviors ?? throw new ArgumentNullException(nameof(interceptionBehaviors)));
         }
 
         /// <summary>
         /// Get the number of interceptors in this pipeline.
         /// </summary>
-        public int Count
-        {
-            get { return interceptionBehaviors.Count; }
-        }
+        public int Count => _interceptionBehaviors.Count;
 
         /// <summary>
         /// Execute the pipeline with the given input.
@@ -48,24 +45,21 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <returns>Return value from the pipeline.</returns>
         public IMethodReturn Invoke(IMethodInvocation input, InvokeInterceptionBehaviorDelegate target)
         {
-            if (interceptionBehaviors.Count == 0)
+            if (_interceptionBehaviors.Count == 0)
             {
                 return target(input, null);
             }
 
             int interceptorIndex = 0;
 
-            IMethodReturn result = interceptionBehaviors[0].Invoke(input, delegate
+            IMethodReturn result = _interceptionBehaviors[0].Invoke(input, delegate
                                       {
                                           ++interceptorIndex;
-                                          if (interceptorIndex < interceptionBehaviors.Count)
+                                          if (interceptorIndex < _interceptionBehaviors.Count)
                                           {
-                                              return interceptionBehaviors[interceptorIndex].Invoke;
+                                              return _interceptionBehaviors[interceptorIndex].Invoke;
                                           }
-                                          else
-                                          {
-                                              return target;
-                                          }
+                                          return target;
                                       });
             return result;
         }
@@ -76,8 +70,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <param name="interceptionBehavior">The interception behavior to add.</param>
         public void Add(IInterceptionBehavior interceptionBehavior)
         {
-            Guard.ArgumentNotNull(interceptionBehavior, "interceptionBehavior");
-            this.interceptionBehaviors.Add(interceptionBehavior);
+            _interceptionBehaviors.Add(interceptionBehavior ?? throw new ArgumentNullException(nameof(interceptionBehavior)));
         }
     }
 }

@@ -2,7 +2,7 @@
 
 using System;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.PolicyInjection.Policies
 {
     /// <summary>
     /// Attribute used to indicate that no interception should be applied to

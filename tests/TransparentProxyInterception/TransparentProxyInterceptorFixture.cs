@@ -6,6 +6,9 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.Practices.Unity.TestSupport;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Unity.Interception.Interceptors;
+using Unity.Interception.Interceptors.InstanceInterceptors;
+using Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyInterception;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.TransparentProxyInterception
 {

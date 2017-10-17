@@ -1,15 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.Practices.ObjectBuilder2;
-using Unity;
 using Unity.Builder;
 using Unity.Builder.Selection;
 using Unity.Policy;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception
 {
     /// <summary>
     /// A small implementation of <see cref="IConstructorSelectorPolicy"/> that returns the
@@ -17,7 +12,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
     /// </summary>
     public class ConstructorWithResolverKeysSelectorPolicy : IConstructorSelectorPolicy
     {
-        private readonly SelectedConstructor selectedConstructor;
+        private readonly SelectedConstructor _selectedConstructor;
 
         /// <summary>
         /// Create a new <see cref="ConstructorWithResolverKeysSelectorPolicy"/> instance.
@@ -25,7 +20,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <param name="selectedConstructor">Information about which constructor to select.</param>
         public ConstructorWithResolverKeysSelectorPolicy(SelectedConstructor selectedConstructor)
         {
-            this.selectedConstructor = selectedConstructor;
+            _selectedConstructor = selectedConstructor;
         }
 
         /// <summary>
@@ -37,7 +32,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <returns>The chosen constructor.</returns>
         public SelectedConstructor SelectConstructor(IBuilderContext context, IPolicyList resolverPolicyDestination)
         {
-            return selectedConstructor;
+            return _selectedConstructor;
         }
     }
 }

@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 
 using System;
-using Microsoft.Practices.ObjectBuilder2;
-using Unity;
+using Unity.Interception.ContainerIntegration.ObjectBuilder;
+using Unity.Interception.InterceptionBehaviors;
 using Unity.Policy;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.ContainerIntegration
 {
     /// <summary>
     /// Stores information about a single <see cref="IInterceptionBehavior"/> to be used on an intercepted object and

@@ -2,7 +2,10 @@
 
 using System;
 using System.Reflection;
-using Microsoft.Practices.ObjectBuilder2;
+using Unity.Interception.Interceptors;
+using Unity.Interception.PolicyInjection;
+using Unity.Interception.PolicyInjection.Pipeline;
+using Unity.Interception.Utilities;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInterception
 {
@@ -16,7 +19,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
                 typeToIntercept = typeToIntercept.GetGenericTypeDefinition();
             }
 
-            InterceptingClassGenerator generator = new InterceptingClassGenerator(typeToIntercept);
+            global::Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration.InterceptingClassGenerator generator = new global::Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration.InterceptingClassGenerator(typeToIntercept);
             Type generatedType = generator.GenerateType();
 
             if (generatedType.IsGenericTypeDefinition)

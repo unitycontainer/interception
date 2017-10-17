@@ -2,8 +2,9 @@
 
 using System.Linq;
 using Microsoft.Practices.Unity.TestSupport;
-using Microsoft.Practices.Unity.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Unity.Interception.PolicyInjection.Pipeline;
+using Unity.Interception.Utilities;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
 {

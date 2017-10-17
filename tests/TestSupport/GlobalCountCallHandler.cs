@@ -6,6 +6,8 @@ using Microsoft.Practices.Unity.InterceptionExtension;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Unity;
 using Unity.Attributes;
+using Unity.Interception.PolicyInjection.Pipeline;
+using Unity.Interception.PolicyInjection.Policies;
 
 namespace Microsoft.Practices.Unity.TestSupport
 {

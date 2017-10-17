@@ -1,18 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 
-using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.PolicyInjection.MatchingRules
 {
     /// <summary>
     /// A <cref see="T:MatchingRuleSet"/> is a matching rule that
     /// is a collection of other matching rules. All the contained
     /// rules much match for the set to match.
     /// </summary>
-    [SuppressMessage("Microsoft.Naming", "CA1710", Justification = "Using alternative suffix 'Set'.")]
     public class MatchingRuleSet : List<IMatchingRule>, IMatchingRule
     {
         /// <summary>
@@ -24,7 +21,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <returns>true if all contained rules match, false if any fail.</returns>
         public bool Matches(MethodBase member)
         {
-            if (this.Count == 0)
+            if (Count == 0)
             {
                 return false;
             }

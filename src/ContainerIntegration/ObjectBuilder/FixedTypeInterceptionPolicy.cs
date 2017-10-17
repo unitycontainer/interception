@@ -1,11 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 
 using System;
-using Microsoft.Practices.ObjectBuilder2;
-using Unity;
 using Unity.Builder;
+using Unity.Interception.Interceptors.TypeInterceptors;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 {
     /// <summary>
     /// Implementation of <see cref="ITypeInterceptionPolicy"/> that returns a pre-created
@@ -13,7 +12,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
     /// </summary>
     public class FixedTypeInterceptionPolicy : ITypeInterceptionPolicy
     {
-        private readonly ITypeInterceptor interceptor;
+        private readonly ITypeInterceptor _interceptor;
 
         /// <summary>
         /// Create a new instance of <see cref="FixedTypeInterceptionPolicy"/> that
@@ -22,7 +21,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <param name="interceptor">Interceptor to use.</param>
         public FixedTypeInterceptionPolicy(ITypeInterceptor interceptor)
         {
-            this.interceptor = interceptor;
+            _interceptor = interceptor;
         }
 
         /// <summary>
@@ -31,7 +30,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <param name="context">Context for current build operation.</param>
         public ITypeInterceptor GetInterceptor(IBuilderContext context)
         {
-            return interceptor;
+            return _interceptor;
         }
 
         /// <summary>

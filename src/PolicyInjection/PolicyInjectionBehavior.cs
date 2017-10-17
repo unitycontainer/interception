@@ -3,17 +3,20 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Microsoft.Practices.Unity.Utility;
-using Unity;
+using Unity.Interception.InterceptionBehaviors;
+using Unity.Interception.Interceptors;
+using Unity.Interception.PolicyInjection.Pipeline;
+using Unity.Interception.PolicyInjection.Policies;
+using Unity.Interception.Utilities;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.PolicyInjection
 {
     /// <summary>
     /// Interceptor that performs policy injection.
     /// </summary>
     public class PolicyInjectionBehavior : IInterceptionBehavior
     {
-        private readonly PipelineManager pipelineManager;
+        private readonly PipelineManager _pipelineManager;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PolicyInjectionBehavior"/> with a pipeline manager.
@@ -21,7 +24,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <param name="pipelineManager">The <see cref="PipelineManager"/> for the new instance.</param>
         public PolicyInjectionBehavior(PipelineManager pipelineManager)
         {
-            this.pipelineManager = pipelineManager;
+            _pipelineManager = pipelineManager;
         }
 
         /// <summary>
@@ -31,12 +34,10 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <param name="interceptionRequest">Information about what will be injected.</param>
         /// <param name="policies">Current injection policies.</param>
         /// <param name="container">Unity container that can be used to resolve call handlers.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
-            Justification = "Validation done by Guard class")]
         public PolicyInjectionBehavior(CurrentInterceptionRequest interceptionRequest, InjectionPolicy[] policies,
             IUnityContainer container)
         {
-            Microsoft.Practices.Unity.Utility.Guard.ArgumentNotNull(interceptionRequest, "interceptionRequest");
+            Guard.ArgumentNotNull(interceptionRequest, "interceptionRequest");
 
             var allPolicies = new PolicySet(policies);
             bool hasHandlers = false;
@@ -51,7 +52,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
                     allPolicies.GetHandlersFor(method, container));
                 hasHandlers = hasHandlers || hasNewHandlers;
             }
-            pipelineManager = hasHandlers ? manager : null;
+            _pipelineManager = hasHandlers ? manager : null;
         }
 
         /// <summary>
@@ -61,8 +62,6 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <param name="getNext">Delegate to execute to get the next delegate in the handler
         /// chain.</param>
         /// <returns>Return value from the target.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
-            Justification = "Validation done by Guard class")]
         public IMethodReturn Invoke(IMethodInvocation input, GetNextInterceptionBehaviorDelegate getNext)
         {
             Guard.ArgumentNotNull(input, "input");
@@ -89,7 +88,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
 
         private HandlerPipeline GetPipeline(MethodBase method)
         {
-            return this.pipelineManager.GetPipeline(method);
+            return _pipelineManager.GetPipeline(method);
         }
 
         /// <summary>
@@ -109,7 +108,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// mechanism can be skipped completely.</remarks>
         public bool WillExecute
         {
-            get { return pipelineManager != null; }
+            get { return _pipelineManager != null; }
         }
     }
 }

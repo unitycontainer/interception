@@ -2,6 +2,7 @@
 
 using System;
 using System.Reflection;
+using Unity.Interception.PolicyInjection.MatchingRules;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.ObjectsUnderTest
 {

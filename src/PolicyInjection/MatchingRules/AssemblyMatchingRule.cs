@@ -1,12 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
-using Microsoft.Practices.Unity.Utility;
+using Unity.Interception.Utilities;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.PolicyInjection.MatchingRules
 {
     /// <summary>
     /// An <see cref="IMatchingRule"/> that matches the assembly name of the
@@ -14,7 +13,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
     /// </summary>
     public class AssemblyMatchingRule : IMatchingRule
     {
-        private readonly string assemblyName;
+        private readonly string _assemblyName;
 
         /// <summary>
         /// Constructs a new <see cref="AssemblyMatchingRule"/> with the given
@@ -23,7 +22,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <param name="assemblyName">Assembly name to match.</param>
         public AssemblyMatchingRule(string assemblyName)
         {
-            this.assemblyName = assemblyName;
+            _assemblyName = assemblyName;
         }
 
         /// <summary>
@@ -36,7 +35,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         {
             if (assembly == null)
             {
-                throw new ArgumentNullException("assembly");
+                throw new ArgumentNullException(nameof(assembly));
             }
         }
 
@@ -51,8 +50,6 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// </remarks>
         /// <param name="member">Member to check.</param>
         /// <returns>true if <paramref name="member"/> is in a matching assembly, false if not.</returns>
-        [SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
-            Justification = "Validation done by Guard class.")]
         public bool Matches(MethodBase member)
         {
             Guard.ArgumentNotNull(member, "member");
@@ -64,7 +61,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
 
             AssemblyName assembly = member.DeclaringType.Assembly.GetName();
 
-            return DoesAssemblyNameMatchString(assemblyName, assembly);
+            return DoesAssemblyNameMatchString(_assemblyName, assembly);
         }
 
         private static bool DoesAssemblyNameMatchString(string assemblyNameString, AssemblyName assemblyName)

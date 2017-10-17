@@ -2,12 +2,10 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.Practices.ObjectBuilder2;
-using Unity;
 using Unity.Builder;
 using Unity.Policy;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 {
     /// <summary>
     /// An <see cref="IAdditionalInterfacesPolicy"/> that accumulates a sequence of 
@@ -15,27 +13,24 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
     /// </summary>
     public class AdditionalInterfacesPolicy : IAdditionalInterfacesPolicy
     {
-        private readonly List<Type> additionalInterfaces;
+        private readonly List<Type> _additionalInterfaces;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AdditionalInterfacesPolicy"/> class.
         /// </summary>
         public AdditionalInterfacesPolicy()
         {
-            this.additionalInterfaces = new List<Type>();
+            _additionalInterfaces = new List<Type>();
         }
 
         /// <summary>
         /// Gets the <see cref="Type"/> instances accumulated by this policy.
         /// </summary>
-        public IEnumerable<Type> AdditionalInterfaces
-        {
-            get { return this.additionalInterfaces; }
-        }
+        public IEnumerable<Type> AdditionalInterfaces => _additionalInterfaces;
 
         internal void AddAdditionalInterface(Type additionalInterface)
         {
-            this.additionalInterfaces.Add(additionalInterface);
+            _additionalInterfaces.Add(additionalInterface);
         }
 
         internal static AdditionalInterfacesPolicy GetOrCreate(
@@ -49,7 +44,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
             if ((policy == null) || !(policy is AdditionalInterfacesPolicy))
             {
                 policy = new AdditionalInterfacesPolicy();
-                policies.Set<IAdditionalInterfacesPolicy>(policy, key);
+                policies.Set(policy, key);
             }
             return (AdditionalInterfacesPolicy)policy;
         }

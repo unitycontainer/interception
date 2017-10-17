@@ -1,20 +1,20 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 
 using System;
-using System.Globalization;
 using System.Reflection;
+using Unity.Interception.Utilities;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.PolicyInjection.MatchingRules
 {
     /// <summary>
-    /// A <see cref="IMatchingRule"/> that checks a member for the presence
-    /// of the <see cref="TagAttribute"/> on the method, property, or class, and
+    /// A <see cref="TagAttribute"/> that checks a member for the presence
+    /// of the <see cref="IMatchingRule"/> on the method, property, or class, and
     /// that the given string matches.
     /// </summary>
     public class TagAttributeMatchingRule : IMatchingRule
     {
-        private readonly string tagToMatch;
-        private readonly bool ignoreCase;
+        private readonly string _tagToMatch;
+        private readonly bool _ignoreCase;
 
         /// <summary>
         /// Constructs a new <see cref="TagAttributeMatchingRule"/>, looking for
@@ -35,8 +35,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <param name="ignoreCase">if false, case-sensitive comparison. If true, case-insensitive comparison.</param>
         public TagAttributeMatchingRule(string tagToMatch, bool ignoreCase)
         {
-            this.tagToMatch = tagToMatch;
-            this.ignoreCase = ignoreCase;
+            _tagToMatch = tagToMatch;
+            _ignoreCase = ignoreCase;
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         {
             foreach (TagAttribute tagAttribute in ReflectionHelper.GetAllAttributes<TagAttribute>(member, true))
             {
-                if (string.Compare(tagAttribute.Tag, tagToMatch, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal) == 0)
+                if (string.Compare(tagAttribute.Tag, _tagToMatch, _ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal) == 0)
                 {
                     return true;
                 }

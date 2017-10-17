@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Unity.Interception.Utilities;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.PolicyInjection.MatchingRules
 {
     /// <summary>
     /// An <see cref="IMatchingRule"/> that matches methods that have any parameters
@@ -12,7 +12,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
     /// </summary>
     public class ParameterTypeMatchingRule : IMatchingRule
     {
-        private readonly List<ParameterTypeMatchingInfo> matches;
+        private readonly List<ParameterTypeMatchingInfo> _matches;
 
         /// <summary>
         /// Creates a new <see cref="ParameterTypeMatchingRule"/> that matches if any of
@@ -22,32 +22,27 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// describes the types to match.</param>
         public ParameterTypeMatchingRule(IEnumerable<ParameterTypeMatchingInfo> matches)
         {
-            this.matches = new List<ParameterTypeMatchingInfo>(matches);
+            _matches = new List<ParameterTypeMatchingInfo>(matches);
         }
 
         /// <summary>
         /// The list of <see cref="ParameterTypeMatchingInfo"/> describing the parameter types to match.
         /// </summary>
         /// <value>The collection of matches.</value>
-        public IEnumerable<ParameterTypeMatchingInfo> ParameterMatches
-        {
-            get { return matches; }
-        }
+        public IEnumerable<ParameterTypeMatchingInfo> ParameterMatches => _matches;
 
         /// <summary>
         /// Check the given member to see if it has any matching parameters.
         /// </summary>
         /// <param name="member">Member to match.</param>
         /// <returns>true if member matches, false if it doesn't.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
-            Justification = "Validation done by Guard class")]
         public bool Matches(MethodBase member)
         {
-            Microsoft.Practices.Unity.Utility.Guard.ArgumentNotNull(member, "member");
+            Guard.ArgumentNotNull(member, "member");
 
             ParameterInfo[] parametersInfo = member.GetParameters();
 
-            foreach (ParameterTypeMatchingInfo matchInfo in matches)
+            foreach (ParameterTypeMatchingInfo matchInfo in _matches)
             {
                 TypeMatchingRule typeRule =
                     new TypeMatchingRule(matchInfo.Match, matchInfo.IgnoreCase);
@@ -128,8 +123,6 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
     /// </summary>
     public class ParameterTypeMatchingInfo : MatchingInfo
     {
-        private ParameterKind kind;
-
         /// <summary>
         /// Creates a new uninitialized <see cref="ParameterTypeMatchingInfo"/>.
         /// </summary>
@@ -143,7 +136,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <param name="kind"><see cref="ParameterKind"/> of parameter to match.</param>
         public ParameterTypeMatchingInfo(ParameterKind kind)
         {
-            this.kind = kind;
+            Kind = kind;
         }
 
         /// <summary>
@@ -155,7 +148,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         public ParameterTypeMatchingInfo(string nameToMatch, ParameterKind kind)
             : base(nameToMatch)
         {
-            this.kind = kind;
+            Kind = kind;
         }
 
         /// <summary>
@@ -169,17 +162,13 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         public ParameterTypeMatchingInfo(string nameToMatch, bool ignoreCase, ParameterKind kind)
             : base(nameToMatch, ignoreCase)
         {
-            this.kind = kind;
+            Kind = kind;
         }
 
         /// <summary>
         /// What kind of parameter to match.
         /// </summary>
         /// <value><see cref="ParameterKind"/> indicating which kind of parameters to match.</value>
-        public ParameterKind Kind
-        {
-            get { return this.kind; }
-            set { this.kind = value; }
-        }
+        public ParameterKind Kind { get; set; }
     }
 }

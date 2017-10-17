@@ -9,6 +9,7 @@ using Microsoft.Practices.Unity.InterceptionExtension.Tests.MatchingRules.TopLev
 using Microsoft.Practices.Unity.InterceptionExtension.Tests.MatchingRules.TopLevel.SecondLevel.ThirdLevel;
 using Microsoft.Practices.Unity.InterceptionExtension.Tests.MatchingRules.TopLevelTwo;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Unity.Interception.PolicyInjection.MatchingRules;
 
 [module: SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1403:FileMayOnlyContainASingleNamespace", Justification = "Test needs multiple namespaces so keep the namespaces and test together")]
 

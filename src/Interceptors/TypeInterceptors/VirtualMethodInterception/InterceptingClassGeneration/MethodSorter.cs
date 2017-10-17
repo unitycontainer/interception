@@ -4,9 +4,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration
 {
     /// <summary>
     /// A utility class that takes a set of <see cref="MethodInfo"/>s
@@ -15,12 +14,12 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
     /// </summary>
     internal class MethodSorter : IEnumerable<MethodInfo>
     {
-        private readonly Dictionary<string, List<MethodInfo>> methodsByName = new Dictionary<string, List<MethodInfo>>();
-        private readonly Type declaringType;
+        private readonly Dictionary<string, List<MethodInfo>> _methodsByName = new Dictionary<string, List<MethodInfo>>();
+        private readonly Type _declaringType;
 
         public MethodSorter(Type declaringType, IEnumerable<MethodInfo> methodsToSort)
         {
-            this.declaringType = declaringType;
+            _declaringType = declaringType;
             GroupMethodsByName(methodsToSort);
         }
 
@@ -31,7 +30,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
 
         public IEnumerator<MethodInfo> GetEnumerator()
         {
-            foreach (KeyValuePair<string, List<MethodInfo>> methodList in methodsByName)
+            foreach (KeyValuePair<string, List<MethodInfo>> methodList in _methodsByName)
             {
                 if (methodList.Value.Count == 1)
                 {
@@ -55,11 +54,11 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         {
             foreach (MethodInfo method in methodsToSort)
             {
-                if (!methodsByName.ContainsKey(method.Name))
+                if (!_methodsByName.ContainsKey(method.Name))
                 {
-                    methodsByName[method.Name] = new List<MethodInfo>();
+                    _methodsByName[method.Name] = new List<MethodInfo>();
                 }
-                methodsByName[method.Name].Add(method);
+                _methodsByName[method.Name].Add(method);
             }
         }
 
@@ -146,8 +145,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         private int DeclarationDepth(MethodInfo method)
         {
             int depth = 0;
-            Type currentType = declaringType;
-            while (currentType != null && method.DeclaringType != declaringType)
+            Type currentType = _declaringType;
+            while (currentType != null && method.DeclaringType != _declaringType)
             {
                 ++depth;
                 currentType = currentType.BaseType;

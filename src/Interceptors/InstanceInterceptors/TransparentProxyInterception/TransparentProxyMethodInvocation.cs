@@ -1,14 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.Remoting.Messaging;
 using System.Security;
 using System.Security.Permissions;
+using Unity.Interception.PolicyInjection.Pipeline;
+using Unity.Interception.Utilities;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyInterception
 {
     /// <summary>
     /// An implementation of <see cref="IMethodInvocation"/> that wraps the
@@ -19,12 +20,12 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
     [SecurityPermission(SecurityAction.Demand, Flags = SecurityPermissionFlag.Infrastructure)]
     public sealed class TransparentProxyMethodInvocation : IMethodInvocation
     {
-        private IMethodCallMessage callMessage;
-        private TransparentProxyInputParameterCollection inputParams;
-        private ParameterCollection allParams;
-        private Dictionary<string, object> invocationContext;
-        private object target;
-        private object[] arguments;
+        private readonly IMethodCallMessage _callMessage;
+        private readonly TransparentProxyInputParameterCollection _inputParams;
+        private readonly ParameterCollection _allParams;
+        private readonly Dictionary<string, object> _invocationContext;
+        private readonly object _target;
+        private readonly object[] _arguments;
 
         /// <summary>
         /// Creates a new <see cref="IMethodInvocation"/> implementation that wraps
@@ -33,19 +34,17 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// </summary>
         /// <param name="callMessage">Remoting call message object.</param>
         /// <param name="target">Ultimate target of the method call.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
-            Justification = "Validation done by Guard class")]
         public TransparentProxyMethodInvocation(IMethodCallMessage callMessage, object target)
         {
-            Microsoft.Practices.Unity.Utility.Guard.ArgumentNotNull(callMessage, "callMessage");
+            Guard.ArgumentNotNull(callMessage, "callMessage");
 
-            this.callMessage = callMessage;
-            this.invocationContext = new Dictionary<string, object>();
-            this.target = target;
-            this.arguments = callMessage.Args;
-            this.inputParams = new TransparentProxyInputParameterCollection(callMessage, this.arguments);
-            this.allParams =
-                new ParameterCollection(arguments, callMessage.MethodBase.GetParameters(), info => true);
+            _callMessage = callMessage;
+            _invocationContext = new Dictionary<string, object>();
+            _target = target;
+            _arguments = callMessage.Args;
+            _inputParams = new TransparentProxyInputParameterCollection(callMessage, _arguments);
+            _allParams =
+                new ParameterCollection(_arguments, callMessage.MethodBase.GetParameters(), info => true);
         }
 
         /// <summary>
@@ -55,7 +54,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         public IParameterCollection Inputs
         {
             [SecuritySafeCritical]
-            get { return inputParams; }
+            get { return _inputParams; }
         }
 
         /// <summary>
@@ -65,7 +64,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         IParameterCollection IMethodInvocation.Arguments
         {
             [SecuritySafeCritical]
-            get { return allParams; }
+            get { return _allParams; }
         }
 
         /// <summary>
@@ -76,7 +75,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         public IDictionary<string, object> InvocationContext
         {
             [SecuritySafeCritical]
-            get { return invocationContext; }
+            get { return _invocationContext; }
         }
 
         /// <summary>
@@ -86,7 +85,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         public object Target
         {
             [SecuritySafeCritical]
-            get { return target; }
+            get { return _target; }
         }
 
         /// <summary>
@@ -96,7 +95,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         public MethodBase MethodBase
         {
             [SecuritySafeCritical]
-            get { return callMessage.MethodBase; }
+            get { return _callMessage.MethodBase; }
         }
 
         /// <summary>
@@ -111,7 +110,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         [SecuritySafeCritical]
         public IMethodReturn CreateMethodReturn(object returnValue, params object[] outputs)
         {
-            return new TransparentProxyMethodReturn(callMessage, returnValue, outputs, invocationContext);
+            return new TransparentProxyMethodReturn(_callMessage, returnValue, outputs, _invocationContext);
         }
 
         /// <summary>
@@ -123,7 +122,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         [SecuritySafeCritical]
         public IMethodReturn CreateExceptionMethodReturn(Exception ex)
         {
-            return new TransparentProxyMethodReturn(ex, callMessage, invocationContext);
+            return new TransparentProxyMethodReturn(ex, _callMessage, _invocationContext);
         }
 
         /// <summary>
@@ -134,7 +133,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <value>Array containing the arguments to the target.</value>
         internal object[] Arguments
         {
-            get { return arguments; }
+            get { return _arguments; }
         }
     }
 }

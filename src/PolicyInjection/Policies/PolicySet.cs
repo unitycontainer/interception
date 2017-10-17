@@ -1,18 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 
-using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using Unity;
+using System.Linq;
+using Unity.Interception.Interceptors;
+using Unity.Interception.PolicyInjection.Pipeline;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.PolicyInjection.Policies
 {
     /// <summary>
     /// A collection of Policy objects. The policies within a PolicySet combine using
     /// an "or" operation.
     /// </summary>
-    [SuppressMessage("Microsoft.Naming", "CA1710", Justification = "Using alternative suffix 'Set'.")]
     public class PolicySet : List<InjectionPolicy>
     {
         /// <summary>
@@ -21,7 +19,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <param name="policies">Policies to put into the policy set.</param>
         public PolicySet(params InjectionPolicy[] policies)
         {
-            this.AddRange(policies);
+            AddRange(policies);
         }
 
         /// <summary>
@@ -48,13 +46,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <returns>Collection of policies that do not apply to <paramref name="member"/>.</returns>
         public IEnumerable<InjectionPolicy> GetPoliciesNotFor(MethodImplementationInfo member)
         {
-            foreach (InjectionPolicy policy in this)
-            {
-                if (!policy.Matches(member))
-                {
-                    yield return policy;
-                }
-            }
+            return this.Where(policy => !policy.Matches(member));
         }
 
         /// <summary>

@@ -3,6 +3,7 @@
 using System.Reflection;
 using Microsoft.Practices.Unity.InterceptionExtension;
 using Unity.Attributes;
+using Unity.Interception.PolicyInjection.MatchingRules;
 
 namespace Microsoft.Practices.Unity.TestSupport
 {

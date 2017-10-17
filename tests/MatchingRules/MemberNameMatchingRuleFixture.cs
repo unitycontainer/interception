@@ -2,6 +2,7 @@
 
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Unity.Interception.PolicyInjection.MatchingRules;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.MatchingRules
 {

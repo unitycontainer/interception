@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 
-using System.Collections.Generic;
+using Unity.Interception.InterceptionBehaviors;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.Interceptors
 {
     /// <summary>
     /// This interface is implemented by all proxy objects, type or instance based.

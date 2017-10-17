@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 
-using System;
 using System.Reflection;
 using System.Runtime.Remoting.Messaging;
 using System.Security;
 using System.Security.Permissions;
+using Unity.Interception.PolicyInjection.Pipeline;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyInterception
 {
     /// <summary>
     /// A class that wraps the inputs of a <see cref="IMethodCallMessage"/> into the

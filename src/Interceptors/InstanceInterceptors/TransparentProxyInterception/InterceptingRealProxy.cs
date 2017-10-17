@@ -1,19 +1,19 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Messaging;
 using System.Runtime.Remoting.Proxies;
 using System.Security;
 using System.Security.Permissions;
+using Unity.Interception.InterceptionBehaviors;
+using Unity.Interception.PolicyInjection.Pipeline;
 using Unity.Interception.Properties;
-using Microsoft.Practices.Unity.Utility;
+using Unity.Interception.Utilities;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyInterception
 {
     /// <summary>
     /// This class provides the remoting based interception mechanism. It is
@@ -24,10 +24,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
     [SecurityPermission(SecurityAction.Demand, Flags = SecurityPermissionFlag.Infrastructure)]
     public class InterceptingRealProxy : RealProxy, IRemotingTypeInfo, IInterceptingProxy
     {
-        private readonly InterceptionBehaviorPipeline interceptorsPipeline = new InterceptionBehaviorPipeline();
-        private readonly object target;
-        private readonly ReadOnlyCollection<Type> additionalInterfaces;
-        private string typeName;
+        private readonly InterceptionBehaviorPipeline _interceptorsPipeline = new InterceptionBehaviorPipeline();
+        private readonly ReadOnlyCollection<Type> _additionalInterfaces;
 
         /// <summary>
         /// Creates a new <see cref="InterceptingRealProxy"/> instance that applies
@@ -36,8 +34,6 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <param name="target">Target object to intercept calls to.</param>
         /// <param name="classToProxy">Type to return as the type being proxied.</param>
         /// <param name="additionalInterfaces">Additional interfaces the proxy must implement.</param>
-        [SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
-            Justification = "Validation done by Guard class")]
         public InterceptingRealProxy(
             object target,
             Type classToProxy,
@@ -45,9 +41,9 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
             : base(classToProxy)
         {
             Guard.ArgumentNotNull(target, "target");
-            this.target = target;
-            this.additionalInterfaces = CheckAdditionalInterfaces(additionalInterfaces);
-            this.typeName = target.GetType().FullName;
+            Target = target;
+            _additionalInterfaces = CheckAdditionalInterfaces(additionalInterfaces);
+            TypeName = target.GetType().FullName;
         }
 
         private static ReadOnlyCollection<Type> CheckAdditionalInterfaces(Type[] interfaces)
@@ -59,10 +55,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// Returns the target of this intercepted call.
         /// </summary>
         /// <value>The target object.</value>
-        public object Target
-        {
-            get { return this.target; }
-        }
+        public object Target { get; }
 
         #region IInterceptingProxy Members
 
@@ -75,7 +68,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         {
             Guard.ArgumentNotNull(interceptor, "interceptor");
 
-            this.interceptorsPipeline.Add(interceptor);
+            _interceptorsPipeline.Add(interceptor);
         }
 
         #endregion
@@ -91,8 +84,6 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <param name="fromType">The type to cast to. </param>
         /// <param name="o">The object for which to check casting. </param>
         /// <exception cref="T:System.Security.SecurityException">The immediate caller makes the call through a reference to the interface and does not have infrastructure permission. </exception>
-        [SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
-            Justification = "Validation done by Guard class.")]
         [SecurityCritical]
         public bool CanCastTo(Type fromType, object o)
         {
@@ -109,7 +100,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
                 return true;
             }
 
-            foreach (Type @interface in this.additionalInterfaces)
+            foreach (Type @interface in _additionalInterfaces)
             {
                 if (fromType.IsAssignableFrom(@interface))
                 {
@@ -130,10 +121,9 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         public string TypeName
         {
             [SecurityCritical]
-            get { return this.typeName; }
-
+            get;
             [SecurityCritical]
-            set { this.typeName = value; }
+            set;
         }
 
         #endregion
@@ -149,7 +139,6 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// about the method call.</param>
         /// <returns>An <see cref="TransparentProxyMethodReturn"/> object contains the
         /// information about the target method's return value.</returns>
-        [SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods", Justification = "Validation done by Guard class")]
         [SecurityCritical]
         public override IMessage Invoke(IMessage msg)
         {
@@ -159,20 +148,20 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
 
             if (callMessage.MethodBase.DeclaringType == typeof(IInterceptingProxy))
             {
-                return this.HandleInterceptingProxyMethod(callMessage);
+                return HandleInterceptingProxyMethod(callMessage);
             }
 
-            TransparentProxyMethodInvocation invocation = new TransparentProxyMethodInvocation(callMessage, this.target);
+            TransparentProxyMethodInvocation invocation = new TransparentProxyMethodInvocation(callMessage, Target);
             IMethodReturn result =
-                this.interceptorsPipeline.Invoke(
+                _interceptorsPipeline.Invoke(
                     invocation,
                     delegate(IMethodInvocation input, GetNextInterceptionBehaviorDelegate getNext)
                     {
-                        if (callMessage.MethodBase.DeclaringType.IsAssignableFrom(this.target.GetType()))
+                        if (callMessage.MethodBase.DeclaringType.IsAssignableFrom(Target.GetType()))
                         {
                             try
                             {
-                                object returnValue = callMessage.MethodBase.Invoke(this.target, invocation.Arguments);
+                                object returnValue = callMessage.MethodBase.Invoke(Target, invocation.Arguments);
                                 return input.CreateMethodReturn(returnValue, invocation.Arguments);
                             }
                             catch (TargetInvocationException ex)
@@ -182,11 +171,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
                                 return input.CreateExceptionMethodReturn(ex.InnerException);
                             }
                         }
-                        else
-                        {
-                            return input.CreateExceptionMethodReturn(
-                                new InvalidOperationException(Resources.ExceptionAdditionalInterfaceNotImplemented));
-                        }
+                        return input.CreateExceptionMethodReturn(
+                            new InvalidOperationException(Resources.ExceptionAdditionalInterfaceNotImplemented));
                     });
 
             return ((TransparentProxyMethodReturn)result).ToMethodReturnMessage();
@@ -197,7 +183,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
             switch (callMessage.MethodName)
             {
                 case "AddInterceptionBehavior":
-                    return this.ExecuteAddInterceptionBehavior(callMessage);
+                    return ExecuteAddInterceptionBehavior(callMessage);
             }
             throw new InvalidOperationException();
         }
@@ -205,7 +191,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         private IMessage ExecuteAddInterceptionBehavior(IMethodCallMessage callMessage)
         {
             IInterceptionBehavior interceptor = (IInterceptionBehavior)callMessage.InArgs[0];
-            this.AddInterceptionBehavior(interceptor);
+            AddInterceptionBehavior(interceptor);
             return new ReturnMessage(null, new object[0], 0, callMessage.LogicalCallContext, callMessage);
         }
     }

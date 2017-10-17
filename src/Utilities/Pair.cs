@@ -1,6 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 
-namespace Microsoft.Practices.Unity.Utility
+namespace Unity.Interception.Utilities
 {
     /// <summary>
     /// A helper class that encapsulates two different
@@ -8,9 +8,6 @@ namespace Microsoft.Practices.Unity.Utility
     /// </summary>
     public class Pair<TFirst, TSecond>
     {
-        private TFirst first;
-        private TSecond second;
-
         /// <summary>
         /// Create a new <see cref="Pair{TFirst, TSecond}"/> containing
         /// the two values give.
@@ -19,25 +16,19 @@ namespace Microsoft.Practices.Unity.Utility
         /// <param name="second">Second value</param>
         public Pair(TFirst first, TSecond second)
         {
-            this.first = first;
-            this.second = second;
+            First = first;
+            Second = second;
         }
 
         /// <summary>
         /// The first value of the pair.
         /// </summary>
-        public TFirst First
-        {
-            get { return first; }
-        }
+        public TFirst First { get; }
 
         /// <summary>
         /// The second value of the pair.
         /// </summary>
-        public TSecond Second
-        {
-            get { return second; }
-        }
+        public TSecond Second { get; }
     }
 
     /// <summary>

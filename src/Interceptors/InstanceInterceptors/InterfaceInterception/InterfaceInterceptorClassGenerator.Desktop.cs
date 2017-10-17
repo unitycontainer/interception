@@ -3,7 +3,7 @@
 using System;
 using System.Reflection.Emit;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceInterception
 {
     public partial class InterfaceInterceptorClassGenerator
     {

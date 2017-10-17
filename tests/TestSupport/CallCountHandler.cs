@@ -2,6 +2,7 @@
 
 using Microsoft.Practices.Unity.InterceptionExtension;
 using Unity.Attributes;
+using Unity.Interception.PolicyInjection.Pipeline;
 
 namespace Microsoft.Practices.Unity.TestSupport
 {

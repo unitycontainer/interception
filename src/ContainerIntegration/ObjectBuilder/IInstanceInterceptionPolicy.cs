@@ -1,10 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 
-using Microsoft.Practices.ObjectBuilder2;
-using Unity;
 using Unity.Builder;
+using Unity.Interception.Interceptors.InstanceInterceptors;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 {
     /// <summary>
     /// An interface that determines when to intercept instances

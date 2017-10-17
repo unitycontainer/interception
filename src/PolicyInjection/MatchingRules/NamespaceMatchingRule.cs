@@ -2,10 +2,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Reflection;
+using Unity.Interception.Utilities;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.PolicyInjection.MatchingRules
 {
     /// <summary>
     /// An <see cref="IMatchingRule"/> that matches members in a given namespace. You can
@@ -14,7 +14,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
     /// </summary>
     public class NamespaceMatchingRule : IMatchingRule
     {
-        private readonly List<NamespaceMatchingInfo> matches;
+        private readonly List<NamespaceMatchingInfo> _matches;
 
         /// <summary>
         /// Create a new <see cref="NamespaceMatchingRule"/> that matches the given
@@ -33,7 +33,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <param name="namespaceName">namespace name to match.</param>
         /// <param name="ignoreCase">If false, comparison is case sensitive. If true, comparison is case insensitive.</param>
         public NamespaceMatchingRule(string namespaceName, bool ignoreCase)
-            : this(new MatchingInfo[] { new MatchingInfo(namespaceName, ignoreCase) })
+            : this(new[] { new MatchingInfo(namespaceName, ignoreCase) })
         {
         }
 
@@ -42,16 +42,14 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// the given namespace names.
         /// </summary>
         /// <param name="matches">Collection of namespace names to match.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
-            Justification = "Validation done by Guard class")]
         public NamespaceMatchingRule(IEnumerable<MatchingInfo> matches)
         {
-            Microsoft.Practices.Unity.Utility.Guard.ArgumentNotNull(matches, "matches");
+            Guard.ArgumentNotNull(matches, "matches");
 
-            this.matches = new List<NamespaceMatchingInfo>();
+            _matches = new List<NamespaceMatchingInfo>();
             foreach (MatchingInfo match in matches)
             {
-                this.matches.Add(new NamespaceMatchingInfo(match.Match, match.IgnoreCase));
+                _matches.Add(new NamespaceMatchingInfo(match.Match, match.IgnoreCase));
             }
         }
 
@@ -64,7 +62,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         public bool Matches(MethodBase member)
         {
             return
-                matches.Exists(
+                _matches.Exists(
                     delegate(NamespaceMatchingInfo match) { return match.Matches(member.DeclaringType); });
         }
 
@@ -86,17 +84,17 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
             public NamespaceMatchingInfo(string match, bool ignoreCase)
                 : base(match, ignoreCase)
             {
-                if (this.NamespaceName.EndsWith(WildCardString, StringComparison.Ordinal))
+                if (NamespaceName.EndsWith(WildCardString, StringComparison.Ordinal))
                 {
-                    this.NamespaceName = this.NamespaceName.Substring(0, this.NamespaceName.Length - WildCardString.Length);
-                    this.wildCard = true;
+                    NamespaceName = NamespaceName.Substring(0, NamespaceName.Length - WildCardString.Length);
+                    wildCard = true;
                 }
             }
 
             private string NamespaceName
             {
-                get { return this.Match; }
-                set { this.Match = value; }
+                get { return Match; }
+                set { Match = value; }
             }
 
             /// <summary>
@@ -108,7 +106,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
             {
                 if (t == null)
                 {
-                    return string.IsNullOrEmpty(this.NamespaceName);
+                    return string.IsNullOrEmpty(NamespaceName);
                 }
 
                 StringComparison comparison = IgnoreCase
@@ -118,14 +116,14 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
                 bool exactMatch =
                     string.Compare(
                         t.Namespace,
-                        this.NamespaceName,
+                        NamespaceName,
                         comparison)
                     == 0;
 
-                if (this.wildCard)
+                if (wildCard)
                 {
                     return exactMatch ||
-                        t.Namespace.StartsWith(this.NamespaceName + ".", comparison);
+                        t.Namespace.StartsWith(NamespaceName + ".", comparison);
                 }
                 return exactMatch;
             }

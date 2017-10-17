@@ -3,7 +3,7 @@
 using System;
 using System.Reflection;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.PolicyInjection.MatchingRules
 {
     /// <summary>
     /// An <see cref="IMatchingRule"/> that checks to see if a member has a specified
@@ -11,7 +11,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
     /// </summary>
     public class ReturnTypeMatchingRule : IMatchingRule
     {
-        private readonly TypeMatchingRule typeMatchingRule;
+        private readonly TypeMatchingRule _typeMatchingRule;
 
         /// <summary>
         /// Construct a new <see cref="ReturnTypeMatchingRule"/> that matches
@@ -22,9 +22,9 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         {
             if (returnType == null)
             {
-                throw new ArgumentNullException("returnType");
+                throw new ArgumentNullException(nameof(returnType));
             }
-            typeMatchingRule = new TypeMatchingRule(returnType.FullName);
+            _typeMatchingRule = new TypeMatchingRule(returnType.FullName);
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <param name="returnTypeName">Type name to match. Name comparisons are case sensitive.</param>
         public ReturnTypeMatchingRule(string returnTypeName)
         {
-            typeMatchingRule = new TypeMatchingRule(returnTypeName);
+            _typeMatchingRule = new TypeMatchingRule(returnTypeName);
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// is case insensitive.</param>
         public ReturnTypeMatchingRule(string returnTypeName, bool ignoreCase)
         {
-            typeMatchingRule = new TypeMatchingRule(returnTypeName, ignoreCase);
+            _typeMatchingRule = new TypeMatchingRule(returnTypeName, ignoreCase);
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
                 return false;
             }
 
-            return typeMatchingRule.Matches(method.ReturnType);
+            return _typeMatchingRule.Matches(method.ReturnType);
         }
     }
 }

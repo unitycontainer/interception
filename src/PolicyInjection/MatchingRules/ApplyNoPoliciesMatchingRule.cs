@@ -1,11 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 
-using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using Microsoft.Practices.Unity.Utility;
+using Unity.Interception.PolicyInjection.Policies;
+using Unity.Interception.Utilities;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.PolicyInjection.MatchingRules
 {
     /// <summary>
     /// A <see cref="IMatchingRule"/> implementation that fails to match
@@ -20,8 +19,6 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// on it, or a containing type doesn't have the attribute.</remarks>
         /// <param name="member">Member to check.</param>
         /// <returns>True if the rule matches, false if it doesn't.</returns>
-        [SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
-            Justification = "Validation done by Guard class.")]
         public bool Matches(MethodBase member)
         {
             Guard.ArgumentNotNull(member, "member");

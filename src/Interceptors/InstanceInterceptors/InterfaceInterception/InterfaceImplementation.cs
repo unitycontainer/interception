@@ -2,21 +2,22 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceInterception
 {
     internal class InterfaceImplementation
     {
-        private readonly TypeBuilder typeBuilder;
-        private readonly Type @interface;
-        private readonly Type targetInterface;
-        private readonly GenericParameterMapper genericParameterMapper;
-        private readonly FieldBuilder proxyInterceptionPipelineField;
-        private readonly bool explicitImplementation;
-        private readonly FieldBuilder targetField;
+        private readonly TypeBuilder _typeBuilder;
+        private readonly Type _interface;
+        private readonly Type _targetInterface;
+        private readonly GenericParameterMapper _genericParameterMapper;
+        private readonly FieldBuilder _proxyInterceptionPipelineField;
+        private readonly bool _explicitImplementation;
+        private readonly FieldBuilder _targetField;
 
         public InterfaceImplementation(
             TypeBuilder typeBuilder,
@@ -43,12 +44,12 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
             bool explicitImplementation,
             FieldBuilder targetField)
         {
-            this.typeBuilder = typeBuilder;
-            this.@interface = @interface;
-            this.genericParameterMapper = genericParameterMapper;
-            this.proxyInterceptionPipelineField = proxyInterceptionPipelineField;
-            this.explicitImplementation = explicitImplementation;
-            this.targetField = targetField;
+            _typeBuilder = typeBuilder;
+            _interface = @interface;
+            _genericParameterMapper = genericParameterMapper;
+            _proxyInterceptionPipelineField = proxyInterceptionPipelineField;
+            _explicitImplementation = explicitImplementation;
+            _targetField = targetField;
 
             if (@interface.IsGenericType)
             {
@@ -56,25 +57,26 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
                 // in this case, the targetInterface is a constructed version using the generic type parameters
                 // from the generated type generate type
                 var definition = @interface.GetGenericTypeDefinition();
+                Debug.Assert(definition != null, nameof(definition) + " != null");
                 var mappedParameters = definition.GetGenericArguments().Select(t => genericParameterMapper.Map(t)).ToArray();
-                this.targetInterface = definition.MakeGenericType(mappedParameters);
+                _targetInterface = definition.MakeGenericType(mappedParameters);
             }
             else
             {
-                this.targetInterface = @interface;
+                _targetInterface = @interface;
             }
         }
 
         public int Implement(HashSet<Type> implementedInterfaces, int memberCount)
         {
-            if (implementedInterfaces.Contains(this.@interface))
+            if (implementedInterfaces.Contains(_interface))
             {
                 return memberCount;
             }
 
-            implementedInterfaces.Add(this.@interface);
+            implementedInterfaces.Add(_interface);
 
-            typeBuilder.AddInterfaceImplementation(this.@interface);
+            _typeBuilder.AddInterfaceImplementation(_interface);
 
             foreach (MethodInfo method in MethodsToIntercept())
             {
@@ -91,16 +93,16 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
                 OverrideEvent(@event, memberCount++);
             }
 
-            foreach (var @extendedInterface in this.@interface.GetInterfaces())
+            foreach (var extendedInterface in _interface.GetInterfaces())
             {
                 memberCount =
                     new InterfaceImplementation(
-                        this.typeBuilder,
-                        @extendedInterface,
-                        new GenericParameterMapper(@extendedInterface, this.genericParameterMapper),
-                        this.proxyInterceptionPipelineField,
-                        this.explicitImplementation,
-                        this.targetField)
+                        _typeBuilder,
+                        extendedInterface,
+                        new GenericParameterMapper(extendedInterface, _genericParameterMapper),
+                        _proxyInterceptionPipelineField,
+                        _explicitImplementation,
+                        _targetField)
                         .Implement(implementedInterfaces, memberCount);
             }
 
@@ -110,7 +112,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         private IEnumerable<MethodInfo> MethodsToIntercept()
         {
             foreach (MethodInfo method in
-                this.@interface.GetMethods(
+                _interface.GetMethods(
                     BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
             {
                 if (!method.IsSpecialName)
@@ -123,20 +125,20 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         private void OverrideMethod(MethodInfo method, int methodNum)
         {
             new InterfaceMethodOverride(
-                this.typeBuilder,
-                this.proxyInterceptionPipelineField,
-                this.targetField,
+                _typeBuilder,
+                _proxyInterceptionPipelineField,
+                _targetField,
                 method,
-                this.targetInterface,
-                this.genericParameterMapper,
-                this.explicitImplementation,
+                _targetInterface,
+                _genericParameterMapper,
+                _explicitImplementation,
                 methodNum)
                 .AddMethod();
         }
 
         private IEnumerable<PropertyInfo> PropertiesToIntercept()
         {
-            return this.@interface.GetProperties(
+            return _interface.GetProperties(
                 BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
         }
 
@@ -150,7 +152,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         private void AddPropertyDefinition(PropertyInfo property, MethodBuilder getMethod, MethodBuilder setMethod)
         {
             PropertyBuilder newProperty =
-                this.typeBuilder.DefineProperty(
+                _typeBuilder.DefineProperty(
                     property.Name,
                     property.Attributes,
                     property.PropertyType,
@@ -172,20 +174,20 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
             return method == null
                 ? null
                 : new InterfaceMethodOverride(
-                    this.typeBuilder,
-                    this.proxyInterceptionPipelineField,
-                    this.targetField,
+                    _typeBuilder,
+                    _proxyInterceptionPipelineField,
+                    _targetField,
                     method,
-                    this.targetInterface,
-                    this.genericParameterMapper,
-                    this.explicitImplementation,
+                    _targetInterface,
+                    _genericParameterMapper,
+                    _explicitImplementation,
                     count)
                     .AddMethod();
         }
 
         private IEnumerable<EventInfo> EventsToIntercept()
         {
-            return this.@interface.GetEvents(
+            return _interface.GetEvents(
                 BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
         }
 
@@ -198,7 +200,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
 
         private void AddEventDefinition(EventInfo @event, MethodBuilder addMethod, MethodBuilder removeMethod)
         {
-            EventBuilder newEvent = this.typeBuilder.DefineEvent(@event.Name, @event.Attributes, @event.EventHandlerType);
+            EventBuilder newEvent = _typeBuilder.DefineEvent(@event.Name, @event.Attributes, @event.EventHandlerType);
 
             if (addMethod != null)
             {
@@ -216,13 +218,13 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
             return method == null
                 ? null
                 : new InterfaceMethodOverride(
-                    this.typeBuilder,
-                    this.proxyInterceptionPipelineField,
-                    this.targetField,
+                    _typeBuilder,
+                    _proxyInterceptionPipelineField,
+                    _targetField,
                     method,
-                    this.targetInterface,
-                    this.genericParameterMapper,
-                    this.explicitImplementation,
+                    _targetInterface,
+                    _genericParameterMapper,
+                    _explicitImplementation,
                     count)
                     .AddMethod();
         }

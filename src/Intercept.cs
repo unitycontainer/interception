@@ -4,10 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Unity.Interception.InterceptionBehaviors;
+using Unity.Interception.Interceptors;
+using Unity.Interception.Interceptors.InstanceInterceptors;
+using Unity.Interception.Interceptors.TypeInterceptors;
 using Unity.Interception.Properties;
-using Microsoft.Practices.Unity.Utility;
+using Unity.Interception.Utilities;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception
 {
     /// <summary>
     /// High-level API for performing interception on existing and new objects.

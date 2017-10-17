@@ -3,7 +3,7 @@
 using System.Collections;
 using System.Reflection;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.PolicyInjection.Pipeline
 {
     /// <summary>
     /// This interface represents a list of either input or output

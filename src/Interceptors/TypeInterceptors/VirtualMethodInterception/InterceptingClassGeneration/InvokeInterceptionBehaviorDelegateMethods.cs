@@ -2,20 +2,14 @@
 
 using System;
 using System.Reflection;
-using Microsoft.Practices.ObjectBuilder2;
+using Unity.Interception.InterceptionBehaviors;
+using Unity.Interception.Utilities;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration
 {
     internal static class InvokeInterceptionBehaviorDelegateMethods
     {
-        internal static ConstructorInfo InvokeInterceptionBehaviorDelegate
-        {
-            get
-            {
-                // cannot use static reflection with delegate types
-                return typeof(InvokeInterceptionBehaviorDelegate)
-                    .GetConstructor(Sequence.Collect(typeof(object), typeof(IntPtr)));
-            }
-        }
+        internal static ConstructorInfo InvokeInterceptionBehaviorDelegate => typeof(InvokeInterceptionBehaviorDelegate)
+            .GetConstructor(Sequence.Collect(typeof(object), typeof(IntPtr)));
     }
 }

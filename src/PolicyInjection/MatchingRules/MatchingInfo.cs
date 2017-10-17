@@ -1,6 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.PolicyInjection.MatchingRules
 {
     /// <summary>
     /// Class used for storing information about a single name/ignoreCase
@@ -9,9 +9,6 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
     /// </summary>
     public class MatchingInfo
     {
-        private string match;
-        private bool ignoreCase;
-
         /// <summary>
         /// Constructs an empty <see cref="MatchingInfo"/> object with empty
         /// string and ignoreCase = false.
@@ -39,28 +36,20 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <param name="ignoreCase">true to do case insensitive comparison, false to do case sensitive.</param>
         public MatchingInfo(string nameToMatch, bool ignoreCase)
         {
-            this.match = nameToMatch;
-            this.ignoreCase = ignoreCase;
+            Match = nameToMatch;
+            IgnoreCase = ignoreCase;
         }
 
         /// <summary>
         /// Gets or sets the name to match.
         /// </summary>
         /// <value>The name to match.</value>
-        public string Match
-        {
-            get { return match; }
-            set { match = value; }
-        }
+        public string Match { get; set; }
 
         /// <summary>
         /// Gets or sets whether to do case sensitive comparisons of Match.
         /// </summary>
         /// <value>If false, case sensitive comparison. If true, case insensitive comparisons.</value>
-        public bool IgnoreCase
-        {
-            get { return ignoreCase; }
-            set { ignoreCase = value; }
-        }
+        public bool IgnoreCase { get; set; }
     }
 }

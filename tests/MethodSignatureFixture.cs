@@ -5,6 +5,12 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Unity;
+using Unity.Interception.Interceptors;
+using Unity.Interception.Interceptors.InstanceInterceptors.InterfaceInterception;
+using Unity.Interception.PolicyInjection;
+using Unity.Interception.PolicyInjection.MatchingRules;
+using Unity.Interception.PolicyInjection.Pipeline;
+using Unity.Interception.PolicyInjection.Policies;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
 {

@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.PolicyInjection.Pipeline
 {
     /// <summary>
     /// This interface is used to represent the return value from a method.

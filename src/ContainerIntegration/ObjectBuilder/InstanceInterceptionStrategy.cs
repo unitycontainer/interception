@@ -3,13 +3,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Practices.ObjectBuilder2;
-using Unity;
 using Unity.Builder;
 using Unity.Builder.Strategy;
+using Unity.Interception.InterceptionBehaviors;
+using Unity.Interception.Interceptors;
 using Unity.Policy;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 {
     /// <summary>
     /// A <see cref="IBuilderStrategy"/> that intercepts objects
@@ -23,14 +23,10 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// phase and executes in reverse order from the PreBuildUp calls.
         /// </summary>
         /// <param name="context">Context of the build operation.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
-            Justification = "Validation done by Guard class")]
         public override void PostBuildUp(IBuilderContext context)
         {
-            Microsoft.Practices.Unity.Utility.Guard.ArgumentNotNull(context, "context");
-
             // If it's already been intercepted, don't do it again.
-            if (context.Existing is IInterceptingProxy)
+            if ((context ?? throw new ArgumentNullException(nameof(context))).Existing is IInterceptingProxy)
             {
                 return;
             }
@@ -79,12 +75,11 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         private static T FindInterceptionPolicy<T>(IBuilderContext context, bool probeOriginalKey)
             where T : class, IBuilderPolicy
         {
-            T policy;
-
             // First, try for a match against the current build key
             Type currentType = context.BuildKey.Type;
-            policy = context.Policies.Get<T>(context.BuildKey, false) ??
-                context.Policies.Get<T>(currentType, false);
+            var policy = context.Policies.Get<T>(context.BuildKey, false) ??
+                       context.Policies.Get<T>(currentType, false);
+
             if (policy != null)
             {
                 return policy;

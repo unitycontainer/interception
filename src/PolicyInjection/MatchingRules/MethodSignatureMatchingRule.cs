@@ -1,18 +1,18 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Unity.Interception.Utilities;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.PolicyInjection.MatchingRules
 {
     /// <summary>
     /// Match methods with the given names and method signature.
     /// </summary>
     public class MethodSignatureMatchingRule : IMatchingRule
     {
-        private readonly Glob methodNamePattern;
-        private readonly List<TypeMatchingRule> parameterRules;
+        private readonly Glob _methodNamePattern;
+        private readonly List<TypeMatchingRule> _parameterRules;
 
         /// <summary>
         /// Creates a new <see cref="MethodSignatureMatchingRule"/> that matches methods
@@ -21,18 +21,16 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <param name="methodName">Method name to match. Wildcards are allowed.</param>
         /// <param name="parameterTypeNames">Parameter type names to match, in order. Wildcards are allowed.</param>
         /// <param name="ignoreCase">If false, name comparisons are case sensitive. If true, name comparisons are case insensitive.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
-            Justification = "Validation done by Guard class")]
         public MethodSignatureMatchingRule(string methodName, IEnumerable<string> parameterTypeNames, bool ignoreCase)
         {
-            Microsoft.Practices.Unity.Utility.Guard.ArgumentNotNull(parameterTypeNames, "parameterTypeNames");
+            Guard.ArgumentNotNull(parameterTypeNames, "parameterTypeNames");
 
-            methodNamePattern = new Glob(methodName, !ignoreCase);
-            parameterRules = new List<TypeMatchingRule>();
+            _methodNamePattern = new Glob(methodName, !ignoreCase);
+            _parameterRules = new List<TypeMatchingRule>();
 
             foreach (string parameterTypeName in parameterTypeNames)
             {
-                parameterRules.Add(new TypeMatchingRule(parameterTypeName, ignoreCase));
+                _parameterRules.Add(new TypeMatchingRule(parameterTypeName, ignoreCase));
             }
         }
 
@@ -75,26 +73,24 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// </summary>
         /// <param name="member">Member to check.</param>
         /// <returns>True if match, false if not.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
-                    Justification = "Validation done by Guard class")]        
         public bool Matches(MethodBase member)
         {
-            Microsoft.Practices.Unity.Utility.Guard.ArgumentNotNull(member, "member");
+            Guard.ArgumentNotNull(member, "member");
 
-            if (!methodNamePattern.IsMatch(member.Name))
+            if (!_methodNamePattern.IsMatch(member.Name))
             {
                 return false;
             }
 
             ParameterInfo[] parameters = member.GetParameters();
-            if (parameters.Length != parameterRules.Count)
+            if (parameters.Length != _parameterRules.Count)
             {
                 return false;
             }
 
             for (int i = 0; i < parameters.Length; ++i)
             {
-                if (!parameterRules[i].Matches(parameters[i].ParameterType))
+                if (!_parameterRules[i].Matches(parameters[i].ParameterType))
                 {
                     return false;
                 }

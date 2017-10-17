@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
+using Unity.Interception.PolicyInjection.Pipeline;
+using Unity.Interception.Utilities;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception
 {
     /// <summary>
     /// An implementation of <see cref="IMethodReturn"/> used by
@@ -14,10 +14,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
     /// </summary>
     public class VirtualMethodReturn : IMethodReturn
     {
-        private ParameterCollection outputs;
-        private Exception exception;
-        private IDictionary<string, object> invocationContext;
-        private object returnValue;
+        private readonly ParameterCollection _outputs;
 
         /// <summary>
         /// Construct a <see cref="VirtualMethodReturn"/> instance that returns
@@ -26,16 +23,14 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <param name="originalInvocation">The method invocation.</param>
         /// <param name="returnValue">Return value (should be null if method returns void).</param>
         /// <param name="arguments">All arguments (including current values) passed to the method.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
-            Justification = "Validation done by Guard class")]
         public VirtualMethodReturn(IMethodInvocation originalInvocation, object returnValue, object[] arguments)
         {
-            Microsoft.Practices.Unity.Utility.Guard.ArgumentNotNull(originalInvocation, "originalInvocation");
+            Guard.ArgumentNotNull(originalInvocation, "originalInvocation");
 
-            invocationContext = originalInvocation.InvocationContext;
-            this.returnValue = returnValue;
-            outputs = new ParameterCollection(arguments, originalInvocation.MethodBase.GetParameters(),
-                delegate(ParameterInfo pi) { return pi.ParameterType.IsByRef; });
+            InvocationContext = originalInvocation.InvocationContext;
+            ReturnValue = returnValue;
+            _outputs = new ParameterCollection(arguments, originalInvocation.MethodBase.GetParameters(),
+                pi => pi.ParameterType.IsByRef);
         }
 
         /// <summary>
@@ -43,44 +38,31 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// </summary>
         /// <param name="originalInvocation">The method invocation.</param>
         /// <param name="exception">Exception that was thrown.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
-            Justification = "Validation done by Guard class")]
         public VirtualMethodReturn(IMethodInvocation originalInvocation, Exception exception)
         {
-            Microsoft.Practices.Unity.Utility.Guard.ArgumentNotNull(originalInvocation, "originalInvocation");
+            Guard.ArgumentNotNull(originalInvocation, "originalInvocation");
             
-            invocationContext = originalInvocation.InvocationContext;
-            this.exception = exception;
-            outputs = new ParameterCollection(new object[0], new ParameterInfo[0], delegate { return false; });
+            InvocationContext = originalInvocation.InvocationContext;
+            Exception = exception;
+            _outputs = new ParameterCollection(new object[0], new ParameterInfo[0], delegate { return false; });
         }
 
         /// <summary>
         /// The collection of output parameters. If the method has no output
         /// parameters, this is a zero-length list (never null).
         /// </summary>
-        public IParameterCollection Outputs
-        {
-            get { return outputs; }
-        }
+        public IParameterCollection Outputs => _outputs;
 
         /// <summary>
         /// Returns value from the method call.
         /// </summary>
         /// <remarks>This value is null if the method has no return value.</remarks>
-        public object ReturnValue
-        {
-            get { return returnValue; }
-            set { returnValue = value; }
-        }
+        public object ReturnValue { get; set; }
 
         /// <summary>
         /// If the method threw an exception, the exception object is here.
         /// </summary>
-        public Exception Exception
-        {
-            get { return exception; }
-            set { exception = value; }
-        }
+        public Exception Exception { get; set; }
 
         /// <summary>
         /// Retrieves a dictionary that can be used to store arbitrary additional
@@ -90,9 +72,6 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// in the IMethodInvocation object, so handlers can set context
         /// properties in the pre-call phase and retrieve them in the after-call phase.
         /// </remarks>
-        public IDictionary<string, object> InvocationContext
-        {
-            get { return invocationContext; }
-        }
+        public IDictionary<string, object> InvocationContext { get; }
     }
 }

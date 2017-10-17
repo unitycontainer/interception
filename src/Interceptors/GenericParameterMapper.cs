@@ -4,29 +4,26 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Interception.Properties;
-using Microsoft.Practices.Unity.Utility;
+using Unity.Interception.Utilities;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.Interceptors
 {
     /// <summary>
     /// Maps types involving generic parameter types from reflected types into equivalent versions involving generated types.
     /// </summary>
     public class GenericParameterMapper
     {
-        private static readonly GenericParameterMapper DefaultParameterMapper = new GenericParameterMapper(Type.EmptyTypes, Type.EmptyTypes, null);
         private static readonly KeyValuePair<Type, Type>[] EmptyMappings = new KeyValuePair<Type, Type>[0];
 
-        private readonly IDictionary<Type, Type> mappedTypesCache = new Dictionary<Type, Type>();
-        private readonly ICollection<KeyValuePair<Type, Type>> localMappings;
-        private readonly GenericParameterMapper parent;
+        private readonly IDictionary<Type, Type> _mappedTypesCache = new Dictionary<Type, Type>();
+        private readonly ICollection<KeyValuePair<Type, Type>> _localMappings;
+        private readonly GenericParameterMapper _parent;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GenericParameterMapper"/> class.
         /// </summary>
         /// <param name="type">A constructed generic type, open or closed.</param>
         /// <param name="parent">The parent mapper, or <see langword="null"/>.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
-            Justification = "Validation done by Guard class")]
         public GenericParameterMapper(Type type, GenericParameterMapper parent)
         {
             Guard.ArgumentNotNull(type, "type");
@@ -38,16 +35,16 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
                     throw new ArgumentException(Resources.ExceptionCannotMapGenericTypeDefinition, "type");
                 }
 
-                this.parent = parent;
-                this.localMappings =
+                _parent = parent;
+                _localMappings =
                     CreateMappings(
                         type.GetGenericTypeDefinition().GetGenericArguments(),
                         type.GetGenericArguments());
             }
             else
             {
-                this.localMappings = EmptyMappings;
-                this.parent = null;
+                _localMappings = EmptyMappings;
+                _parent = null;
             }
         }
 
@@ -68,8 +65,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <param name="parent">The parent mapper, or <see langword="null"/>.</param>
         public GenericParameterMapper(Type[] reflectedParameters, Type[] generatedParameters, GenericParameterMapper parent)
         {
-            this.parent = parent;
-            this.localMappings = CreateMappings(reflectedParameters, generatedParameters);
+            _parent = parent;
+            _localMappings = CreateMappings(reflectedParameters, generatedParameters);
         }
 
         private static ICollection<KeyValuePair<Type, Type>> CreateMappings(Type[] reflectedParameters, Type[] generatedParameters)
@@ -97,12 +94,10 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <param name="typeToMap">The type to map.</param>
         public Type Map(Type typeToMap)
         {
-            Type mappedType;
-
-            if (!this.mappedTypesCache.TryGetValue(typeToMap, out mappedType))
+            if (!_mappedTypesCache.TryGetValue(typeToMap, out var mappedType))
             {
-                mappedType = this.DoMap(typeToMap);
-                this.mappedTypesCache[typeToMap] = mappedType;
+                mappedType = DoMap(typeToMap);
+                _mappedTypesCache[typeToMap] = mappedType;
             }
 
             return mappedType;
@@ -119,7 +114,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
                 {
                     // Array case: create a new array type for the mapped element type
 
-                    var mappedElementType = this.Map(typeToMap.GetElementType());
+                    var mappedElementType = Map(typeToMap.GetElementType());
 
                     // assume a rank of 1 means vector. there is no way to check for this (IsSzArray is not public)
                     var mappedArrayType =
@@ -134,7 +129,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
                 {
                     // Generic type case: construct a new generic type with mapped types
 
-                    var mappedGenericArguments = typeToMap.GetGenericArguments().Select(gp => this.Map(gp)).ToArray();
+                    var mappedGenericArguments = typeToMap.GetGenericArguments().Select(gp => Map(gp)).ToArray();
                     var mappedGenericType = typeToMap.GetGenericTypeDefinition().MakeGenericType(mappedGenericArguments);
 
                     return mappedGenericType;
@@ -142,30 +137,25 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
 
                 return typeToMap;
             }
-            else
+            // Map the generic parameter from the reflected type into the generated generic parameter
+
+            var mappedType =
+                _localMappings.Where(kvp => kvp.Key == typeToMap).Select(kvp => kvp.Value).FirstOrDefault()
+                ?? typeToMap;
+
+            if (_parent != null)
             {
-                // Map the generic parameter from the reflected type into the generated generic parameter
-
-                var mappedType =
-                    this.localMappings.Where(kvp => kvp.Key == typeToMap).Select(kvp => kvp.Value).FirstOrDefault()
-                    ?? typeToMap;
-
-                if (parent != null)
-                {
-                    mappedType = this.parent.Map(mappedType);
-                }
-
-                return mappedType;
+                mappedType = _parent.Map(mappedType);
             }
+
+            return mappedType;
         }
 
         /// <summary>
         /// Gets the default mapper.
         /// </summary>
-        public static GenericParameterMapper DefaultMapper
-        {
-            get { return DefaultParameterMapper; }
-        }
+        public static GenericParameterMapper DefaultMapper { get; } = new GenericParameterMapper(Type.EmptyTypes, 
+                                                                                                 Type.EmptyTypes, null);
 
         /// <summary>
         /// Gets the formal parameters.
@@ -173,7 +163,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <returns></returns>
         public Type[] GetReflectedParameters()
         {
-            return this.localMappings.Select(kvp => kvp.Key).ToArray();
+            return _localMappings.Select(kvp => kvp.Key).ToArray();
         }
 
         /// <summary>
@@ -182,7 +172,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <returns></returns>
         public Type[] GetGeneratedParameters()
         {
-            return this.localMappings.Select(kvp => kvp.Value).ToArray();
+            return _localMappings.Select(kvp => kvp.Value).ToArray();
         }
     }
 }

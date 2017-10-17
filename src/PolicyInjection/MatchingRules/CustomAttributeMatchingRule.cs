@@ -1,12 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Unity.Interception.Properties;
-using Microsoft.Practices.Unity.Utility;
+using Unity.Interception.Utilities;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.PolicyInjection.MatchingRules
 {
     /// <summary>
     /// An implementation of <see cref="IMatchingRule"/> that checks to see if
@@ -14,26 +13,24 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
     /// </summary>
     public class CustomAttributeMatchingRule : IMatchingRule
     {
-        private readonly Type attributeType;
-        private readonly bool inherited;
+        private readonly Type _attributeType;
+        private readonly bool _inherited;
 
         /// <summary>
         /// Constructs a new <see cref="CustomAttributeMatchingRule"/>.
         /// </summary>
         /// <param name="attributeType">Attribute to match.</param>
         /// <param name="inherited">If true, checks the base class for attributes as well.</param>
-        [SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
-            Justification = "Validation done by Guard class.")]
         public CustomAttributeMatchingRule(Type attributeType, bool inherited)
         {
             Guard.ArgumentNotNull(attributeType, "attributeType");
             if (!attributeType.IsSubclassOf(typeof(Attribute)))
             {
-                throw new ArgumentException(Resources.ExceptionAttributeNoSubclassOfAttribute, "attributeType");
+                throw new ArgumentException(Resources.ExceptionAttributeNoSubclassOfAttribute, nameof(attributeType));
             }
 
-            this.attributeType = attributeType;
-            this.inherited = inherited;
+            _attributeType = attributeType;
+            _inherited = inherited;
         }
 
         /// <summary>
@@ -41,13 +38,11 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// </summary>
         /// <param name="member">Member to check.</param>
         /// <returns>true if it matches, false if not.</returns>
-        [SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
-            Justification = "Validation done by Guard class.")]
         public bool Matches(MethodBase member)
         {
             Guard.ArgumentNotNull(member, "member");
 
-            object[] attribues = member.GetCustomAttributes(attributeType, inherited);
+            object[] attribues = member.GetCustomAttributes(_attributeType, _inherited);
 
             return (attribues != null && attribues.Length > 0);
         }

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration
 {
     /// <summary>
     /// This class handles parameter type mapping. When we generate
@@ -15,19 +15,19 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
     /// </summary>
     internal class MethodOverrideParameterMapper
     {
-        private readonly MethodInfo methodToOverride;
-        private GenericParameterMapper genericParameterMapper;
+        private readonly MethodInfo _methodToOverride;
+        private GenericParameterMapper _genericParameterMapper;
 
         public MethodOverrideParameterMapper(MethodInfo methodToOverride)
         {
-            this.methodToOverride = methodToOverride;
+            _methodToOverride = methodToOverride;
         }
 
         public void SetupParameters(MethodBuilder methodBuilder, GenericParameterMapper parentMapper)
         {
-            if (methodToOverride.IsGenericMethod)
+            if (_methodToOverride.IsGenericMethod)
             {
-                var genericArguments = methodToOverride.GetGenericArguments();
+                var genericArguments = _methodToOverride.GetGenericArguments();
                 var names = genericArguments.Select(t => t.Name).ToArray();
                 var builders = methodBuilder.DefineGenericParameters(names);
                 for (int i = 0; i < genericArguments.Length; ++i)
@@ -52,18 +52,18 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
                     }
                 }
 
-                this.genericParameterMapper =
+                _genericParameterMapper =
                     new GenericParameterMapper(genericArguments, builders.Cast<Type>().ToArray(), parentMapper);
             }
             else
             {
-                this.genericParameterMapper = parentMapper;
+                _genericParameterMapper = parentMapper;
             }
         }
 
         public Type GetParameterType(Type originalParameterType)
         {
-            return this.genericParameterMapper.Map(originalParameterType);
+            return _genericParameterMapper.Map(originalParameterType);
         }
 
         public Type GetElementType(Type originalParameterType)
@@ -73,12 +73,9 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
 
         public Type GetReturnType()
         {
-            return GetParameterType(methodToOverride.ReturnType);
+            return GetParameterType(_methodToOverride.ReturnType);
         }
 
-        public Type[] GenericMethodParameters
-        {
-            get { return this.genericParameterMapper.GetGeneratedParameters(); }
-        }
+        public Type[] GenericMethodParameters => _genericParameterMapper.GetGeneratedParameters();
     }
 }

@@ -2,11 +2,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using Microsoft.Practices.Unity.Utility;
+using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration;
+using Unity.Interception.Utilities;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceInterception
 {
     /// <summary>
     /// An instance interceptor that works by generating a
@@ -24,8 +24,6 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// </summary>
         /// <param name="t">Type to check.</param>
         /// <returns>True if interception is possible, false if not.</returns>
-        [SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
-            Justification = "Validation done via Guard class.")]
         public bool CanIntercept(Type t)
         {
             Guard.ArgumentNotNull(t, "t");
@@ -40,8 +38,6 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// was created (typically an interface).</param>
         /// <param name="implementationType">The concrete type of the implementing object.</param>
         /// <returns>Sequence of <see cref="MethodInfo"/> objects.</returns>
-        [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Interceptable",
-            Justification = "Spelling is fine")]
         public IEnumerable<MethodImplementationInfo> GetInterceptableMethods(
             Type interceptedType,
             Type implementationType)
@@ -90,8 +86,6 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <param name="target">Object to create the proxy for.</param>
         /// <param name="additionalInterfaces">Additional interfaces the proxy must implement.</param>
         /// <returns>The proxy object.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
-            Justification = "Validation done by Guard class")]
         public IInterceptingProxy CreateProxy(Type t, object target, params Type[] additionalInterfaces)
         {
             Guard.ArgumentNotNull(t, "t");
@@ -123,7 +117,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
             {
                 interceptorType = interceptorType.MakeGenericType(t.GetGenericArguments());
             }
-            return (IInterceptingProxy)interceptorType.GetConstructors()[0].Invoke(new object[] { target, t });
+            return (IInterceptingProxy)interceptorType.GetConstructors()[0].Invoke(new[] { target, t });
         }
 
         #endregion

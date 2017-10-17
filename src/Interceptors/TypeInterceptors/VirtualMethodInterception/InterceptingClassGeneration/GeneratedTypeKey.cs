@@ -3,30 +3,30 @@
 using System;
 using System.Collections.Generic;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration
 {
     internal struct GeneratedTypeKey
     {
-        private readonly Type baseType;
-        private readonly Type[] additionalInterfaces;
+        private readonly Type _baseType;
+        private readonly Type[] _additionalInterfaces;
 
         public GeneratedTypeKey(Type baseType, Type[] additionalInterfaces)
         {
-            this.baseType = baseType;
-            this.additionalInterfaces = additionalInterfaces;
+            _baseType = baseType;
+            _additionalInterfaces = additionalInterfaces;
         }
 
         internal class GeneratedTypeKeyComparer : IEqualityComparer<GeneratedTypeKey>
         {
             public bool Equals(GeneratedTypeKey x, GeneratedTypeKey y)
             {
-                if (!(x.baseType.Equals(y.baseType) && x.additionalInterfaces.Length == y.additionalInterfaces.Length))
+                if (!(x._baseType.Equals(y._baseType) && x._additionalInterfaces.Length == y._additionalInterfaces.Length))
                 {
                     return false;
                 }
-                for (int i = 0; i < x.additionalInterfaces.Length; i++)
+                for (int i = 0; i < x._additionalInterfaces.Length; i++)
                 {
-                    if (!x.additionalInterfaces[i].Equals(y.additionalInterfaces[i]))
+                    if (!x._additionalInterfaces[i].Equals(y._additionalInterfaces[i]))
                     {
                         return false;
                     }
@@ -37,7 +37,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
 
             public int GetHashCode(GeneratedTypeKey obj)
             {
-                return obj.baseType.GetHashCode();
+                return obj._baseType.GetHashCode();
             }
         }
     }

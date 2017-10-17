@@ -4,13 +4,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Security;
+using Unity.Interception.Interceptors.InstanceInterceptors.InterfaceInterception;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration
 {
     /// <summary>
     /// Class that handles generating the dynamic types used for interception.
@@ -19,16 +18,14 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
     {
         private static readonly AssemblyBuilder AssemblyBuilder;
 
-        private readonly Type typeToIntercept;
-        private readonly IEnumerable<Type> additionalInterfaces;
-        private Type targetType;
-        private GenericParameterMapper mainTypeMapper;
+        private readonly Type _typeToIntercept;
+        private readonly IEnumerable<Type> _additionalInterfaces;
+        private Type _targetType;
+        private GenericParameterMapper _mainTypeMapper;
 
-        private FieldBuilder proxyInterceptionPipelineField;
-        private TypeBuilder typeBuilder;
+        private FieldBuilder _proxyInterceptionPipelineField;
+        private TypeBuilder _typeBuilder;
 
-        [SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline",
-            Justification = "Need to use constructor so we can place attribute on it.")]
         static InterceptingClassGenerator()
         {
             AssemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(
@@ -48,8 +45,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <param name="additionalInterfaces">Additional interfaces the proxy must implement.</param>
         public InterceptingClassGenerator(Type typeToIntercept, params Type[] additionalInterfaces)
         {
-            this.typeToIntercept = typeToIntercept;
-            this.additionalInterfaces = additionalInterfaces;
+            _typeToIntercept = typeToIntercept;
+            _additionalInterfaces = additionalInterfaces;
             CreateTypeBuilder();
         }
 
@@ -66,14 +63,14 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
 
             int memberCount = 0;
             HashSet<Type> implementedInterfaces = GetImplementedInterfacesSet();
-            foreach (var @interface in this.additionalInterfaces)
+            foreach (var @interface in _additionalInterfaces)
             {
                 memberCount =
-                    new InterfaceImplementation(this.typeBuilder, @interface, this.proxyInterceptionPipelineField, true)
+                    new InterfaceImplementation(_typeBuilder, @interface, _proxyInterceptionPipelineField, true)
                         .Implement(implementedInterfaces, memberCount);
             }
 
-            Type result = typeBuilder.CreateType();
+            Type result = _typeBuilder.CreateType();
 #if DEBUG_SAVE_GENERATED_ASSEMBLY
             assemblyBuilder.Save("Unity_ILEmit_DynamicClasses.dll");
 #endif
@@ -85,14 +82,14 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
             int methodNum = 0;
             foreach (MethodInfo method in GetMethodsToIntercept())
             {
-                new MethodOverride(typeBuilder, proxyInterceptionPipelineField, method, targetType, mainTypeMapper, methodNum++).AddMethod();
+                new MethodOverride(_typeBuilder, _proxyInterceptionPipelineField, method, _targetType, _mainTypeMapper, methodNum++).AddMethod();
             }
         }
 
         private IEnumerable<MethodInfo> GetMethodsToIntercept()
         {
             List<MethodInfo> methodsToIntercept = new List<MethodInfo>();
-            foreach (MethodInfo method in typeToIntercept.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+            foreach (MethodInfo method in _typeToIntercept.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
             {
                 if (!method.IsSpecialName && MethodOverride.MethodCanBeIntercepted(method))
                 {
@@ -100,7 +97,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
                 }
             }
 
-            MethodSorter sorter = new MethodSorter(typeToIntercept, methodsToIntercept);
+            MethodSorter sorter = new MethodSorter(_typeToIntercept, methodsToIntercept);
             foreach (MethodInfo method in sorter)
             {
                 yield return method;
@@ -114,7 +111,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
             // show up properly on the derived class.
 
             int propertyCount = 0;
-            foreach (PropertyInfo property in typeToIntercept.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+            foreach (PropertyInfo property in _typeToIntercept.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
             {
                 OverridePropertyMethod(property.GetGetMethod(true), propertyCount);
                 OverridePropertyMethod(property.GetSetMethod(true), propertyCount);
@@ -126,7 +123,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         {
             if (method != null && MethodOverride.MethodCanBeIntercepted(method))
             {
-                new MethodOverride(typeBuilder, proxyInterceptionPipelineField, method, targetType, mainTypeMapper, count).AddMethod();
+                new MethodOverride(_typeBuilder, _proxyInterceptionPipelineField, method, _targetType, _mainTypeMapper, count).AddMethod();
             }
         }
 
@@ -137,7 +134,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
             // show up properly on the derived class.
 
             int eventCount = 0;
-            foreach (EventInfo eventInfo in typeToIntercept.GetEvents(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+            foreach (EventInfo eventInfo in _typeToIntercept.GetEvents(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
             {
                 OverrideEventMethod(eventInfo.GetAddMethod(), eventCount);
                 OverrideEventMethod(eventInfo.GetRemoveMethod(), eventCount);
@@ -149,18 +146,18 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         {
             if (method != null && MethodOverride.MethodCanBeIntercepted(method))
             {
-                new MethodOverride(typeBuilder, proxyInterceptionPipelineField, method, targetType, mainTypeMapper, count).AddMethod();
+                new MethodOverride(_typeBuilder, _proxyInterceptionPipelineField, method, _targetType, _mainTypeMapper, count).AddMethod();
             }
         }
 
         private void AddConstructors()
         {
             BindingFlags bindingFlags =
-                this.typeToIntercept.IsAbstract
+                _typeToIntercept.IsAbstract
                     ? BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic
                     : BindingFlags.Public | BindingFlags.Instance;
 
-            foreach (ConstructorInfo ctor in typeToIntercept.GetConstructors(bindingFlags))
+            foreach (ConstructorInfo ctor in _typeToIntercept.GetConstructors(bindingFlags))
             {
                 AddConstructor(ctor);
             }
@@ -183,7 +180,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
 
             Type[] paramTypes = parameters.Select(item => item.ParameterType).ToArray();
 
-            ConstructorBuilder ctorBuilder = typeBuilder.DefineConstructor(
+            ConstructorBuilder ctorBuilder = _typeBuilder.DefineConstructor(
                 attributes, ctor.CallingConvention, paramTypes);
 
             for (int i = 0; i < parameters.Length; i++)
@@ -196,7 +193,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
             // Initialize pipeline field
             il.Emit(OpCodes.Ldarg_0);
             il.Emit(OpCodes.Newobj, InterceptionBehaviorPipelineMethods.Constructor);
-            il.Emit(OpCodes.Stfld, proxyInterceptionPipelineField);
+            il.Emit(OpCodes.Stfld, _proxyInterceptionPipelineField);
 
             // call base class constructor
             il.Emit(OpCodes.Ldarg_0);
@@ -212,31 +209,31 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
 
         private void CreateTypeBuilder()
         {
-            TypeAttributes newAttributes = typeToIntercept.Attributes;
+            TypeAttributes newAttributes = _typeToIntercept.Attributes;
             newAttributes = FilterTypeAttributes(newAttributes);
 
-            Type baseClass = GetGenericType(typeToIntercept);
+            Type baseClass = GetGenericType(_typeToIntercept);
 
-            ModuleBuilder moduleBuilder = GetModuleBuilder();
-            typeBuilder = moduleBuilder.DefineType(
-                "DynamicModule.ns.Wrapped_" + typeToIntercept.Name + "_" + Guid.NewGuid().ToString("N"),
+            ModuleBuilder moduleBuilder = InterceptingClassGenerator.GetModuleBuilder();
+            _typeBuilder = moduleBuilder.DefineType(
+                "DynamicModule.ns.Wrapped_" + _typeToIntercept.Name + "_" + Guid.NewGuid().ToString("N"),
                 newAttributes,
                 baseClass);
 
-            this.mainTypeMapper = DefineGenericArguments(typeBuilder, baseClass);
+            _mainTypeMapper = DefineGenericArguments(_typeBuilder, baseClass);
 
-            if (this.typeToIntercept.IsGenericType)
+            if (_typeToIntercept.IsGenericType)
             {
-                var definition = this.typeToIntercept.GetGenericTypeDefinition();
-                var mappedParameters = definition.GetGenericArguments().Select(t => this.mainTypeMapper.Map(t)).ToArray();
-                this.targetType = definition.MakeGenericType(mappedParameters);
+                var definition = _typeToIntercept.GetGenericTypeDefinition();
+                var mappedParameters = definition.GetGenericArguments().Select(t => _mainTypeMapper.Map(t)).ToArray();
+                _targetType = definition.MakeGenericType(mappedParameters);
             }
             else
             {
-                this.targetType = this.typeToIntercept;
+                _targetType = _typeToIntercept;
             }
 
-            proxyInterceptionPipelineField = InterceptingProxyImplementor.ImplementIInterceptingProxy(typeBuilder);
+            _proxyInterceptionPipelineField = InterceptingProxyImplementor.ImplementIInterceptingProxy(_typeBuilder);
         }
 
         private static Type GetGenericType(Type typeToIntercept)
@@ -300,7 +297,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         private HashSet<Type> GetImplementedInterfacesSet()
         {
             HashSet<Type> implementedInterfaces = new HashSet<Type>();
-            AddToImplementedInterfaces(this.typeToIntercept, implementedInterfaces);
+            AddToImplementedInterfaces(_typeToIntercept, implementedInterfaces);
             return implementedInterfaces;
         }
 

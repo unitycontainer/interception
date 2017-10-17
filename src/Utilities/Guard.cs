@@ -3,14 +3,13 @@
 using System;
 using System.Globalization;
 using System.Reflection;
-using Unity;
 
-namespace Microsoft.Practices.Unity.Utility
+namespace Unity.Interception.Utilities
 {
     /// <summary>
     /// A static helper class that includes various parameter checking routines.
     /// </summary>
-    internal static partial class Guard
+    internal static class Guard
     {
         /// <summary>
         /// Throws <see cref="ArgumentNullException"/> if the given argument is null.
@@ -59,12 +58,12 @@ namespace Microsoft.Practices.Unity.Utility
         {
             if (assignmentTargetType == null)
             {
-                throw new ArgumentNullException("assignmentTargetType");
+                throw new ArgumentNullException(nameof(assignmentTargetType));
             }
 
             if (assignmentValueType == null)
             {
-                throw new ArgumentNullException("assignmentValueType");
+                throw new ArgumentNullException(nameof(assignmentValueType));
             }
 
             if (!assignmentTargetType.GetTypeInfo().IsAssignableFrom(assignmentValueType.GetTypeInfo()))
@@ -90,12 +89,12 @@ namespace Microsoft.Practices.Unity.Utility
         {
             if (assignmentTargetType == null)
             {
-                throw new ArgumentNullException("assignmentTargetType");
+                throw new ArgumentNullException(nameof(assignmentTargetType));
             }
 
             if (assignmentInstance == null)
             {
-                throw new ArgumentNullException("assignmentInstance");
+                throw new ArgumentNullException(nameof(assignmentInstance));
             }
 
             if (!assignmentTargetType.GetTypeInfo().IsAssignableFrom(assignmentInstance.GetType().GetTypeInfo()))

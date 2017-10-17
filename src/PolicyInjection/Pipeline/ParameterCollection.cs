@@ -3,20 +3,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
+using Unity.Interception.Utilities;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.PolicyInjection.Pipeline
 {
     /// <summary>
     /// An implementation of <see cref="IParameterCollection"/> that wraps a provided array
     /// containing the argument values.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1035:ICollectionImplementationsHaveStronglyTypedMembers",
-        Justification = "Not a general purpose collection")]   
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1039:ListsAreStronglyTyped", 
-        Justification = "Not a general purpose collection")]
     public class ParameterCollection : IParameterCollection
     {
         /// <summary>
@@ -25,9 +21,9 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// </summary>
         private struct ArgumentInfo
         {
-            public int Index;
-            public string Name;
-            public ParameterInfo ParameterInfo;
+            public readonly int Index;
+            public readonly string Name;
+            public readonly ParameterInfo ParameterInfo;
 
             /// <summary>
             /// Construct a new <see cref="ArgumentInfo"/> object linking the
@@ -37,14 +33,14 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
             /// <param name="parameterInfo"><see cref="ParameterInfo"/> for the argument at <paramref name="index"/>.</param>
             public ArgumentInfo(int index, ParameterInfo parameterInfo)
             {
-                this.Index = index;
-                this.Name = parameterInfo.Name;
-                this.ParameterInfo = parameterInfo;
+                Index = index;
+                Name = parameterInfo.Name;
+                ParameterInfo = parameterInfo;
             }
         }
 
-        private readonly List<ArgumentInfo> argumentInfo;
-        private readonly object[] arguments;
+        private readonly List<ArgumentInfo> _argumentInfo;
+        private readonly object[] _arguments;
 
         /// <summary>
         /// Construct a new <see cref="ParameterCollection"/> that wraps the
@@ -52,23 +48,21 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// </summary>
         /// <param name="arguments">Complete collection of arguments.</param>
         /// <param name="argumentInfo">Type information about each parameter.</param>
-        /// <param name="isArgumentPartOfCollection">A <see cref="Predicate{ParameterInfo}"/> that indicates
+        /// <param name="isArgumentPartOfCollection">A <see cref="Predicate{T}"/> that indicates
         /// whether a particular parameter is part of the collection. Used to filter out only input
         /// parameters, for example.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
-            Justification = "Validation done by Guard class")]
         public ParameterCollection(object[] arguments, ParameterInfo[] argumentInfo, Predicate<ParameterInfo> isArgumentPartOfCollection)
         {
-            Microsoft.Practices.Unity.Utility.Guard.ArgumentNotNull(arguments, "arguments");
-            Microsoft.Practices.Unity.Utility.Guard.ArgumentNotNull(isArgumentPartOfCollection, "isArgumentPartOfCollection");
+            Guard.ArgumentNotNull(arguments, "arguments");
+            Guard.ArgumentNotNull(isArgumentPartOfCollection, "isArgumentPartOfCollection");
 
-            this.arguments = arguments;
-            this.argumentInfo = new List<ArgumentInfo>();
+            _arguments = arguments;
+            _argumentInfo = new List<ArgumentInfo>();
             for (int argumentNumber = 0; argumentNumber < argumentInfo.Length; ++argumentNumber)
             {
                 if (isArgumentPartOfCollection(argumentInfo[argumentNumber]))
                 {
-                    this.argumentInfo.Add(new ArgumentInfo(argumentNumber, argumentInfo[argumentNumber]));
+                    _argumentInfo.Add(new ArgumentInfo(argumentNumber, argumentInfo[argumentNumber]));
                 }
             }
         }
@@ -80,16 +74,16 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <value>value of the named parameter.</value>
         public object this[string parameterName]
         {
-            get { return arguments[argumentInfo[IndexForInputParameterName(parameterName)].Index]; }
+            get { return _arguments[_argumentInfo[IndexForInputParameterName(parameterName)].Index]; }
 
-            set { arguments[argumentInfo[IndexForInputParameterName(parameterName)].Index] = value; }
+            set { _arguments[_argumentInfo[IndexForInputParameterName(parameterName)].Index] = value; }
         }
 
         private int IndexForInputParameterName(string paramName)
         {
-            for (int i = 0; i < argumentInfo.Count; ++i)
+            for (int i = 0; i < _argumentInfo.Count; ++i)
             {
-                if (argumentInfo[i].Name == paramName)
+                if (_argumentInfo[i].Name == paramName)
                 {
                     return i;
                 }
@@ -104,8 +98,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <value>Value of the requested parameter.</value>
         public object this[int index]
         {
-            get { return arguments[argumentInfo[index].Index]; }
-            set { arguments[argumentInfo[index].Index] = value; }
+            get => _arguments[_argumentInfo[index].Index];
+            set => _arguments[_argumentInfo[index].Index] = value;
         }
 
         /// <summary>
@@ -115,7 +109,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <returns>ParameterInfo object describing the parameter.</returns>
         public ParameterInfo GetParameterInfo(int index)
         {
-            return argumentInfo[index].ParameterInfo;
+            return _argumentInfo[index].ParameterInfo;
         }
 
         /// <summary>
@@ -125,7 +119,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <returns><see cref="ParameterInfo"/> for the requested parameter.</returns>
         public ParameterInfo GetParameterInfo(string parameterName)
         {
-            return argumentInfo[IndexForInputParameterName(parameterName)].ParameterInfo;
+            return _argumentInfo[IndexForInputParameterName(parameterName)].ParameterInfo;
         }
 
         /// <summary>
@@ -135,7 +129,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <returns>Name of the requested parameter.</returns>
         public string ParameterName(int index)
         {
-            return argumentInfo[index].Name;
+            return _argumentInfo[index].Name;
         }
 
         /// <summary>
@@ -145,7 +139,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <returns>True if the parameter name is in the collection, false if not.</returns>
         public bool ContainsParameter(string parameterName)
         {
-            return argumentInfo.Any(info => info.Name == parameterName);
+            return _argumentInfo.Any(info => info.Name == parameterName);
         }
 
         /// <summary>
@@ -169,10 +163,10 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         public bool Contains(object value)
         {
             return
-                argumentInfo.Exists(
+                _argumentInfo.Exists(
                     delegate(ArgumentInfo info)
                     {
-                        var argument = arguments[info.Index];
+                        var argument = _arguments[info.Index];
 
                         if (argument == null)
                         {
@@ -200,10 +194,10 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <returns>zero-based index of found object, or -1 if not found.</returns>
         public int IndexOf(object value)
         {
-            return argumentInfo.FindIndex(
+            return _argumentInfo.FindIndex(
                 delegate(ArgumentInfo info)
                 {
-                    return arguments[info.Index].Equals(value);
+                    return _arguments[info.Index].Equals(value);
                 });
         }
 
@@ -242,19 +236,13 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// Is this collection read only?
         /// </summary>
         /// <value>No, it is not read only, the contents can change.</value>
-        public bool IsReadOnly
-        {
-            get { return false; }
-        }
+        public bool IsReadOnly { get; } = false;
 
         /// <summary>
         /// Is this collection fixed size?
         /// </summary>
         /// <value>Yes, it is.</value>
-        public bool IsFixedSize
-        {
-            get { return true; }
-        }
+        public bool IsFixedSize { get; } = true;
 
         /// <summary>
         /// Copies the contents of this collection to the given array.
@@ -264,10 +252,10 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         public void CopyTo(Array array, int index)
         {
             int destIndex = 0;
-            argumentInfo.GetRange(index, argumentInfo.Count - index).ForEach(
+            _argumentInfo.GetRange(index, _argumentInfo.Count - index).ForEach(
                 delegate(ArgumentInfo info)
                 {
-                    array.SetValue(arguments[info.Index], destIndex);
+                    array.SetValue(_arguments[info.Index], destIndex);
                     ++destIndex;
                 });
         }
@@ -276,28 +264,19 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// Total number of items in the collection.
         /// </summary>
         /// <value>The count.</value>
-        public int Count
-        {
-            get { return argumentInfo.Count; }
-        }
+        public int Count => _argumentInfo.Count;
 
         /// <summary>
         /// Gets a synchronized version of this collection. WARNING: Not implemented completely,
         /// DO NOT USE THIS METHOD.
         /// </summary>
-        public object SyncRoot
-        {
-            get { return this; }
-        }
+        public object SyncRoot => this;
 
         /// <summary>
         /// Is the object synchronized for thread safety?
         /// </summary>
         /// <value>No, it isn't.</value>
-        public bool IsSynchronized
-        {
-            get { return false; }
-        }
+        public bool IsSynchronized => false;
 
         /// <summary>
         /// Gets an enumerator object to support the foreach construct.
@@ -305,9 +284,9 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <returns>Enumerator object.</returns>
         public IEnumerator GetEnumerator()
         {
-            for (int i = 0; i < argumentInfo.Count; ++i)
+            for (int i = 0; i < _argumentInfo.Count; ++i)
             {
-                yield return arguments[argumentInfo[i].Index];
+                yield return _arguments[_argumentInfo[i].Index];
             }
         }
     }

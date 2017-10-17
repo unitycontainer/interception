@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Unity.Interception.Utilities;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.PolicyInjection.MatchingRules
 {
     /// <summary>
     /// An <see cref="IMatchingRule"/> implementation that matches properties
@@ -12,7 +12,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
     /// </summary>
     public class PropertyMatchingRule : IMatchingRule
     {
-        private readonly List<Glob> patterns = new List<Glob>();
+        private readonly List<Glob> _patterns = new List<Glob>();
 
         /// <summary>
         /// Construct a new <see cref="PropertyMatchingRule"/> that matches the
@@ -43,7 +43,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <param name="option">Match the getter, setter, or both.</param>
         /// <param name="ignoreCase">If false, name comparison is case sensitive. If true, name comparison is case insensitive.</param>
         public PropertyMatchingRule(string propertyName, PropertyMatchingOption option, bool ignoreCase)
-            : this(new PropertyMatchingInfo[] { new PropertyMatchingInfo(propertyName, option, ignoreCase) })
+            : this(new[] { new PropertyMatchingInfo(propertyName, option, ignoreCase) })
         {
         }
 
@@ -53,22 +53,20 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// </summary>
         /// <param name="matches">Collection of <see cref="PropertyMatchingInfo"/> defining which
         /// properties to match.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
-            Justification = "Validation done by Guard class")]
         public PropertyMatchingRule(IEnumerable<PropertyMatchingInfo> matches)
         {
-            Microsoft.Practices.Unity.Utility.Guard.ArgumentNotNull(matches, "matches");
+            Guard.ArgumentNotNull(matches, "matches");
 
             foreach (PropertyMatchingInfo match in matches)
             {
                 if (match.Option != PropertyMatchingOption.Set)
                 {
-                    patterns.Add(new Glob("get_" + match.Match, !match.IgnoreCase));
+                    _patterns.Add(new Glob("get_" + match.Match, !match.IgnoreCase));
                 }
 
                 if (match.Option != PropertyMatchingOption.Get)
                 {
-                    patterns.Add(new Glob("set_" + match.Match, !match.IgnoreCase));
+                    _patterns.Add(new Glob("set_" + match.Match, !match.IgnoreCase));
                 }
             }
         }
@@ -78,19 +76,14 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// </summary>
         /// <param name="member">Member to check.</param>
         /// <returns>True if it matches, false if it does not.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
-            Justification = "Validation done by Guard class")]
         public bool Matches(MethodBase member)
         {
-            Microsoft.Practices.Unity.Utility.Guard.ArgumentNotNull(member, "member");
+            Guard.ArgumentNotNull(member, "member");
 
             return
                 member.IsSpecialName &&
-                    (patterns.Exists(
-                        delegate(Glob pattern)
-                        {
-                            return pattern.IsMatch(member.Name);
-                        }));
+                    (_patterns.Exists(
+                        pattern => pattern.IsMatch(member.Name)));
         }
     }
 
@@ -121,8 +114,6 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
     /// </summary>
     public class PropertyMatchingInfo : MatchingInfo
     {
-        private PropertyMatchingOption option;
-
         /// <summary>
         /// Construct a new <see cref="PropertyMatchingInfo"/> that matches the get or set methods
         /// of the given property name, and does a case-sensitive comparison.
@@ -154,17 +145,13 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         public PropertyMatchingInfo(string match, PropertyMatchingOption option, bool ignoreCase)
             : base(match, ignoreCase)
         {
-            this.option = option;
+            Option = option;
         }
 
         /// <summary>
         /// The <see cref="PropertyMatchingOption"/> to use when doing name comparisons on this property.
         /// </summary>
         /// <value>Specifies which methods of the property to match.</value>
-        public PropertyMatchingOption Option
-        {
-            get { return this.option; }
-            set { this.option = value; }
-        }
+        public PropertyMatchingOption Option { get; set; }
     }
 }

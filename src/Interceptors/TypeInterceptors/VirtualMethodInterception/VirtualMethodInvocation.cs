@@ -1,14 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using System.Text;
-using Microsoft.Practices.Unity.InterceptionExtension;
+using Unity.Interception.PolicyInjection.Pipeline;
+using Unity.Interception.Utilities;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception
 {
     /// <summary>
     /// Implementation of <see cref="IMethodInvocation"/> used
@@ -16,11 +15,9 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
     /// </summary>
     public class VirtualMethodInvocation : IMethodInvocation
     {
-        private readonly ParameterCollection inputs;
-        private readonly ParameterCollection arguments;
-        private readonly Dictionary<string, object> context;
-        private readonly object target;
-        private readonly MethodBase targetMethod;
+        private readonly ParameterCollection _inputs;
+        private readonly ParameterCollection _arguments;
+        private readonly Dictionary<string, object> _context;
 
         /// <summary>
         /// Construct a new <see cref="VirtualMethodInvocation"/> instance for the
@@ -30,61 +27,46 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <param name="target">Object that is target of this invocation.</param>
         /// <param name="targetMethod">Method on <paramref name="target"/> to call.</param>
         /// <param name="parameterValues">Values for the parameters.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
+        [SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
             Justification = "Validation done by Guard class")]
         public VirtualMethodInvocation(object target, MethodBase targetMethod, params object[] parameterValues)
         {
-            Microsoft.Practices.Unity.Utility.Guard.ArgumentNotNull(targetMethod, "targetMethod");
+            Guard.ArgumentNotNull(targetMethod, "targetMethod");
 
-            this.target = target;
-            this.targetMethod = targetMethod;
-            this.context = new Dictionary<string, object>();
+            Target = target;
+            MethodBase = targetMethod;
+            _context = new Dictionary<string, object>();
 
             ParameterInfo[] targetParameters = targetMethod.GetParameters();
-            this.arguments = new ParameterCollection(parameterValues, targetParameters, param => true);
-            this.inputs = new ParameterCollection(parameterValues, targetParameters, param => !param.IsOut);
+            _arguments = new ParameterCollection(parameterValues, targetParameters, param => true);
+            _inputs = new ParameterCollection(parameterValues, targetParameters, param => !param.IsOut);
         }
 
         /// <summary>
         /// Gets the inputs for this call.
         /// </summary>
-        public IParameterCollection Inputs
-        {
-            get { return inputs; }
-        }
+        public IParameterCollection Inputs => _inputs;
 
         /// <summary>
         /// Collection of all parameters to the call: in, out and byref.
         /// </summary>
-        public IParameterCollection Arguments
-        {
-            get { return arguments; }
-        }
+        public IParameterCollection Arguments => _arguments;
 
         /// <summary>
         /// Retrieves a dictionary that can be used to store arbitrary additional
         /// values. This allows the user to pass values between call handlers.
         /// </summary>
-        public IDictionary<string, object> InvocationContext
-        {
-            get { return context; }
-        }
+        public IDictionary<string, object> InvocationContext => _context;
 
         /// <summary>
         /// The object that the call is made on.
         /// </summary>
-        public object Target
-        {
-            get { return target; }
-        }
+        public object Target { get; }
 
         /// <summary>
         /// The method on Target that we're aiming at.
         /// </summary>
-        public MethodBase MethodBase
-        {
-            get { return targetMethod; }
-        }
+        public MethodBase MethodBase { get; }
 
         /// <summary>
         /// Factory method that creates the correct implementation of

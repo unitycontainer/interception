@@ -1,11 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 
-using System;
 using System.Collections.Generic;
-using System.Reflection;
-using Unity;
+using Unity.Interception.Interceptors;
+using Unity.Interception.PolicyInjection.MatchingRules;
+using Unity.Interception.PolicyInjection.Pipeline;
+using Unity.Interception.Utilities;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.PolicyInjection.Policies
 {
     /// <summary>
     /// A policy is a combination of a matching rule set and a set of handlers.
@@ -14,8 +15,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
     /// </summary>
     public class RuleDrivenPolicy : InjectionPolicy
     {
-        private readonly MatchingRuleSet ruleSet;
-        private readonly IEnumerable<string> callHandlerNames;
+        private readonly MatchingRuleSet _ruleSet;
+        private readonly IEnumerable<string> _callHandlerNames;
 
         /// <summary>
         /// Creates a new <see cref="RuleDrivenPolicy"/> object with a set of matching rules
@@ -33,10 +34,10 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         public RuleDrivenPolicy(string name, IMatchingRule[] matchingRules, string[] callHandlerNames)
             : base(name)
         {
-            this.ruleSet = new MatchingRuleSet();
-            this.ruleSet.AddRange(matchingRules);
+            _ruleSet = new MatchingRuleSet();
+            _ruleSet.AddRange(matchingRules);
 
-            this.callHandlerNames = callHandlerNames;
+            _callHandlerNames = callHandlerNames;
         }
 
         /// <summary>
@@ -44,14 +45,12 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// </summary>
         /// <param name="member">MemberInfo to check against.</param>
         /// <returns>true if ruleset matches, false if it does not.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
-            Justification = "Validation done by Guard class")]
         protected override bool DoesMatch(MethodImplementationInfo member)
         {
-            Microsoft.Practices.Unity.Utility.Guard.ArgumentNotNull(member, "member");
+            Guard.ArgumentNotNull(member, "member");
 
-            bool matchesInterface = member.InterfaceMethodInfo != null ? this.ruleSet.Matches(member.InterfaceMethodInfo) : false;
-            bool matchesImplementation = this.ruleSet.Matches(member.ImplementationMethodInfo);
+            bool matchesInterface = member.InterfaceMethodInfo != null ? _ruleSet.Matches(member.InterfaceMethodInfo) : false;
+            bool matchesImplementation = _ruleSet.Matches(member.ImplementationMethodInfo);
             return matchesInterface | matchesImplementation;
         }
 
@@ -64,9 +63,9 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <returns>Collection of handlers (possibly empty) that apply to this member.</returns>
         protected override IEnumerable<ICallHandler> DoGetHandlersFor(MethodImplementationInfo member, IUnityContainer container)
         {
-            if (this.Matches(member))
+            if (Matches(member))
             {
-                foreach (string callHandlerName in this.callHandlerNames)
+                foreach (string callHandlerName in _callHandlerNames)
                 {
                     yield return container.Resolve<ICallHandler>(callHandlerName);
                 }

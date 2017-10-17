@@ -2,16 +2,20 @@
 
 using System;
 using System.Globalization;
-using Microsoft.Practices.ObjectBuilder2;
-using Unity.Interception.Properties;
-using Unity;
 using Unity.Builder;
 using Unity.Extension;
+using Unity.Interception.ContainerIntegration.ObjectBuilder;
+using Unity.Interception.Interceptors;
+using Unity.Interception.Interceptors.InstanceInterceptors;
+using Unity.Interception.Interceptors.TypeInterceptors;
+using Unity.Interception.PolicyInjection;
+using Unity.Interception.PolicyInjection.Policies;
+using Unity.Interception.Properties;
+using Unity.Interception.Utilities;
 using Unity.Policy;
-using Guard = Microsoft.Practices.Unity.Utility.Guard;
 using Unity.Strategy;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.ContainerIntegration
 {
     /// <summary>
     /// A Unity container extension that allows you to configure
@@ -36,10 +40,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
             // have taken place.
             Context.Strategies.AddNew<InstanceInterceptionStrategy>(UnityBuildStage.Setup);
             Context.Strategies.AddNew<TypeInterceptionStrategy>(UnityBuildStage.PreCreation);
-            Context.Container
-                .RegisterInstance<InjectionPolicy>(
-                    typeof(AttributeDrivenPolicy).AssemblyQualifiedName,
-                    new AttributeDrivenPolicy());
+            Context.Container.RegisterInstance<InjectionPolicy>(typeof(AttributeDrivenPolicy).AssemblyQualifiedName,
+                                                                new AttributeDrivenPolicy());
         }
 
         /// <summary>
@@ -76,7 +78,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <returns>This extension object.</returns>
         public Interception SetInterceptorFor(Type typeToIntercept, ITypeInterceptor interceptor)
         {
-            return this.SetInterceptorFor(typeToIntercept, null, interceptor);
+            return SetInterceptorFor(typeToIntercept, null, interceptor);
         }
 
         /// <summary>
@@ -86,10 +88,9 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <param name="name">Name type is registered under.</param>
         /// <param name="interceptor">Interceptor object to use.</param>
         /// <returns>This extension object.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "As designed")]
         public Interception SetInterceptorFor<T>(string name, ITypeInterceptor interceptor)
         {
-            return this.SetInterceptorFor(typeof(T), name, interceptor);
+            return SetInterceptorFor(typeof(T), name, interceptor);
         }
 
         /// <summary>
@@ -98,10 +99,9 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <typeparam name="T">Type to intercept</typeparam>
         /// <param name="interceptor">Interceptor object to use.</param>
         /// <returns>This extension object.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "As designed")]
         public Interception SetInterceptorFor<T>(ITypeInterceptor interceptor)
         {
-            return this.SetInterceptorFor(typeof(T), null, interceptor);
+            return SetInterceptorFor(typeof(T), null, interceptor);
         }
 
         /// <summary>
@@ -158,10 +158,9 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <typeparam name="TTypeToIntercept">Type to intercept</typeparam>
         /// <param name="interceptor">Interceptor instance.</param>
         /// <returns>This extension object.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "As designed")]
         public Interception SetDefaultInterceptorFor<TTypeToIntercept>(ITypeInterceptor interceptor)
         {
-            return this.SetDefaultInterceptorFor(typeof(TTypeToIntercept), interceptor);
+            return SetDefaultInterceptorFor(typeof(TTypeToIntercept), interceptor);
         }
 
         /// <summary>
@@ -172,7 +171,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <returns>This extension object.</returns>
         public Interception SetInterceptorFor(Type typeToIntercept, IInstanceInterceptor interceptor)
         {
-            return this.SetInterceptorFor(typeToIntercept, null, interceptor);
+            return SetInterceptorFor(typeToIntercept, null, interceptor);
         }
 
         /// <summary>
@@ -182,10 +181,9 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <param name="name">Name type is registered under.</param>
         /// <param name="interceptor">Instance interceptor to use.</param>
         /// <returns>This extension object.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "As designed")]
         public Interception SetInterceptorFor<T>(string name, IInstanceInterceptor interceptor)
         {
-            return this.SetInterceptorFor(typeof(T), name, interceptor);
+            return SetInterceptorFor(typeof(T), name, interceptor);
         }
 
         /// <summary>
@@ -194,10 +192,9 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <typeparam name="T">Type to intercept.</typeparam>
         /// <param name="interceptor">Instance interceptor to use.</param>
         /// <returns>This extension object.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "As designed")]
         public Interception SetInterceptorFor<T>(IInstanceInterceptor interceptor)
         {
-            return this.SetInterceptorFor(typeof(T), null, interceptor);
+            return SetInterceptorFor(typeof(T), null, interceptor);
         }
 
         /// <summary>
@@ -228,10 +225,9 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <typeparam name="TTypeToIntercept">Type the interception is being configured for.</typeparam>
         /// <param name="interceptor">The interceptor to use by default.</param>
         /// <returns>This extension object.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "As designed")]
         public Interception SetDefaultInterceptorFor<TTypeToIntercept>(IInstanceInterceptor interceptor)
         {
-            return this.SetDefaultInterceptorFor(typeof(TTypeToIntercept), interceptor);
+            return SetDefaultInterceptorFor(typeof(TTypeToIntercept), interceptor);
         }
 
         private static void GuardTypeInterceptable(Type typeToIntercept, IInterceptor interceptor)
@@ -243,7 +239,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
                         CultureInfo.CurrentCulture,
                         Resources.InterceptionNotSupported,
                         typeToIntercept.FullName),
-                    "typeToIntercept");
+                    nameof(typeToIntercept));
             }
         }
 

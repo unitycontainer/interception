@@ -2,44 +2,45 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using Microsoft.Practices.Unity.Utility;
-using Unity;
 using Unity.Injection;
+using Unity.Interception.PolicyInjection.MatchingRules;
+using Unity.Interception.PolicyInjection.Pipeline;
+using Unity.Interception.PolicyInjection.Policies;
+using Unity.Interception.Utilities;
 using Unity.Lifetime;
 using Unity.Registration;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.ContainerIntegration
 {
     /// <summary>
     /// Transient class that supports convenience method for specifying interception policies.
     /// </summary>
     public class PolicyDefinition
     {
-        private readonly string policyName;
-        private readonly Interception extension;
-        private readonly List<ResolvedParameter> rulesParameters;
-        private readonly List<string> handlersNames;
+        private readonly string _policyName;
+        private readonly Interception _extension;
+        private readonly List<ResolvedParameter> _rulesParameters;
+        private readonly List<string> _handlersNames;
 
         internal PolicyDefinition(string policyName, Interception extension)
         {
-            this.policyName = policyName;
-            this.extension = extension;
+            _policyName = policyName;
+            _extension = extension;
 
-            this.rulesParameters = new List<ResolvedParameter>();
-            this.handlersNames = new List<string>();
+            _rulesParameters = new List<ResolvedParameter>();
+            _handlersNames = new List<string>();
 
-            this.extension.Container.RegisterType<InjectionPolicy, RuleDrivenPolicy>(this.policyName);
+            _extension.Container.RegisterType<InjectionPolicy, RuleDrivenPolicy>(_policyName);
             UpdateRuleDrivenPolicyInjection();
         }
 
         private PolicyDefinition UpdateRuleDrivenPolicyInjection()
         {
-            this.extension.Container
-                .RegisterType<RuleDrivenPolicy>(policyName,
-                    new InjectionConstructor(policyName,
-                        new ResolvedArrayParameter<IMatchingRule>(rulesParameters.ToArray()),
-                        handlersNames.ToArray()));
+            _extension.Container
+                .RegisterType<RuleDrivenPolicy>(_policyName,
+                    new InjectionConstructor(_policyName,
+                        new ResolvedArrayParameter<IMatchingRule>(_rulesParameters.ToArray()),
+                        _handlersNames.ToArray()));
             return this;
         }
 
@@ -47,14 +48,14 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
 
         private PolicyDefinition UpdateRulesParameters(string name)
         {
-            this.rulesParameters.Add(new ResolvedParameter<IMatchingRule>(name));
+            _rulesParameters.Add(new ResolvedParameter<IMatchingRule>(name));
 
             return UpdateRuleDrivenPolicyInjection();
         }
 
         private PolicyDefinition UpdateHandlerNames(string name)
         {
-            this.handlersNames.Add(name);
+            _handlersNames.Add(name);
 
             return UpdateRuleDrivenPolicyInjection();
         }
@@ -68,10 +69,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// The <see cref="IUnityContainer"/> that is currently being
         /// configured.
         /// </summary>
-        public IUnityContainer Container
-        {
-            get { return extension.Container; }
-        }
+        public IUnityContainer Container => _extension.Container;
 
         /// <summary>
         /// The <see cref="Interception"/> extension to which the policy was added.
@@ -79,10 +77,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <remarks>
         /// Use this property to start adding a new policy.
         /// </remarks>
-        public Interception Interception
-        {
-            get { return extension; }
-        }
+        public Interception Interception => _extension;
 
         /// <summary>
         /// Adds a reference to matching rule by name.
@@ -109,7 +104,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// </returns>
         public PolicyDefinition AddMatchingRule(IMatchingRule instance)
         {
-            return AddElement<IMatchingRule>(instance, UpdateRulesParameters);
+            return AddElement(instance, UpdateRulesParameters);
         }
 
         /// <summary>
@@ -215,7 +210,6 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <returns>
         /// The <see cref="PolicyDefinition"/> than allows further configuration of the policy.
         /// </returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "As designed")]
         public PolicyDefinition AddMatchingRule<TMatchingRule>(
             params InjectionMember[] injectionMembers)
             where TMatchingRule : IMatchingRule
@@ -238,7 +232,6 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <returns>
         /// The <see cref="PolicyDefinition"/> than allows further configuration of the policy.
         /// </returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "As designed")]
         public PolicyDefinition AddMatchingRule<TMatchingRule>(
             LifetimeManager lifetimeManager,
             params InjectionMember[] injectionMembers)
@@ -261,7 +254,6 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <returns>
         /// The <see cref="PolicyDefinition"/> than allows further configuration of the policy.
         /// </returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "As designed")]
         public PolicyDefinition AddMatchingRule<TMatchingRule>(
             string name,
             params InjectionMember[] injectionMembers)
@@ -287,7 +279,6 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <returns>
         /// The <see cref="PolicyDefinition"/> than allows further configuration of the policy.
         /// </returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "As designed")]
         public PolicyDefinition AddMatchingRule<TMatchingRule>(
             string name,
             LifetimeManager lifetimeManager,
@@ -326,7 +317,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// </returns>
         public PolicyDefinition AddCallHandler(ICallHandler instance)
         {
-            return AddElement<ICallHandler>(instance, UpdateHandlerNames);
+            return AddElement(instance, UpdateHandlerNames);
         }
 
         /// <summary>
@@ -433,7 +424,6 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <returns>
         /// The <see cref="PolicyDefinition"/> than allows further configuration of the policy.
         /// </returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "As designed")]
         public PolicyDefinition AddCallHandler<TCallHandler>(
             params InjectionMember[] injectionMembers)
             where TCallHandler : ICallHandler
@@ -456,7 +446,6 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <returns>
         /// The <see cref="PolicyDefinition"/> than allows further configuration of the policy.
         /// </returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "As designed")]
         public PolicyDefinition AddCallHandler<TCallHandler>(
             LifetimeManager lifetimeManager,
             params InjectionMember[] injectionMembers)
@@ -479,7 +468,6 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <returns>
         /// The <see cref="PolicyDefinition"/> than allows further configuration of the policy.
         /// </returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "As designed")]
         public PolicyDefinition AddCallHandler<TCallHandler>(
             string name,
             params InjectionMember[] injectionMembers)
@@ -505,7 +493,6 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <returns>
         /// The <see cref="PolicyDefinition"/> than allows further configuration of the policy.
         /// </returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "As designed")]
         public PolicyDefinition AddCallHandler<TCallHandler>(
             string name,
             LifetimeManager lifetimeManager,
@@ -519,8 +506,6 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
                 UpdateHandlerNames);
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic",
-            Justification = "Consistency with other overloads")]
         private PolicyDefinition AddElement<T>(string name, UpdateElements update)
         {
             Guard.ArgumentNotNull(name, "name");
@@ -533,7 +518,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
             Guard.ArgumentNotNull(instance, "instance");
 
             string newName = NewName();
-            Container.RegisterInstance<T>(newName, instance);
+            Container.RegisterInstance(newName, instance);
 
             return update(newName);
         }

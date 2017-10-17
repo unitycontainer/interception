@@ -2,12 +2,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.Reflection;
-using Microsoft.Practices.Unity.Utility;
+using Unity.Interception.Utilities;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.PolicyInjection.MatchingRules
 {
     /// <summary>
     /// A matching rule that matches when the member is declared
@@ -15,16 +13,14 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
     /// </summary>
     public class TypeMatchingRule : IMatchingRule
     {
-        private readonly List<MatchingInfo> matches;
-        private readonly bool matchesTypelessMembers;
+        private readonly List<MatchingInfo> _matches;
+        private readonly bool _matchesTypelessMembers;
 
         /// <summary>
         /// Constructs a new <see cref="TypeMatchingRule"/> that matches the
         /// given type.
         /// </summary>
         /// <param name="type">The type to match.</param>
-        [SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
-            Justification = "Validation done by Guard class.")]
         public TypeMatchingRule(Type type)
             : this(SafeGetTypeName(type), false)
         {
@@ -48,7 +44,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <param name="typeName">Type name to match.</param>
         /// <param name="ignoreCase">if false, do case-sensitive comparison. If true, do case-insensitive.</param>
         public TypeMatchingRule(string typeName, bool ignoreCase)
-            : this(new MatchingInfo[] { new MatchingInfo(typeName, ignoreCase) })
+            : this(new[] { new MatchingInfo(typeName, ignoreCase) })
         {
         }
 
@@ -59,13 +55,9 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <param name="matches">The match information to match.</param>
         public TypeMatchingRule(IEnumerable<MatchingInfo> matches)
         {
-            this.matches = new List<MatchingInfo>(matches);
-            matchesTypelessMembers = this.matches.Exists(delegate(MatchingInfo match)
-            {
-                return
-                    string.IsNullOrEmpty(
-                        match.Match);
-            });
+            _matches = new List<MatchingInfo>(matches);
+            _matchesTypelessMembers = _matches.Exists(match => string.IsNullOrEmpty(
+                match.Match));
         }
 
         /// <summary>
@@ -73,15 +65,13 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// </summary>
         /// <param name="member">Member to match.</param>
         /// <returns>True if match, false if not.</returns>
-        [SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
-            Justification = "Validation done by Guard class.")]
         public bool Matches(MethodBase member)
         {
             Guard.ArgumentNotNull(member, "member");
 
             if (member.DeclaringType == null)
             {
-                return matchesTypelessMembers;
+                return _matchesTypelessMembers;
             }
             bool doesMatch = Matches(member.DeclaringType);
             return doesMatch;
@@ -93,20 +83,17 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <remarks>Matches may be on the namespace-qualified type name or just the type name.</remarks>
         /// <param name="t">Type to check.</param>
         /// <returns>True if it matches, false if it doesn't.</returns>
-        [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "t", Justification = "Parameter name is meaningful enough in context")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
-            Justification = "Validation done by Guard class")]
         public bool Matches(Type t)
         {
-            Microsoft.Practices.Unity.Utility.Guard.ArgumentNotNull(t, "t");
+            Guard.ArgumentNotNull(t, "t");
 
-            foreach (MatchingInfo match in matches)
+            foreach (MatchingInfo match in _matches)
             {
                 if (string.Compare(t.FullName, match.Match, Comparison(match.IgnoreCase)) == 0)
                 {
                     return true;
                 }
-                else if (string.Compare(t.Name, match.Match, Comparison(match.IgnoreCase)) == 0)
+                if (string.Compare(t.Name, match.Match, Comparison(match.IgnoreCase)) == 0)
                 {
                     return true;
                 }

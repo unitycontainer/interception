@@ -1,9 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 
 using System.Collections.Generic;
-using Unity;
+using Unity.Interception.Interceptors;
+using Unity.Interception.PolicyInjection.MatchingRules;
+using Unity.Interception.PolicyInjection.Pipeline;
+using Unity.Interception.Utilities;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.PolicyInjection.Policies
 {
     /// <summary>
     /// A <see cref="InjectionPolicy"/> class that reads and constructs handlers
@@ -11,7 +14,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
     /// </summary>
     public class AttributeDrivenPolicy : InjectionPolicy
     {
-        private readonly AttributeDrivenPolicyMatchingRule attributeMatchRule;
+        private readonly AttributeDrivenPolicyMatchingRule _attributeMatchRule;
 
         /// <summary>
         /// Constructs a new instance of the <see cref="AttributeDrivenPolicy"/>.
@@ -19,7 +22,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         public AttributeDrivenPolicy()
             : base("Attribute Driven Policy")
         {
-            this.attributeMatchRule = new AttributeDrivenPolicyMatchingRule();
+            _attributeMatchRule = new AttributeDrivenPolicyMatchingRule();
         }
 
         /// <summary>
@@ -28,14 +31,12 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// </summary>
         /// <param name="member">Member to check.</param>
         /// <returns>true if policy applies to this member, false if not.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
-            Justification = "Validation done by Guard class")]
         protected override bool DoesMatch(MethodImplementationInfo member)
         {
-            Microsoft.Practices.Unity.Utility.Guard.ArgumentNotNull(member, "member");
+            Guard.ArgumentNotNull(member, "member");
 
-            bool matchesInterface = member.InterfaceMethodInfo != null ? this.attributeMatchRule.Matches(member.InterfaceMethodInfo) : false;
-            bool matchesImplementation = this.attributeMatchRule.Matches(member.ImplementationMethodInfo);
+            bool matchesInterface = member.InterfaceMethodInfo != null ? _attributeMatchRule.Matches(member.InterfaceMethodInfo) : false;
+            bool matchesImplementation = _attributeMatchRule.Matches(member.ImplementationMethodInfo);
 
             return matchesInterface | matchesImplementation;
         }

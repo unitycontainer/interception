@@ -6,10 +6,14 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using Unity.Interception.InterceptionBehaviors;
+using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception;
+using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration;
+using Unity.Interception.PolicyInjection.Pipeline;
 using Unity.Interception.Properties;
-using Microsoft.Practices.Unity.Utility;
+using Unity.Interception.Utilities;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceInterception
 {
     /// <summary>
     /// Represents the implementation of an interface method.
@@ -17,7 +21,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
     public class InterfaceMethodOverride
     {
         private static readonly MethodInfo BuildAdditionalInterfaceNonImplementedExceptionMethod =
-            StaticReflection.GetMethodInfo(() => InterfaceMethodOverride.BuildAdditionalInterfaceNonImplementedException());
+            StaticReflection.GetMethodInfo(() => BuildAdditionalInterfaceNonImplementedException());
 
         private const MethodAttributes ImplicitImplementationAttributes =
             MethodAttributes.Public | MethodAttributes.Virtual | MethodAttributes.Final
@@ -26,15 +30,15 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
             MethodAttributes.Private | MethodAttributes.Virtual | MethodAttributes.Final
             | MethodAttributes.HideBySig | MethodAttributes.NewSlot;
 
-        private readonly TypeBuilder typeBuilder;
-        private readonly MethodInfo methodToOverride;
-        private readonly ParameterInfo[] methodParameters;
-        private readonly FieldBuilder proxyInterceptionPipelineField;
-        private readonly bool explicitImplementation;
-        private readonly FieldBuilder targetField;
-        private readonly Type targetInterface;
-        private readonly GenericParameterMapper targetInterfaceParameterMapper;
-        private readonly int overrideCount;
+        private readonly TypeBuilder _typeBuilder;
+        private readonly MethodInfo _methodToOverride;
+        private readonly ParameterInfo[] _methodParameters;
+        private readonly FieldBuilder _proxyInterceptionPipelineField;
+        private readonly bool _explicitImplementation;
+        private readonly FieldBuilder _targetField;
+        private readonly Type _targetInterface;
+        private readonly GenericParameterMapper _targetInterfaceParameterMapper;
+        private readonly int _overrideCount;
 
         internal InterfaceMethodOverride(
             TypeBuilder typeBuilder,
@@ -46,15 +50,15 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
             bool explicitImplementation,
             int overrideCount)
         {
-            this.typeBuilder = typeBuilder;
-            this.proxyInterceptionPipelineField = proxyInterceptionPipelineField;
-            this.explicitImplementation = explicitImplementation;
-            this.targetField = targetField;
-            this.methodToOverride = methodToOverride;
-            this.targetInterface = targetInterface;
-            this.targetInterfaceParameterMapper = targetInterfaceParameterMapper;
-            this.methodParameters = methodToOverride.GetParameters();
-            this.overrideCount = overrideCount;
+            _typeBuilder = typeBuilder;
+            _proxyInterceptionPipelineField = proxyInterceptionPipelineField;
+            _explicitImplementation = explicitImplementation;
+            _targetField = targetField;
+            _methodToOverride = methodToOverride;
+            _targetInterface = targetInterface;
+            _targetInterfaceParameterMapper = targetInterfaceParameterMapper;
+            _methodParameters = methodToOverride.GetParameters();
+            _overrideCount = overrideCount;
         }
 
         internal MethodBuilder AddMethod()
@@ -65,8 +69,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
 
         private string CreateMethodName(string purpose)
         {
-            return "<" + methodToOverride.Name + "_" + purpose + ">__" +
-                overrideCount.ToString(CultureInfo.InvariantCulture);
+            return "<" + _methodToOverride.Name + "_" + purpose + ">__" +
+                _overrideCount.ToString(CultureInfo.InvariantCulture);
         }
 
         private static readonly OpCode[] LoadArgsOpcodes = 
@@ -98,7 +102,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
             OpCodes.Ldc_I4_5,
             OpCodes.Ldc_I4_6,
             OpCodes.Ldc_I4_7,
-            OpCodes.Ldc_I4_8,
+            OpCodes.Ldc_I4_8
         };
 
         private static void EmitLoadConstant(ILGenerator il, int i)
@@ -137,12 +141,12 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         {
             string methodName = CreateMethodName("DelegateImplementation");
 
-            MethodBuilder methodBuilder = typeBuilder.DefineMethod(methodName,
+            MethodBuilder methodBuilder = _typeBuilder.DefineMethod(methodName,
                 MethodAttributes.Private | MethodAttributes.HideBySig);
             List<LocalBuilder> outOrRefLocals = new List<LocalBuilder>();
 
-            var paramMapper = new MethodOverrideParameterMapper(methodToOverride);
-            paramMapper.SetupParameters(methodBuilder, this.targetInterfaceParameterMapper);
+            var paramMapper = new MethodOverrideParameterMapper(_methodToOverride);
+            paramMapper.SetupParameters(methodBuilder, _targetInterfaceParameterMapper);
 
             methodBuilder.SetReturnType(typeof(IMethodReturn));
             // Adding parameters
@@ -156,7 +160,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
 
             ILGenerator il = methodBuilder.GetILGenerator();
 
-            if (this.targetField != null)
+            if (_targetField != null)
             {
                 // forwarding implementation
                 Label done = il.DefineLabel();
@@ -174,21 +178,21 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
                 il.BeginExceptionBlock();
                 // Call the target method
                 il.Emit(OpCodes.Ldarg_0);
-                il.Emit(OpCodes.Ldfld, targetField);
+                il.Emit(OpCodes.Ldfld, _targetField);
 
-                if (methodParameters.Length > 0)
+                if (_methodParameters.Length > 0)
                 {
                     parameters = il.DeclareLocal(typeof(IParameterCollection));
                     il.Emit(OpCodes.Ldarg_1);
                     il.EmitCall(OpCodes.Callvirt, IMethodInvocationMethods.GetArguments, null);
                     il.Emit(OpCodes.Stloc, parameters);
 
-                    for (int i = 0; i < methodParameters.Length; ++i)
+                    for (int i = 0; i < _methodParameters.Length; ++i)
                     {
                         il.Emit(OpCodes.Ldloc, parameters);
                         EmitLoadConstant(il, i);
                         il.EmitCall(OpCodes.Callvirt, IListMethods.GetItem, null);
-                        Type parameterType = paramMapper.GetParameterType(methodParameters[i].ParameterType);
+                        Type parameterType = paramMapper.GetParameterType(_methodParameters[i].ParameterType);
 
                         if (parameterType.IsByRef)
                         {
@@ -206,10 +210,10 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
                     }
                 }
 
-                MethodInfo callTarget = methodToOverride;
+                MethodInfo callTarget = _methodToOverride;
                 if (callTarget.IsGenericMethod)
                 {
-                    callTarget = methodToOverride.MakeGenericMethod(paramMapper.GenericMethodParameters);
+                    callTarget = _methodToOverride.MakeGenericMethod(paramMapper.GenericMethodParameters);
                 }
 
                 il.Emit(OpCodes.Callvirt, callTarget);
@@ -230,21 +234,21 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
                 {
                     il.Emit(OpCodes.Ldnull);
                 }
-                EmitLoadConstant(il, methodParameters.Length);
+                EmitLoadConstant(il, _methodParameters.Length);
                 il.Emit(OpCodes.Newarr, typeof(object));
 
-                if (methodParameters.Length > 0)
+                if (_methodParameters.Length > 0)
                 {
                     LocalBuilder outputArguments = il.DeclareLocal(typeof(object[]));
                     il.Emit(OpCodes.Stloc, outputArguments);
 
                     int outputArgNum = 0;
-                    for (int i = 0; i < methodParameters.Length; ++i)
+                    for (int i = 0; i < _methodParameters.Length; ++i)
                     {
                         il.Emit(OpCodes.Ldloc, outputArguments);
                         EmitLoadConstant(il, i);
 
-                        Type parameterType = paramMapper.GetParameterType(methodParameters[i].ParameterType);
+                        Type parameterType = paramMapper.GetParameterType(_methodParameters[i].ParameterType);
                         if (parameterType.IsByRef)
                         {
                             parameterType = parameterType.GetElementType();
@@ -290,27 +294,27 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         private MethodBuilder CreateMethodOverride(MethodBuilder delegateMethod)
         {
             string methodName =
-                this.explicitImplementation
-                        ? methodToOverride.DeclaringType.Name + "." + methodToOverride.Name
-                        : methodToOverride.Name;
+                _explicitImplementation
+                        ? _methodToOverride.DeclaringType.Name + "." + _methodToOverride.Name
+                        : _methodToOverride.Name;
 
             MethodBuilder methodBuilder =
-                typeBuilder.DefineMethod(
+                _typeBuilder.DefineMethod(
                     methodName,
-                    this.explicitImplementation ? ExplicitImplementationAttributes : ImplicitImplementationAttributes);
+                    _explicitImplementation ? ExplicitImplementationAttributes : ImplicitImplementationAttributes);
 
-            var paramMapper = new MethodOverrideParameterMapper(methodToOverride);
-            paramMapper.SetupParameters(methodBuilder, this.targetInterfaceParameterMapper);
+            var paramMapper = new MethodOverrideParameterMapper(_methodToOverride);
+            paramMapper.SetupParameters(methodBuilder, _targetInterfaceParameterMapper);
 
             methodBuilder.SetReturnType(paramMapper.GetReturnType());
-            methodBuilder.SetParameters(methodParameters.Select(pi => paramMapper.GetParameterType(pi.ParameterType)).ToArray());
-            if (this.explicitImplementation)
+            methodBuilder.SetParameters(_methodParameters.Select(pi => paramMapper.GetParameterType(pi.ParameterType)).ToArray());
+            if (_explicitImplementation)
             {
-                this.typeBuilder.DefineMethodOverride(methodBuilder, this.methodToOverride);
+                _typeBuilder.DefineMethodOverride(methodBuilder, _methodToOverride);
             }
 
             int paramNum = 1;
-            foreach (ParameterInfo pi in methodParameters)
+            foreach (ParameterInfo pi in _methodParameters)
             {
                 methodBuilder.DefineParameter(paramNum++, pi.Attributes, pi.Name);
             }
@@ -329,22 +333,22 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
             // should use it as the target object. If we don't, we're building
             // a type interceptor and should leave the this pointer as the
             // target.
-            if (targetField != null)
+            if (_targetField != null)
             {
-                il.Emit(OpCodes.Ldfld, targetField);
+                il.Emit(OpCodes.Ldfld, _targetField);
             }
 
             // If we have a generic method, we want to make sure we're using the open constructed generic method
             // so when a closed generic version of the method is invoked the actual type parameters are used
             il.Emit(
                 OpCodes.Ldtoken,
-                methodToOverride.IsGenericMethodDefinition
-                    ? methodToOverride.MakeGenericMethod(paramMapper.GenericMethodParameters)
-                    : methodToOverride);
-            if (methodToOverride.DeclaringType.IsGenericType)
+                _methodToOverride.IsGenericMethodDefinition
+                    ? _methodToOverride.MakeGenericMethod(paramMapper.GenericMethodParameters)
+                    : _methodToOverride);
+            if (_methodToOverride.DeclaringType.IsGenericType)
             {
                 // if the declaring type is generic, we need to get the method from the target type
-                il.Emit(OpCodes.Ldtoken, targetInterface);
+                il.Emit(OpCodes.Ldtoken, _targetInterface);
                 il.Emit(OpCodes.Call, MethodBaseMethods.GetMethodForGenericFromHandle);
             }
             else
@@ -352,21 +356,21 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
                 il.Emit(OpCodes.Call, MethodBaseMethods.GetMethodFromHandle); // target method
             }
 
-            EmitLoadConstant(il, methodParameters.Length);
+            EmitLoadConstant(il, _methodParameters.Length);
             il.Emit(OpCodes.Newarr, typeof(object)); // object[] parameters
-            if (methodParameters.Length > 0)
+            if (_methodParameters.Length > 0)
             {
                 il.Emit(OpCodes.Stloc, parameterArray);
 
-                for (int i = 0; i < methodParameters.Length; ++i)
+                for (int i = 0; i < _methodParameters.Length; ++i)
                 {
                     il.Emit(OpCodes.Ldloc, parameterArray);
                     EmitLoadConstant(il, i);
                     EmitLoadArgument(il, i);
-                    Type elementType = paramMapper.GetParameterType(methodParameters[i].ParameterType);
+                    Type elementType = paramMapper.GetParameterType(_methodParameters[i].ParameterType);
                     if (elementType.IsByRef)
                     {
-                        elementType = paramMapper.GetElementType(methodParameters[i].ParameterType);
+                        elementType = paramMapper.GetElementType(_methodParameters[i].ParameterType);
                         il.Emit(OpCodes.Ldobj, elementType);
                     }
                     EmitBox(il, elementType);
@@ -379,7 +383,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
             il.Emit(OpCodes.Stloc, inputs);
 
             il.Emit(OpCodes.Ldarg_0);
-            il.Emit(OpCodes.Ldfld, proxyInterceptionPipelineField);
+            il.Emit(OpCodes.Ldfld, _proxyInterceptionPipelineField);
             il.Emit(OpCodes.Ldloc, inputs);
 
             // Put delegate reference onto the stack
@@ -415,12 +419,12 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
             il.MarkLabel(noException);
 
             // Unpack any ref/out parameters
-            if (methodParameters.Length > 0)
+            if (_methodParameters.Length > 0)
             {
                 int outputArgNum = 0;
-                for (paramNum = 0; paramNum < methodParameters.Length; ++paramNum)
+                for (paramNum = 0; paramNum < _methodParameters.Length; ++paramNum)
                 {
-                    ParameterInfo pi = methodParameters[paramNum];
+                    ParameterInfo pi = _methodParameters[paramNum];
                     if (pi.ParameterType.IsByRef)
                     {
                         // Get the original parameter value - address of the ref or out
@@ -450,10 +454,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
             return methodBuilder;
         }
 
-        private bool MethodHasReturnValue
-        {
-            get { return methodToOverride.ReturnType != typeof(void); }
-        }
+        private bool MethodHasReturnValue => _methodToOverride.ReturnType != typeof(void);
 
         /// <summary>
         /// Used to throw an <see cref="NotImplementedException"/> for non-implemented methods on the

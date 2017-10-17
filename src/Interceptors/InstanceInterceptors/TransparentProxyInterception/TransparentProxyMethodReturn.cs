@@ -1,14 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.Remoting.Messaging;
 using System.Security;
 using System.Security.Permissions;
+using Unity.Interception.PolicyInjection.Pipeline;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyInterception
 {
     /// <summary>
     /// An implementation of <see cref="IMethodReturn"/> that wraps the
@@ -18,12 +18,12 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
     [SecurityPermission(SecurityAction.Demand, Flags = SecurityPermissionFlag.Infrastructure)]
     internal class TransparentProxyMethodReturn : IMethodReturn
     {
-        private readonly IMethodCallMessage callMessage;
-        private readonly ParameterCollection outputs;
-        private readonly IDictionary<string, object> invocationContext;
-        private readonly object[] arguments;
-        private object returnValue;
-        private Exception exception;
+        private readonly IMethodCallMessage _callMessage;
+        private readonly ParameterCollection _outputs;
+        private readonly IDictionary<string, object> _invocationContext;
+        private readonly object[] _arguments;
+        private object _returnValue;
+        private Exception _exception;
 
         /// <summary>
         /// Creates a new <see cref="TransparentProxyMethodReturn"/> object that contains a
@@ -36,11 +36,11 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <param name="invocationContext">Invocation context dictionary passed into the call.</param>
         public TransparentProxyMethodReturn(IMethodCallMessage callMessage, object returnValue, object[] arguments, IDictionary<string, object> invocationContext)
         {
-            this.callMessage = callMessage;
-            this.invocationContext = invocationContext;
-            this.arguments = arguments;
-            this.returnValue = returnValue;
-            this.outputs = new TransparentProxyOutputParameterCollection(callMessage, arguments);
+            _callMessage = callMessage;
+            _invocationContext = invocationContext;
+            _arguments = arguments;
+            _returnValue = returnValue;
+            _outputs = new TransparentProxyOutputParameterCollection(callMessage, arguments);
         }
 
         /// <summary>
@@ -52,11 +52,11 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <param name="invocationContext">Invocation context dictionary passed into the call.</param>
         public TransparentProxyMethodReturn(Exception ex, IMethodCallMessage callMessage, IDictionary<string, object> invocationContext)
         {
-            this.callMessage = callMessage;
-            this.invocationContext = invocationContext;
-            this.exception = ex;
-            this.arguments = new object[0];
-            this.outputs = new ParameterCollection(this.arguments, new ParameterInfo[0], pi => false);
+            _callMessage = callMessage;
+            _invocationContext = invocationContext;
+            _exception = ex;
+            _arguments = new object[0];
+            _outputs = new ParameterCollection(_arguments, new ParameterInfo[0], pi => false);
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         public IParameterCollection Outputs
         {
             [SecuritySafeCritical]
-            get { return outputs; }
+            get { return _outputs; }
         }
 
         /// <summary>
@@ -78,12 +78,12 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         public object ReturnValue
         {
             [SecuritySafeCritical]
-            get { return returnValue; }
+            get { return _returnValue; }
 
             [SecuritySafeCritical]
             set
             {
-                returnValue = value;
+                _returnValue = value;
             }
         }
 
@@ -94,12 +94,12 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         public Exception Exception
         {
             [SecuritySafeCritical]
-            get { return exception; }
+            get { return _exception; }
             
             [SecuritySafeCritical]
             set
             {
-                exception = value;
+                _exception = value;
             }
         }
 
@@ -115,7 +115,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         public IDictionary<string, object> InvocationContext
         {
             [SecuritySafeCritical]
-            get { return invocationContext; }
+            get { return _invocationContext; }
         }
 
         /// <summary>
@@ -126,16 +126,13 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         [SecurityCritical]
         public IMethodReturnMessage ToMethodReturnMessage()
         {
-            if (exception == null)
+            if (_exception == null)
             {
                 return
-                    new ReturnMessage(returnValue, arguments, arguments.Length,
-                        callMessage.LogicalCallContext, callMessage);
+                    new ReturnMessage(_returnValue, _arguments, _arguments.Length,
+                        _callMessage.LogicalCallContext, _callMessage);
             }
-            else
-            {
-                return new ReturnMessage(exception, callMessage);
-            }
+            return new ReturnMessage(_exception, _callMessage);
         }
     }
 }

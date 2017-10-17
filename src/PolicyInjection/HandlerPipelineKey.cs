@@ -2,26 +2,23 @@
 
 using System;
 using System.Reflection;
-using Microsoft.Practices.Unity.Utility;
+using Unity.Interception.Utilities;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.PolicyInjection
 {
     /// <summary>
     /// Key for handler pipelines.
     /// </summary>
     public struct HandlerPipelineKey : IEquatable<HandlerPipelineKey>
     {
-        private readonly Module module;
-        private readonly int methodMetadataToken;
+        private readonly Module _module;
+        private readonly int _methodMetadataToken;
 
         /// <summary>
         /// Creates a new <see cref="HandlerPipelineKey"/> for the supplied method.
         /// </summary>
         /// <param name="methodBase">The method for the key.</param>
         /// <returns>The new key.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "Preserve existing interface")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
-            Justification = "Validation done by Guard class")]
         public static HandlerPipelineKey ForMethod(MethodBase methodBase)
         {
             Guard.ArgumentNotNull(methodBase, "methodBase");
@@ -31,8 +28,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
 
         private HandlerPipelineKey(Module module, int methodMetadataToken)
         {
-            this.module = module;
-            this.methodMetadataToken = methodMetadataToken;
+            _module = module;
+            _methodMetadataToken = methodMetadataToken;
         }
 
         /// <summary>
@@ -55,7 +52,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <returns>A hash code.</returns>
         public override int GetHashCode()
         {
-            return this.module.GetHashCode() ^ this.methodMetadataToken;
+            return _module.GetHashCode() ^ _methodMetadataToken;
         }
 
         /// <summary>
@@ -66,8 +63,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <returns>True if the values of the keys are the same, else false.</returns>
         public static bool operator ==(HandlerPipelineKey left, HandlerPipelineKey right)
         {
-            return left.module == right.module &&
-                   left.methodMetadataToken == right.methodMetadataToken;
+            return left._module == right._module &&
+                   left._methodMetadataToken == right._methodMetadataToken;
         }
 
         /// <summary>

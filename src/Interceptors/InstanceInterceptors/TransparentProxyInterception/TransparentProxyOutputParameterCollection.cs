@@ -3,8 +3,9 @@
 using System.Runtime.Remoting.Messaging;
 using System.Security;
 using System.Security.Permissions;
+using Unity.Interception.PolicyInjection.Pipeline;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyInterception
 {
     /// <summary>
     /// A class that wraps the outputs of a <see cref="IMethodCallMessage"/> into the

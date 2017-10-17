@@ -1,11 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 
-using System;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
+using Unity.Interception.InterceptionBehaviors;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration
 {
     /// <summary>
     /// This class provides the code needed to implement the <see cref="IInterceptingProxy"/>
@@ -36,8 +35,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
                     | MethodAttributes.NewSlot;
 
             MethodBuilder methodBuilder =
-                typeBuilder.DefineMethod(
-                    "Microsoft.Practices.Unity.InterceptionExtension.IInterceptingProxy.AddInterceptionBehavior",
+                typeBuilder.DefineMethod(nameof(IInterceptingProxy.AddInterceptionBehavior),
                     MethodAttributes);
 
             // Setting return type

@@ -4,6 +4,8 @@ using System;
 using System.Reflection;
 using System.Runtime.Remoting.Messaging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyInterception;
+using Unity.Interception.PolicyInjection.Pipeline;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
 {

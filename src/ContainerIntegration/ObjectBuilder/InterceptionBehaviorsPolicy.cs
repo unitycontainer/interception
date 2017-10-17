@@ -2,13 +2,13 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.Practices.ObjectBuilder2;
-using Unity;
 using Unity.Builder;
+using Unity.Interception.InterceptionBehaviors;
+using Unity.Interception.Interceptors;
 using Unity.Policy;
 using Unity.Resolution;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 {
     /// <summary>
     /// An <see cref="IInterceptionBehaviorsPolicy"/> that accumulates a sequence of 
@@ -16,16 +16,13 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
     /// </summary>
     public class InterceptionBehaviorsPolicy : IInterceptionBehaviorsPolicy
     {
-        private readonly List<NamedTypeBuildKey> behaviorKeys = new List<NamedTypeBuildKey>();
+        private readonly List<NamedTypeBuildKey> _behaviorKeys = new List<NamedTypeBuildKey>();
 
         /// <summary>
         /// Get the set of <see cref="NamedTypeBuildKey"/> that can be used to resolve the
         /// behaviors.
         /// </summary>
-        public IEnumerable<NamedTypeBuildKey> BehaviorKeys
-        {
-            get { return behaviorKeys; }
-        }
+        public IEnumerable<NamedTypeBuildKey> BehaviorKeys => _behaviorKeys;
 
         /// <summary>
         /// Get the set of <see cref="IInterceptionBehavior"/> object to be used for the given type and
@@ -56,7 +53,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
 
         internal void AddBehaviorKey(NamedTypeBuildKey key)
         {
-            behaviorKeys.Add(key);
+            _behaviorKeys.Add(key);
         }
 
         internal static InterceptionBehaviorsPolicy GetOrCreate(
@@ -67,10 +64,10 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
             NamedTypeBuildKey key = new NamedTypeBuildKey(typeToCreate, name);
             IInterceptionBehaviorsPolicy policy =
                 policies.GetNoDefault<IInterceptionBehaviorsPolicy>(key, false);
-            if ((policy == null) || !(policy is InterceptionBehaviorsPolicy))
+            if (policy == null || !(policy is InterceptionBehaviorsPolicy))
             {
                 policy = new InterceptionBehaviorsPolicy();
-                policies.Set<IInterceptionBehaviorsPolicy>(policy, key);
+                policies.Set(policy, key);
             }
             return (InterceptionBehaviorsPolicy)policy;
         }

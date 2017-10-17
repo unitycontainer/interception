@@ -2,13 +2,11 @@
 
 using System;
 using System.Globalization;
-using Microsoft.Practices.ObjectBuilder2;
+using Unity.Interception.ContainerIntegration.ObjectBuilder;
 using Unity.Interception.Properties;
-using Microsoft.Practices.Unity.Utility;
-using Unity;
 using Unity.Policy;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.ContainerIntegration
 {
     /// <summary>
     /// Stores information about a single <see cref="Type"/> to be an additional interface for an intercepted object and
@@ -16,7 +14,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
     /// </summary>
     public class AdditionalInterface : InterceptionMember
     {
-        private readonly Type additionalInterface;
+        private readonly Type _additionalInterface;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AdditionalInterface"/> with a 
@@ -27,22 +25,19 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <see langword="null"/>.</exception>
         /// <exception cref="ArgumentException">when <paramref name="additionalInterface"/> is not an interface.
         /// </exception>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
-            Justification = "Validation done by Guard class")]
         public AdditionalInterface(Type additionalInterface)
         {
-            Guard.ArgumentNotNull(additionalInterface, "additionalInterface");
-            if (!additionalInterface.IsInterface)
+            if (!(additionalInterface ?? throw new ArgumentNullException(nameof(additionalInterface))).IsInterface)
             {
                 throw new ArgumentException(
                     string.Format(
                         CultureInfo.CurrentCulture,
                         Resources.ExceptionTypeIsNotInterface,
                         additionalInterface.Name),
-                    "additionalInterface");
+                    nameof(additionalInterface));
             }
 
-            this.additionalInterface = additionalInterface;
+            _additionalInterface = additionalInterface;
         }
 
         /// <summary>
@@ -57,7 +52,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         {
             AdditionalInterfacesPolicy policy =
                 AdditionalInterfacesPolicy.GetOrCreate(policies, implementationType, name);
-            policy.AddAdditionalInterface(this.additionalInterface);
+            policy.AddAdditionalInterface(_additionalInterface);
         }
     }
 

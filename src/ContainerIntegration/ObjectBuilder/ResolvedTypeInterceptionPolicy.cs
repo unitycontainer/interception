@@ -1,12 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 
 using System;
-using Microsoft.Practices.ObjectBuilder2;
-using Microsoft.Practices.Unity.Utility;
-using Unity;
 using Unity.Builder;
+using Unity.Interception.Interceptors.TypeInterceptors;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension
+namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 {
     /// <summary>
     /// An implementation of <see cref="ITypeInterceptionPolicy"/> that will
@@ -14,7 +12,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
     /// </summary>
     public class ResolvedTypeInterceptionPolicy : ITypeInterceptionPolicy
     {
-        private readonly NamedTypeBuildKey buildKey;
+        private readonly NamedTypeBuildKey _buildKey;
 
         /// <summary>
         /// construct a new <see cref="ResolvedTypeInterceptionPolicy"/> that
@@ -23,7 +21,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// <param name="buildKey">The build key to use to resolve.</param>
         public ResolvedTypeInterceptionPolicy(NamedTypeBuildKey buildKey)
         {
-            this.buildKey = buildKey;
+            _buildKey = buildKey;
         }
 
         #region ITypeInterceptionPolicy Members
@@ -32,12 +30,9 @@ namespace Microsoft.Practices.Unity.InterceptionExtension
         /// Interceptor to use to create type proxy
         /// </summary>
         /// <param name="context">Context for current build operation.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
-            Justification = "Validation done by Guard class")]
         public ITypeInterceptor GetInterceptor(IBuilderContext context)
         {
-            Guard.ArgumentNotNull(context, "context");
-            return (ITypeInterceptor)context.NewBuildUp(buildKey);
+            return (ITypeInterceptor)(context ?? throw new ArgumentNullException(nameof(context))).NewBuildUp(_buildKey);
         }
 
         /// <summary>

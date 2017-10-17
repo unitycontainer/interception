@@ -13,8 +13,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Container\src\Unity.Container.csproj" />
     <ProjectReference Include="..\src\Unity.Interception.csproj" />
   </ItemGroup>
 
+
+  <ItemGroup Condition=" '$(Configuration)' != 'Release' ">
+    <ProjectReference Include="..\..\Abstractions\src\Unity.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Container\src\Unity.Container.csproj" />
+  </ItemGroup>  
+
+  <ItemGroup Condition=" '$(Configuration)' == 'Release' ">
+    <PackageReference Include="Unity.Abstractions" Version="2.0.0-RC3" />
+    <PackageReference Include="Unity.Container" Version="5.0.0-RC3" />
+  </ItemGroup>
+  
 </Project>

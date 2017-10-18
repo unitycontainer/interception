@@ -163,14 +163,5 @@ namespace Microsoft.Practices.Unity.TestSupport
 
             return Strategies.ExecuteBuildUp(this);
         }
-
-        public object ExecuteTearDown(object existing)
-        {
-            this.BuildKey = null;
-            this.Existing = existing;
-
-            Strategies.Reverse().ExecuteTearDown(this);
-            return existing;
-        }
     }
 }

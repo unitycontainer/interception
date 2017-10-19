@@ -149,5 +149,21 @@ namespace Unity.Interception.Utilities
             attributes.AddRange(GetAttributes<TAttribute>(member, inherits));
             return attributes.ToArray();
         }
+
+        public static readonly MethodInfo ExceptionDispatchInfoCaptureMethod;
+
+        public static readonly MethodInfo ExceptionDispatchInfoThrowMethod;
+
+        static ReflectionHelper()
+        {
+            Assembly mscorlib = typeof(int).Assembly;
+            ExceptionDispatchInfoCaptureMethod = mscorlib
+                ?.GetType("System.Runtime.ExceptionServices.ExceptionDispatchInfo")
+                ?.GetMethod("Capture", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(Exception) }, null);
+
+            ExceptionDispatchInfoThrowMethod = mscorlib
+                ?.GetType("System.Runtime.ExceptionServices.ExceptionDispatchInfo")
+                ?.GetMethod("Throw", BindingFlags.Public | BindingFlags.Instance, null, new Type[] { }, null);
+        }
     }
 }

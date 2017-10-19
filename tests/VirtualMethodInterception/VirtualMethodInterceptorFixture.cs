@@ -12,6 +12,7 @@ using Unity.Interception.Interceptors;
 using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception;
 using Unity.Interception.PolicyInjection;
 using Unity.Interception.PolicyInjection.Pipeline;
+using System.Runtime.CompilerServices;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInterceptorTests
 {
@@ -864,6 +865,64 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
                 {
                     return default(X[]);
                 }
+            }
+        }
+
+        [TestMethod]
+        public void InterceptorCorrectlyRethrowsException()
+        {
+            IUnityContainer container = new UnityContainer()
+                .AddNewExtension<Interception>()
+                .RegisterType(typeof(IFoo), typeof(Foo))
+                .Configure<Interception>()
+                    .SetInterceptorFor(typeof(Foo), new VirtualMethodInterceptor())
+                    .AddPolicy("AlwaysMatches")
+                    .AddMatchingRule<AlwaysMatchingRule>()
+                    .AddCallHandler<CallCountHandler>("callCount", new ContainerControlledLifetimeManager())
+                .Interception
+                .Container;
+
+            IFoo myFoo = container.Resolve<IFoo>();
+
+            try
+            {
+                myFoo.DoSomething();
+                Assert.Fail("Should have thrown");
+            }
+            catch (Exception ex)
+            {
+                CallCountHandler handler = (CallCountHandler)(container.Resolve<ICallHandler>("callCount"));
+                Assert.AreEqual(1, handler.CallCount);
+                Assert.IsInstanceOfType(ex, typeof(FooCrashedException));
+
+                var stackTrace = ex.StackTrace.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+                Assert.IsTrue(stackTrace[0].Contains("DoSomethingLocal"), "stack trace is not full");
+            }
+        }
+
+        public interface IFoo
+        {
+            void DoSomething();
+        }
+
+        public class Foo : IFoo
+        {
+            public virtual void DoSomething()
+            {
+                DoSomethingLocal();
+            }
+
+            [MethodImpl(MethodImplOptions.NoInlining)]
+            protected void DoSomethingLocal()
+            {
+                throw new FooCrashedException("oops");
+            }
+        }
+
+        public class FooCrashedException : Exception
+        {
+            public FooCrashedException(string message) : base(message)
+            {
             }
         }
     }

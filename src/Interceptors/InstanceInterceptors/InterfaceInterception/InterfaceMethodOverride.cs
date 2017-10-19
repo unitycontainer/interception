@@ -414,7 +414,17 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
             il.Emit(OpCodes.Ceq);
             il.Emit(OpCodes.Brtrue_S, noException);
             il.Emit(OpCodes.Ldloc, ex);
-            il.Emit(OpCodes.Throw);
+
+            if (ReflectionHelper.ExceptionDispatchInfoCaptureMethod != null
+                && ReflectionHelper.ExceptionDispatchInfoThrowMethod != null)
+            {
+                il.EmitCall(OpCodes.Call, ReflectionHelper.ExceptionDispatchInfoCaptureMethod, null);
+                il.EmitCall(OpCodes.Callvirt, ReflectionHelper.ExceptionDispatchInfoThrowMethod, null);
+            }
+            else
+            {
+                il.Emit(OpCodes.Throw);
+            }
 
             il.MarkLabel(noException);
 

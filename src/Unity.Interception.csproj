@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <Description>Unity Interception</Description>
-    <Version>5.0.0</Version>
+    <Version>5.0.1</Version>
     <AssemblyVersion>5.0.0.0</AssemblyVersion>
     <FileVersion>5.0.0.0</FileVersion>
     <Copyright>Copyright © Microsoft 2008</Copyright>

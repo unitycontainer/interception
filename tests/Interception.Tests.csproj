@@ -15,15 +15,26 @@
   <ItemGroup>
     <ProjectReference Include="..\src\Unity.Interception.csproj" />
   </ItemGroup>
+  
 
+  <PropertyGroup>
+    <UnityAbstractions>$(SolutionDir)\Abstractions\src\Unity.Abstractions.csproj</UnityAbstractions>
+    <UnityContainer>$(SolutionDir)\Container\src\Unity.Container.csproj</UnityContainer>
+  </PropertyGroup>
 
-  <ItemGroup Condition=" '$(Configuration)' != 'Release' ">
-    <ProjectReference Include="..\..\Abstractions\src\Unity.Abstractions.csproj" />
-    <ProjectReference Include="..\..\Container\src\Unity.Container.csproj" />
-  </ItemGroup>  
+  <ItemGroup Condition="Exists('$(UnityAbstractions)')">
+    <ProjectReference Include="$(UnityAbstractions)" />
+  </ItemGroup>
 
-  <ItemGroup Condition=" '$(Configuration)' == 'Release' ">
+  <ItemGroup Condition="Exists('$(UnityContainer)')">
+    <ProjectReference Include="$(UnityContainer)" />
+  </ItemGroup>
+
+  <ItemGroup Condition="!Exists('$(UnityAbstractions)')">
     <PackageReference Include="Unity.Abstractions" Version="2.0.1" />
+  </ItemGroup>
+
+  <ItemGroup Condition="!Exists('$(UnityContainer)')">
     <PackageReference Include="Unity.Container" Version="5.0.0" />
   </ItemGroup>
   

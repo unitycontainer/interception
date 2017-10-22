@@ -1,10 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>Unity Interception</Description>
     <Version>5.0.1</Version>
     <AssemblyVersion>5.0.0.0</AssemblyVersion>
     <FileVersion>5.0.0.0</FileVersion>
+    <PackageId>Unity.Interception</PackageId>
+    <Description>Unity Interception</Description>
     <Copyright>Copyright © Microsoft 2008</Copyright>
     <PackageProjectUrl>https://github.com/unitycontainer/unity</PackageProjectUrl>
     <RepositoryUrl>https://github.com/unitycontainer/unity</RepositoryUrl>
@@ -12,10 +13,8 @@
     <PackageIconUrl>https://avatars1.githubusercontent.com/u/12849707</PackageIconUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReleaseNotes>This package is compatible with .NET 4.0, 4.5, and 4.7 frameworks.</PackageReleaseNotes>
-    <PackageId>Unity.Interception</PackageId>
     <Authors>Microsoft.Practices.Unity</Authors>
     <Company>Microsoft.Practices.Unity</Company>
-    <Configurations>Debug;Release;Package</Configurations>
   </PropertyGroup>
   
   <ItemGroup>
@@ -50,14 +49,9 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <TargetFrameworks>net47;net45;net40</TargetFrameworks>
-  </PropertyGroup>
-  
-  <PropertyGroup Condition="'$(Configuration)'=='Package'">
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <TargetFrameworks>net47;net45;net40</TargetFrameworks>
     <OutputPath>$(SolutionDir)\lib\</OutputPath>
   </PropertyGroup>
-
+  
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugType>Full</DebugType>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>

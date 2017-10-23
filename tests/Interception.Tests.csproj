@@ -18,8 +18,8 @@
   
 
   <PropertyGroup>
-    <UnityAbstractions>$(SolutionDir)Abstractions\src\Unity.Abstractions.csproj</UnityAbstractions>
-    <UnityContainer>$(SolutionDir)Container\src\Unity.Container.csproj</UnityContainer>
+    <UnityAbstractions>..\..\Abstractions\src\Unity.Abstractions.csproj</UnityAbstractions>
+    <UnityContainer>..\..\Container\src\Unity.Container.csproj</UnityContainer>
   </PropertyGroup>
 
   <ItemGroup Condition="Exists('$(UnityAbstractions)')">

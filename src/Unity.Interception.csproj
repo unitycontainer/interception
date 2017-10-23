@@ -49,7 +49,7 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <TargetFrameworks>net47;net45;net40</TargetFrameworks>
-    <OutputPath>$(SolutionDir)\lib\</OutputPath>
+    <OutputPath>$(SolutionDir)lib</OutputPath>
   </PropertyGroup>
   
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -60,7 +60,7 @@
   
 
   <PropertyGroup>
-    <UnityAbstractions>$(SolutionDir)\Abstractions\src\Unity.Abstractions.csproj</UnityAbstractions>
+    <UnityAbstractions>$(SolutionDir)Abstractions\src\Unity.Abstractions.csproj</UnityAbstractions>
   </PropertyGroup>
 
   <ItemGroup Condition="Exists('$(UnityAbstractions)')">

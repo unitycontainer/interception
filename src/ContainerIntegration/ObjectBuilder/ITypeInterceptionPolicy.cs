@@ -3,6 +3,7 @@
 using System;
 using Unity.Builder;
 using Unity.Interception.Interceptors.TypeInterceptors;
+using Unity.Policy;
 
 namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 {

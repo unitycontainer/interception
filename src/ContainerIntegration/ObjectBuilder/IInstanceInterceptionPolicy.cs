@@ -2,6 +2,7 @@
 
 using Unity.Builder;
 using Unity.Interception.Interceptors.InstanceInterceptors;
+using Unity.Policy;
 
 namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 {

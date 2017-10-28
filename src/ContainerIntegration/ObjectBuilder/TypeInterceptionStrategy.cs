@@ -98,7 +98,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
             }
 
             EffectiveInterceptionBehaviorsPolicy effectiveInterceptionBehaviorsPolicy =
-                context.Policies.Get<EffectiveInterceptionBehaviorsPolicy>(context.BuildKey, true);
+                context.Policies.GetNoDefault<EffectiveInterceptionBehaviorsPolicy>(context.BuildKey);
             if (effectiveInterceptionBehaviorsPolicy == null)
             {
                 return;
@@ -113,8 +113,8 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         private static TPolicy FindInterceptionPolicy<TPolicy>(IBuilderContext context)
             where TPolicy : class, IBuilderPolicy
         {
-            return context.Policies.Get<TPolicy>(context.BuildKey, false) ??
-                context.Policies.Get<TPolicy>(context.BuildKey.Type, false);
+            return context.Policies.Get<TPolicy>(context.BuildKey) ??
+                context.Policies.Get<TPolicy>(context.BuildKey.Type);
         }
 
         private class EffectiveInterceptionBehaviorsPolicy : IBuilderPolicy

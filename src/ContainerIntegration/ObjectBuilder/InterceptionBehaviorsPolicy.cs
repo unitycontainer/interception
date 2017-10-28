@@ -63,7 +63,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         {
             NamedTypeBuildKey key = new NamedTypeBuildKey(typeToCreate, name);
             IInterceptionBehaviorsPolicy policy =
-                policies.GetNoDefault<IInterceptionBehaviorsPolicy>(key, false);
+                policies.GetNoDefault<IInterceptionBehaviorsPolicy>(key);
             if (policy == null || !(policy is InterceptionBehaviorsPolicy))
             {
                 policy = new InterceptionBehaviorsPolicy();

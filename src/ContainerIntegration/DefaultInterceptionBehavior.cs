@@ -55,7 +55,7 @@ namespace Unity.Interception.ContainerIntegration
         protected override InterceptionBehaviorsPolicy GetBehaviorsPolicy(IPolicyList policies, Type implementationType,
             string name)
         {
-            var policy = policies.GetNoDefault<IInterceptionBehaviorsPolicy>(implementationType, false);
+            var policy = policies.GetNoDefault<IInterceptionBehaviorsPolicy>(implementationType);
             if ((policy == null) || !(policy is InterceptionBehaviorsPolicy))
             {
                 policy = new InterceptionBehaviorsPolicy();

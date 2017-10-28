@@ -31,7 +31,7 @@ namespace Unity.Interception.PolicyInjection.Pipeline
         }
 
         /// <summary>
-        /// Get the number of handlers in this pipeline.
+        /// GetOrDefault the number of handlers in this pipeline.
         /// </summary>
         public int Count => _handlers.Count;
 

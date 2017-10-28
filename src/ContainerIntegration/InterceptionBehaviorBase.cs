@@ -92,7 +92,7 @@ namespace Unity.Interception.ContainerIntegration
         }
 
         /// <summary>
-        /// Get the list of behaviors for the current type so that it can be added to.
+        /// GetOrDefault the list of behaviors for the current type so that it can be added to.
         /// </summary>
         /// <param name="policies">Policy list.</param>
         /// <param name="implementationType">Implementation type to set behaviors for.</param>

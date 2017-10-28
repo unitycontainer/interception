@@ -48,7 +48,7 @@ namespace Unity.Interception.PolicyInjection.Pipeline
         }
 
         /// <summary>
-        /// Get the pipeline for the given method, creating it if necessary.
+        /// GetOrDefault the pipeline for the given method, creating it if necessary.
         /// </summary>
         /// <param name="method">Method to retrieve the pipeline for.</param>
         /// <param name="handlers">Handlers to initialize the pipeline with</param>

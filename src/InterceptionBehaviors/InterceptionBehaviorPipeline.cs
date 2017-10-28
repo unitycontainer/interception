@@ -33,7 +33,7 @@ namespace Unity.Interception.InterceptionBehaviors
         }
 
         /// <summary>
-        /// Get the number of interceptors in this pipeline.
+        /// GetOrDefault the number of interceptors in this pipeline.
         /// </summary>
         public int Count => _interceptionBehaviors.Count;
 

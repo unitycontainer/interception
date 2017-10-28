@@ -19,13 +19,13 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         private readonly List<NamedTypeBuildKey> _behaviorKeys = new List<NamedTypeBuildKey>();
 
         /// <summary>
-        /// Get the set of <see cref="NamedTypeBuildKey"/> that can be used to resolve the
+        /// GetOrDefault the set of <see cref="NamedTypeBuildKey"/> that can be used to resolve the
         /// behaviors.
         /// </summary>
         public IEnumerable<NamedTypeBuildKey> BehaviorKeys => _behaviorKeys;
 
         /// <summary>
-        /// Get the set of <see cref="IInterceptionBehavior"/> object to be used for the given type and
+        /// GetOrDefault the set of <see cref="IInterceptionBehavior"/> object to be used for the given type and
         /// interceptor.
         /// </summary>
         /// <remarks>

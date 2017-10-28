@@ -437,10 +437,10 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
                     ParameterInfo pi = _methodParameters[paramNum];
                     if (pi.ParameterType.IsByRef)
                     {
-                        // Get the original parameter value - address of the ref or out
+                        // GetOrDefault the original parameter value - address of the ref or out
                         EmitLoadArgument(il, paramNum);
 
-                        // Get the value of this output parameter out of the Outputs collection
+                        // GetOrDefault the value of this output parameter out of the Outputs collection
                         il.Emit(OpCodes.Ldloc, methodReturn);
                         il.Emit(OpCodes.Callvirt, IMethodReturnMethods.GetOutputs);
                         EmitLoadConstant(il, outputArgNum++);

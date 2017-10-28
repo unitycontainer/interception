@@ -451,11 +451,11 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
                 int outArgIndex = 0;
                 foreach (int parameterIndex in OutputParameterIndices)
                 {
-                    // Get parameter value (the address) onto the stack)
+                    // GetOrDefault parameter value (the address) onto the stack)
                     Type elementType = paramMapper.GetElementType(_methodParameters[parameterIndex].ParameterType);
                     EmitLoadArgument(il, parameterIndex);
 
-                    // Get result of output parameter out of the results array
+                    // GetOrDefault result of output parameter out of the results array
                     il.Emit(OpCodes.Ldloc, methodReturn);
                     il.Emit(OpCodes.Callvirt, IMethodReturnMethods.GetOutputs);
                     EmitLoadConstant(il, outArgIndex);

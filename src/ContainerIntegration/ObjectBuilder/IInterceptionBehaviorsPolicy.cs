@@ -16,13 +16,13 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
     public interface IInterceptionBehaviorsPolicy : IBuilderPolicy
     {
         /// <summary>
-        /// Get the set of <see cref="NamedTypeBuildKey"/> that can be used to resolve the
+        /// GetOrDefault the set of <see cref="NamedTypeBuildKey"/> that can be used to resolve the
         /// behaviors.
         /// </summary>
         IEnumerable<NamedTypeBuildKey> BehaviorKeys { get; }
 
         /// <summary>
-        /// Get the set of <see cref="IInterceptionBehavior"/> object to be used for the given type and
+        /// GetOrDefault the set of <see cref="IInterceptionBehavior"/> object to be used for the given type and
         /// interceptor.
         /// </summary>
         /// <remarks>

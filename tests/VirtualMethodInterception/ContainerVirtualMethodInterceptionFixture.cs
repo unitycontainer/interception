@@ -113,7 +113,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
             Assert.IsTrue(testClass.TestMethod3(), "always true");
             Assert.IsTrue(testClass.TestMethod4(), "abstract");
 
-            Assert.AreEqual(4, container.Resolve<CallCountHandler>("TestCallHandler").CallCount);
+            Assert.AreEqual(4, ((CallCountHandler)container.Resolve<ICallHandler>("TestCallHandler")).CallCount);
         }
 
         [TestMethod]

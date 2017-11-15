@@ -37,7 +37,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="!Exists('$(UnityContainer)')">
-    <PackageReference Include="Unity.Container" Version="$(UnityContainerVersion)" />
+    <PackageReference Include="Unity.Container" />
   </ItemGroup>
   
 </Project>

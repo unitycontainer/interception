@@ -192,7 +192,8 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
 
             for (int i = 0; i < genericArguments.Length; ++i)
             {
-                genericTypes[i].SetGenericParameterAttributes(genericArguments[i].GenericParameterAttributes);
+                genericTypes[i].SetGenericParameterAttributes(
+                    genericArguments[i].GenericParameterAttributes & ~GenericParameterAttributes.VarianceMask);
                 var interfaceConstraints = new List<Type>();
                 foreach (Type constraint in genericArguments[i].GetGenericParameterConstraints())
                 {

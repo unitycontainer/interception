@@ -7,12 +7,55 @@ using Unity.Interception.PolicyInjection.Pipeline;
 using Unity.Interception.ContainerIntegration;
 using Unity.Lifetime;
 using System.Diagnostics;
+using Unity;
+using Unity.Interception;
 
-namespace Unity.Interception.Tests
+namespace UnityInterception.Tests
 {
     [TestClass]
     public class Issues
     {
+
+        [TestMethod]
+        public void unitycontainer_unity_45()
+        {
+            var proxy = Intercept.ThroughProxy<IInterface<string, string>>(
+              new Thing(),
+              new InterfaceInterceptor(),
+              new[] { new TestInterceptor() });
+
+            proxy.DoSomething("hello world");
+        }
+
+        public interface IInterface<in TIn, out TOut>
+        {
+            TOut DoSomething(TIn input);
+        }
+
+        public class Thing : IInterface<string, string>
+        {
+            public string DoSomething(string input)
+            {
+                return input;
+            }
+        }
+
+        public class TestInterceptor : IInterceptionBehavior
+        {
+            public bool WillExecute => true;
+
+            public IEnumerable<Type> GetRequiredInterfaces()
+            {
+                return Type.EmptyTypes;
+            }
+
+            public IMethodReturn Invoke(IMethodInvocation input, GetNextInterceptionBehaviorDelegate getNext)
+            {
+                return getNext()(input, null);
+            }
+        }
+
+
         [TestMethod]
         public void unitycontainer_interception_162()
         {

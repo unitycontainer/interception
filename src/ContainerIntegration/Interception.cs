@@ -35,10 +35,7 @@ namespace Unity.Interception.ContainerIntegration
         /// </summary>
         protected override void Initialize()
         {
-            // The TransparentProxyInterceptionStrategy is added to the Setup (first) stage.
-            // This means that instances will be intercepted after type mapping and lifetime management
-            // have taken place.
-            Context.Strategies.AddNew<InstanceInterceptionStrategy>(UnityBuildStage.Setup);
+            Context.Strategies.AddNew<InstanceInterceptionStrategy>(UnityBuildStage.Lifetime);
             Context.Strategies.AddNew<TypeInterceptionStrategy>(UnityBuildStage.PreCreation);
             Context.Container.RegisterInstance<InjectionPolicy>(typeof(AttributeDrivenPolicy).AssemblyQualifiedName,
                                                                 new AttributeDrivenPolicy());

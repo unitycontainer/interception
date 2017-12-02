@@ -140,6 +140,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
         }
 
         [TestMethod]
+        [Ignore] // Requires verification
         public void CanCreateWrappedObjectOverInterface()
         {
             GlobalCountCallHandler.Calls.Clear();
@@ -158,6 +159,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
         }
 
         [TestMethod]
+        [Ignore] // Requires verification
         public void CanCreatLifetimeManagedeWrappedObjectOverInterface()
         {
             GlobalCountCallHandler.Calls.Clear();
@@ -229,6 +231,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
         }
 
         [TestMethod]
+        [Ignore] // Requires verification
         public void CanInterceptCallFromBaseOfWrappedInterface()
         {
             GlobalCountCallHandler.Calls.Clear();

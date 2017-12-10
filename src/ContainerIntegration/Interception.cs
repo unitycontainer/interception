@@ -35,8 +35,8 @@ namespace Unity.Interception.ContainerIntegration
         /// </summary>
         protected override void Initialize()
         {
-            Context.Strategies.AddNew<InstanceInterceptionStrategy>(UnityBuildStage.Lifetime);
-            Context.Strategies.AddNew<TypeInterceptionStrategy>(UnityBuildStage.PreCreation);
+            Context.Strategies.Add(new InstanceInterceptionStrategy(),  UnityBuildStage.Lifetime);
+            Context.Strategies.Add(new TypeInterceptionStrategy(), UnityBuildStage.PreCreation);
             Context.Container.RegisterInstance<InjectionPolicy>(typeof(AttributeDrivenPolicy).AssemblyQualifiedName,
                                                                 new AttributeDrivenPolicy());
         }

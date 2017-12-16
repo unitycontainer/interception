@@ -66,13 +66,12 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
 
             int invokeCount = 0;
 
-            container.RegisterType<IInterface, BaseClass>(
-                "test",
-                new Interceptor<InterfaceInterceptor>(),
-                new AdditionalInterface(typeof(IOtherInterface)),
-                new InterceptionBehavior(
-                    new DelegateInterceptionBehavior(
-                        (mi, gn) => { invokeCount++; return mi.CreateMethodReturn(0); })));
+            container.RegisterType<IInterface, BaseClass>("test",
+                                                          new Interceptor<InterfaceInterceptor>(),
+                                                          new AdditionalInterface(typeof(IOtherInterface)),
+                                                          new InterceptionBehavior(
+                                                              new DelegateInterceptionBehavior(
+                                                                  (mi, gn) => { invokeCount++; return mi.CreateMethodReturn(0); })));
 
             IInterface instance = container.Resolve<IInterface>("test");
 

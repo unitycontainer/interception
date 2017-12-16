@@ -51,7 +51,7 @@ namespace Unity.Interception.ContainerIntegration
         public override void AddPolicies(Type serviceType, Type implementationType, string name, IPolicyList policies)
         {
             AdditionalInterfacesPolicy policy =
-                AdditionalInterfacesPolicy.GetOrCreate(policies, implementationType, name);
+                AdditionalInterfacesPolicy.GetOrCreate(policies, serviceType, name);
             policy.AddAdditionalInterface(_additionalInterface);
         }
     }

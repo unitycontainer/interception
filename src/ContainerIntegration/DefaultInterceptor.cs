@@ -74,11 +74,11 @@ namespace Unity.Interception.ContainerIntegration
         {
             if (IsInstanceInterceptor)
             {
-                AddDefaultInstanceInterceptor(implementationType, policies);
+                AddDefaultInstanceInterceptor(serviceType, policies);
             }
             else
             {
-                AddDefaultTypeInterceptor(implementationType, policies);
+                AddDefaultTypeInterceptor(serviceType, policies);
             }
         }
 

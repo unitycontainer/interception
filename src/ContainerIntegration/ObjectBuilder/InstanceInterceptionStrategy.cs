@@ -75,10 +75,9 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         private static T FindInterceptionPolicy<T>(IBuilderContext context, bool probeOriginalKey)
             where T : class, IBuilderPolicy
         {
-            // First, try for a match against the current build key
-            Type currentType = context.BuildKey.Type;
-            var policy = context.Policies.Get<T>(context.BuildKey) ??
-                       context.Policies.Get<T>(currentType);
+            // First, try for an original build key
+            var policy = context.Policies.Get<T>(context.OriginalBuildKey) ??
+                         context.Policies.Get<T>(context.OriginalBuildKey.Type);
 
             if (policy != null)
             {
@@ -90,10 +89,9 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
                 return null;
             }
 
-            // Next, try the original build key
-            Type originalType = context.OriginalBuildKey.Type;
-            policy = context.Policies.Get<T>(context.OriginalBuildKey) ??
-                context.Policies.Get<T>(originalType);
+            // Next, try the build type
+            policy = context.Policies.Get<T>(context.BuildKey) ??
+                     context.Policies.Get<T>(context.BuildKey.Type);
 
             return policy;
         }

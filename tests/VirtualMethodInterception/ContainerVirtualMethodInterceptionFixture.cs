@@ -166,8 +166,9 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
             Assert.IsFalse(container.Resolve<ClassWithVirtualProperty>() is INotifyPropertyChanged);
 
             container
-                .RegisterType<ClassWithVirtualProperty>(
-                    new InterceptionBehavior(new NaiveINotifyPropertyChangedInterceptionBehavior()));
+                .RegisterType<ClassWithVirtualProperty>(new Interceptor<VirtualMethodInterceptor>(),
+                                                        new InterceptionBehavior(
+                                                            new NaiveINotifyPropertyChangedInterceptionBehavior()));
 
             Assert.IsTrue(container.Resolve<ClassWithVirtualProperty>() is INotifyPropertyChanged);
         }

@@ -52,9 +52,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.PolicyInjection
         {
             return new UnityContainer()
                 .AddNewExtension<Interception>()
-                .RegisterType<IInterfaceWithGenericMethod, MyClass>(
-                    new Interceptor<TInterceptor>(),
-                    new InterceptionBehavior<PolicyInjectionBehavior>());
+                .RegisterType<IInterfaceWithGenericMethod, MyClass>(new Interceptor<TInterceptor>(),
+                                                                    new InterceptionBehavior<PolicyInjectionBehavior>());
         }
 
         private static void CanInterceptNonGenericMethod<TInterceptor>()

@@ -64,31 +64,21 @@ namespace Unity.Interception.ContainerIntegration
         {
             if (_explicitBehavior != null)
             {
-                AddExplicitBehaviorPolicies(implementationType, name, policies);
+                var lifetimeManager = new ContainerControlledLifetimeManager();
+                lifetimeManager.SetValue(_explicitBehavior);
+                var behaviorName = Guid.NewGuid().ToString();
+                var newBehaviorKey = new NamedTypeBuildKey(_explicitBehavior.GetType(), behaviorName);
+
+                policies.Set<ILifetimePolicy>(lifetimeManager, newBehaviorKey);
+
+                InterceptionBehaviorsPolicy behaviorsPolicy = GetBehaviorsPolicy(policies, serviceType, name);
+                behaviorsPolicy.AddBehaviorKey(newBehaviorKey);
             }
             else
             {
-                AddKeyedPolicies(implementationType, name, policies);
+                var behaviorsPolicy = GetBehaviorsPolicy(policies, serviceType, name);
+                behaviorsPolicy.AddBehaviorKey(_behaviorKey);
             }
-        }
-
-        private void AddExplicitBehaviorPolicies(Type implementationType, string name, IPolicyList policies)
-        {
-            var lifetimeManager = new ContainerControlledLifetimeManager();
-            lifetimeManager.SetValue(_explicitBehavior);
-            var behaviorName = Guid.NewGuid().ToString();
-            var newBehaviorKey = new NamedTypeBuildKey(_explicitBehavior.GetType(), behaviorName);
-
-            policies.Set<ILifetimePolicy>(lifetimeManager, newBehaviorKey);
-
-            InterceptionBehaviorsPolicy behaviorsPolicy = GetBehaviorsPolicy(policies, implementationType, name);
-            behaviorsPolicy.AddBehaviorKey(newBehaviorKey);
-        }
-
-        private void AddKeyedPolicies(Type implementationType, string name, IPolicyList policies)
-        {
-            var behaviorsPolicy = GetBehaviorsPolicy(policies, implementationType, name);
-            behaviorsPolicy.AddBehaviorKey(_behaviorKey);
         }
 
         /// <summary>

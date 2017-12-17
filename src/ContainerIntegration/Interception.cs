@@ -57,12 +57,12 @@ namespace Unity.Interception.ContainerIntegration
             var key = new NamedTypeBuildKey(typeToIntercept, name);
 
             var policy = new FixedTypeInterceptionPolicy(interceptor);
-            Context.Policies.Set<ITypeInterceptionPolicy>(policy, key);
+            Context.Policies.Set(key.Type, key.Name, typeof(ITypeInterceptionPolicy), policy);
 
             // add policy injection behavior if using this configuration API to set the interceptor
             var interceptionBehaviorsPolicy = new InterceptionBehaviorsPolicy();
             interceptionBehaviorsPolicy.AddBehaviorKey(NamedTypeBuildKey.Make<PolicyInjectionBehavior>());
-            Context.Policies.Set<IInterceptionBehaviorsPolicy>(interceptionBehaviorsPolicy, key);
+            Context.Policies.Set(key.Type, key.Name, typeof(IInterceptionBehaviorsPolicy), interceptionBehaviorsPolicy);
 
             return this;
         }
@@ -117,12 +117,12 @@ namespace Unity.Interception.ContainerIntegration
             var key = new NamedTypeBuildKey(typeToIntercept, name);
 
             var policy = new FixedInstanceInterceptionPolicy(interceptor);
-            Context.Policies.Set<IInstanceInterceptionPolicy>(policy, key);
+            Context.Policies.Set(key.Type, key.Name, typeof(IInstanceInterceptionPolicy), policy);
 
             // add policy injection behavior if using this configuration API to set the interceptor
             var interceptionBehaviorsPolicy = new InterceptionBehaviorsPolicy();
             interceptionBehaviorsPolicy.AddBehaviorKey(NamedTypeBuildKey.Make<PolicyInjectionBehavior>());
-            Context.Policies.Set<IInterceptionBehaviorsPolicy>(interceptionBehaviorsPolicy, key);
+            Context.Policies.Set(key.Type, key.Name, typeof(IInterceptionBehaviorsPolicy), interceptionBehaviorsPolicy);
 
             return this;
         }
@@ -139,13 +139,14 @@ namespace Unity.Interception.ContainerIntegration
             Guard.ArgumentNotNull(interceptor, "interceptor");
             GuardTypeInterceptable(typeToIntercept, interceptor);
 
-            Context.Policies.Set<ITypeInterceptionPolicy>(new FixedTypeInterceptionPolicy(interceptor), typeToIntercept);
+            Context.Policies.Set(typeToIntercept, string.Empty, typeof(ITypeInterceptionPolicy), 
+                                 new FixedTypeInterceptionPolicy(interceptor));
 
             // add policy injection behavior if using this configuration API to set the interceptor
             var interceptionBehaviorsPolicy = new InterceptionBehaviorsPolicy();
             interceptionBehaviorsPolicy.AddBehaviorKey(NamedTypeBuildKey.Make<PolicyInjectionBehavior>());
-            Context.Policies.Set<IInterceptionBehaviorsPolicy>(interceptionBehaviorsPolicy, typeToIntercept);
-
+            Context.Policies.Set(typeToIntercept, string.Empty, 
+                                typeof(IInterceptionBehaviorsPolicy), interceptionBehaviorsPolicy);
             return this;
         }
 
@@ -206,12 +207,12 @@ namespace Unity.Interception.ContainerIntegration
             Guard.ArgumentNotNull(interceptor, "interceptor");
             GuardTypeInterceptable(typeToIntercept, interceptor);
 
-            Context.Policies.Set<IInstanceInterceptionPolicy>(new FixedInstanceInterceptionPolicy(interceptor), typeToIntercept);
+            Context.Policies.Set(typeToIntercept, string.Empty, typeof(IInstanceInterceptionPolicy), new FixedInstanceInterceptionPolicy(interceptor));
 
             // add policy injection behavior if using this configuration API to set the interceptor
             var interceptionBehaviorsPolicy = new InterceptionBehaviorsPolicy();
             interceptionBehaviorsPolicy.AddBehaviorKey(NamedTypeBuildKey.Make<PolicyInjectionBehavior>());
-            Context.Policies.Set<IInterceptionBehaviorsPolicy>(interceptionBehaviorsPolicy, typeToIntercept);
+            Context.Policies.Set(typeToIntercept, string.Empty, typeof(IInterceptionBehaviorsPolicy), interceptionBehaviorsPolicy);
 
             return this;
         }

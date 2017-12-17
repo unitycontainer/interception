@@ -66,18 +66,17 @@ namespace Unity.Interception.ContainerIntegration
         /// <param name="policies">Policy list to add policies to.</param>
         public override void AddPolicies(Type serviceType, Type implementationType, string name, IPolicyList policies)
         {
-            var key = new NamedTypeBuildKey(serviceType, name);
             if (IsInstanceInterceptor)
             {
                 var policy = CreateInstanceInterceptionPolicy();
-                policies.Set(policy, key);
-                policies.Clear<ITypeInterceptionPolicy>(key);
+                policies.Set(serviceType, name, typeof(IInstanceInterceptionPolicy), policy);
+                policies.Clear(serviceType, name, typeof(ITypeInterceptionPolicy));
             }
             else
             {
                 var policy = CreateTypeInterceptionPolicy();
-                policies.Set(policy, key);
-                policies.Clear<IInstanceInterceptionPolicy>(key);
+                policies.Set(serviceType, name, typeof(ITypeInterceptionPolicy), policy);
+                policies.Clear(serviceType, name, typeof(IInstanceInterceptionPolicy));
             }
         }
 

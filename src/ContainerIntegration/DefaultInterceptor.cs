@@ -107,7 +107,7 @@ namespace Unity.Interception.ContainerIntegration
                 policy = new ResolvedInstanceInterceptionPolicy(_interceptorKey);
             }
 
-            policies.Set(policy, typeToIntercept);
+            policies.Set(typeToIntercept, string.Empty, typeof(IInstanceInterceptionPolicy), policy);
         }
 
         private void AddDefaultTypeInterceptor(Type typeToIntercept, IPolicyList policies)
@@ -123,7 +123,7 @@ namespace Unity.Interception.ContainerIntegration
                 policy = new ResolvedTypeInterceptionPolicy(_interceptorKey);
             }
 
-            policies.Set(policy, typeToIntercept);
+            policies.Set(typeToIntercept, string.Empty, typeof(ITypeInterceptionPolicy), policy);
         }
     }
 

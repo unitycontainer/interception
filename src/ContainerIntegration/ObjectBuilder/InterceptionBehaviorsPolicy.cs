@@ -61,13 +61,12 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
             Type typeToCreate,
             string name)
         {
-            NamedTypeBuildKey key = new NamedTypeBuildKey(typeToCreate, name);
             IInterceptionBehaviorsPolicy policy =
-                policies.GetNoDefault<IInterceptionBehaviorsPolicy>(key);
-            if (policy == null || !(policy is InterceptionBehaviorsPolicy))
+                (IInterceptionBehaviorsPolicy)policies.Get(typeToCreate, name, typeof(IInterceptionBehaviorsPolicy), out _);
+            if (!(policy is InterceptionBehaviorsPolicy))
             {
                 policy = new InterceptionBehaviorsPolicy();
-                policies.Set(policy, key);
+                policies.Set(typeToCreate, name, typeof(IInterceptionBehaviorsPolicy), policy);
             }
             return (InterceptionBehaviorsPolicy)policy;
         }

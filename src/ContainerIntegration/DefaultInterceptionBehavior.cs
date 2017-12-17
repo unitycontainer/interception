@@ -52,14 +52,13 @@ namespace Unity.Interception.ContainerIntegration
         /// <param name="implementationType">Implementation type to set behaviors for.</param>
         /// <param name="name">Name type is registered under.</param>
         /// <returns>An instance of <see cref="InterceptionBehaviorsPolicy"/>.</returns>
-        protected override InterceptionBehaviorsPolicy GetBehaviorsPolicy(IPolicyList policies, Type implementationType,
-            string name)
+        protected override InterceptionBehaviorsPolicy GetBehaviorsPolicy(IPolicyList policies, Type implementationType, string name)
         {
-            var policy = policies.GetNoDefault<IInterceptionBehaviorsPolicy>(implementationType);
-            if ((policy == null) || !(policy is InterceptionBehaviorsPolicy))
+            var policy = policies.Get(implementationType, string.Empty, typeof(IInterceptionBehaviorsPolicy), out _);
+            if (!(policy is InterceptionBehaviorsPolicy))
             {
                 policy = new InterceptionBehaviorsPolicy();
-                policies.Set(policy, implementationType);
+                policies.Set(implementationType, string.Empty, typeof(IInterceptionBehaviorsPolicy), policy);
             }
             return (InterceptionBehaviorsPolicy)policy;
         }

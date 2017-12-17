@@ -68,9 +68,10 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
                 additionalInterfacesPolicy != null ? additionalInterfacesPolicy.AdditionalInterfaces : Type.EmptyTypes;
 
             var enumerable = interceptionBehaviors as IInterceptionBehavior[] ?? interceptionBehaviors.ToArray();
-            context.Policies.Set(
-                new EffectiveInterceptionBehaviorsPolicy { Behaviors = enumerable },
-                context.OriginalBuildKey);
+            context.Policies.Set(context.OriginalBuildKey.Type, 
+                                 context.OriginalBuildKey.Name, 
+                                 typeof(EffectiveInterceptionBehaviorsPolicy), 
+                                 new EffectiveInterceptionBehaviorsPolicy { Behaviors = enumerable });
 
             Type[] allAdditionalInterfaces =
                 Intercept.GetAllAdditionalInterfaces(enumerable, additionalInterfaces);
@@ -91,14 +92,19 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         /// <param name="context">Context of the build operation.</param>
         public override void PostBuildUp(IBuilderContext context)
         {
-            IInterceptingProxy proxy = (context ?? throw new ArgumentNullException(nameof(context))).Existing as IInterceptingProxy;
+            IInterceptingProxy proxy = 
+                (context ?? throw new ArgumentNullException(nameof(context))).Existing as IInterceptingProxy;
+
             if (proxy == null)
             {
                 return;
             }
 
-            EffectiveInterceptionBehaviorsPolicy effectiveInterceptionBehaviorsPolicy =
-                context.Policies.GetNoDefault<EffectiveInterceptionBehaviorsPolicy>(context.OriginalBuildKey);
+            var effectiveInterceptionBehaviorsPolicy =
+                (EffectiveInterceptionBehaviorsPolicy)context.Policies
+                                                             .Get(context.OriginalBuildKey.Type, 
+                                                                  context.OriginalBuildKey.Name, 
+                                               typeof(EffectiveInterceptionBehaviorsPolicy), out _);
             if (effectiveInterceptionBehaviorsPolicy == null)
             {
                 return;
@@ -113,8 +119,8 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         private static TPolicy FindInterceptionPolicy<TPolicy>(IBuilderContext context)
             where TPolicy : class, IBuilderPolicy
         {
-            return context.Policies.Get<TPolicy>(context.OriginalBuildKey) ??
-                context.Policies.Get<TPolicy>(context.OriginalBuildKey.Type);
+            return (TPolicy)context.Policies.GetOrDefault(typeof(TPolicy), context.OriginalBuildKey, out _) ??
+                   (TPolicy)context.Policies.GetOrDefault(typeof(TPolicy), context.OriginalBuildKey.Type, out _);
         }
 
         private class EffectiveInterceptionBehaviorsPolicy : IBuilderPolicy
@@ -167,23 +173,26 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 
             public static void SetPolicyForInterceptingType(IBuilderContext context, Type interceptingType)
             {
-                var currentSelectorPolicy = context.Policies.Get<IConstructorSelectorPolicy>(context.OriginalBuildKey, out var selectorPolicyDestination);
-
+                var currentSelectorPolicy = 
+                    (IConstructorSelectorPolicy)context.Policies.GetOrDefault(typeof(IConstructorSelectorPolicy), 
+                                                                              context.OriginalBuildKey, 
+                                                                              out var selectorPolicyDestination);
                 if (!(currentSelectorPolicy is DerivedTypeConstructorSelectorPolicy currentDerivedTypeSelectorPolicy))
                 {
-                    selectorPolicyDestination.Set<IConstructorSelectorPolicy>(
-                        new DerivedTypeConstructorSelectorPolicy(
-                            interceptingType,
-                            currentSelectorPolicy),
-                        context.OriginalBuildKey);
+                    selectorPolicyDestination.Set(context.OriginalBuildKey.Type, 
+                                                  context.OriginalBuildKey.Name, 
+                                                  typeof(IConstructorSelectorPolicy),
+                                                  new DerivedTypeConstructorSelectorPolicy(
+                                                      interceptingType, currentSelectorPolicy));
                 }
                 else if (currentDerivedTypeSelectorPolicy._interceptingType != interceptingType)
                 {
-                    selectorPolicyDestination.Set<IConstructorSelectorPolicy>(
-                        new DerivedTypeConstructorSelectorPolicy(
-                            interceptingType,
-                            currentDerivedTypeSelectorPolicy._originalConstructorSelectorPolicy),
-                        context.OriginalBuildKey);
+                    selectorPolicyDestination.Set(context.OriginalBuildKey.Type, 
+                                                  context.OriginalBuildKey.Name, 
+                                                  typeof(IConstructorSelectorPolicy),
+                                                  new DerivedTypeConstructorSelectorPolicy(
+                                                      interceptingType,
+                                                      currentDerivedTypeSelectorPolicy._originalConstructorSelectorPolicy));
                 }
             }
         }

@@ -33,18 +33,17 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
             _additionalInterfaces.Add(additionalInterface);
         }
 
-        internal static AdditionalInterfacesPolicy GetOrCreate(
-            IPolicyList policies,
-            Type typeToCreate,
-            string name)
+        internal static AdditionalInterfacesPolicy GetOrCreate(IPolicyList policies,
+                                                               Type typeToCreate,
+                                                               string name)
         {
             NamedTypeBuildKey key = new NamedTypeBuildKey(typeToCreate, name);
             IAdditionalInterfacesPolicy policy =
-                policies.GetNoDefault<IAdditionalInterfacesPolicy>(key);
-            if ((policy == null) || !(policy is AdditionalInterfacesPolicy))
+                (IAdditionalInterfacesPolicy)policies.Get(typeToCreate, name, typeof(IAdditionalInterfacesPolicy), out _);
+            if (!(policy is AdditionalInterfacesPolicy))
             {
                 policy = new AdditionalInterfacesPolicy();
-                policies.Set(policy, key);
+                policies.Set(typeToCreate, name, typeof(IAdditionalInterfacesPolicy), policy);
             }
             return (AdditionalInterfacesPolicy)policy;
         }

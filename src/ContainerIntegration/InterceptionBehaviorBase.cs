@@ -69,8 +69,7 @@ namespace Unity.Interception.ContainerIntegration
                 var behaviorName = Guid.NewGuid().ToString();
                 var newBehaviorKey = new NamedTypeBuildKey(_explicitBehavior.GetType(), behaviorName);
 
-                policies.Set<ILifetimePolicy>(lifetimeManager, newBehaviorKey);
-
+                policies.Set(newBehaviorKey.Type, newBehaviorKey.Name, typeof(ILifetimePolicy), lifetimeManager);
                 InterceptionBehaviorsPolicy behaviorsPolicy = GetBehaviorsPolicy(policies, serviceType, name);
                 behaviorsPolicy.AddBehaviorKey(newBehaviorKey);
             }

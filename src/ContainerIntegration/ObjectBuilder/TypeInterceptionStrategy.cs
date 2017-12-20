@@ -29,11 +29,11 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         /// <remarks>In this class, PreBuildUp is responsible for figuring out if the
         /// class is proxyable, and if so, replacing it with a proxy class.</remarks>
         /// <param name="context">Context of the build operation.</param>
-        public override void PreBuildUp(IBuilderContext context)
+        public override object PreBuildUp(IBuilderContext context)
         {
             if ((context ?? throw new ArgumentNullException(nameof(context))).Existing != null)
             {
-                return;
+                return null;
             }
 
             Type typeToBuild = context.BuildKey.Type;
@@ -41,13 +41,13 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
             var interceptionPolicy = FindInterceptionPolicy<ITypeInterceptionPolicy>(context);
             if (interceptionPolicy == null)
             {
-                return;
+                return null;
             }
 
             var interceptor = interceptionPolicy.GetInterceptor(context);
             if (!interceptor.CanIntercept(typeToBuild))
             {
-                return;
+                return null;
             }
 
             var interceptionBehaviorsPolicy = FindInterceptionPolicy<IInterceptionBehaviorsPolicy>(context);
@@ -80,6 +80,8 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
                 interceptor.CreateProxyType(typeToBuild, allAdditionalInterfaces);
 
             DerivedTypeConstructorSelectorPolicy.SetPolicyForInterceptingType(context, interceptingType);
+
+            return null;
         }
 
         /// <summary>
@@ -90,7 +92,8 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         /// <remarks>In this class, PostBuildUp checks to see if the object was proxyable,
         /// and if it was, wires up the handlers.</remarks>
         /// <param name="context">Context of the build operation.</param>
-        public override void PostBuildUp(IBuilderContext context)
+        /// <param name="pre"></param>
+        public override void PostBuildUp(IBuilderContext context, object pre = null)
         {
             IInterceptingProxy proxy = 
                 (context ?? throw new ArgumentNullException(nameof(context))).Existing as IInterceptingProxy;
@@ -163,7 +166,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 
                 SelectedConstructor newConstructor = new SelectedConstructor(newConstructorInfo);
 
-                foreach (IDependencyResolverPolicy resolver in originalConstructor.GetParameterResolvers())
+                foreach (IResolverPolicy resolver in originalConstructor.GetParameterResolvers())
                 {
                     newConstructor.AddParameterResolver(resolver);
                 }

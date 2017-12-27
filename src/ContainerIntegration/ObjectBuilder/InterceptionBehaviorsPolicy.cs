@@ -44,7 +44,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 
             foreach (var key in BehaviorKeys)
             {
-                var behavior = (IInterceptionBehavior)context.NewBuildUp(key,
+                var behavior = (IInterceptionBehavior)context.NewBuildUp(key.Type, key.Name,
                     childContext => childContext.AddResolverOverrides(
                         new DependencyOverride<CurrentInterceptionRequest>(interceptionRequest)));
                 yield return behavior;

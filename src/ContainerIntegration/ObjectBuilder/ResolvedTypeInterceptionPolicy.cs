@@ -32,7 +32,8 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         /// <param name="context">Context for current build operation.</param>
         public ITypeInterceptor GetInterceptor(IBuilderContext context)
         {
-            return (ITypeInterceptor)(context ?? throw new ArgumentNullException(nameof(context))).NewBuildUp(_buildKey);
+            return (ITypeInterceptor)(context ?? throw new ArgumentNullException(nameof(context)))
+                .NewBuildUp(_buildKey.Type, _buildKey.Name);
         }
 
         /// <summary>

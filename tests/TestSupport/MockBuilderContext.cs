@@ -2,9 +2,8 @@
 
 using System;
 using System.Collections.Generic;
-using Unity;
+using Microsoft.Practices.Unity.TestSupport;
 using Unity.Builder;
-using Unity.Container;
 using Unity.Container.Lifetime;
 using Unity.Exceptions;
 using Unity.Lifetime;
@@ -13,7 +12,7 @@ using Unity.Resolution;
 using Unity.Strategy;
 using Unity.Utility;
 
-namespace Microsoft.Practices.Unity.TestSupport
+namespace Unity.Interception.Tests.TestSupport
 {
     public class MockBuilderContext : IBuilderContext
     {

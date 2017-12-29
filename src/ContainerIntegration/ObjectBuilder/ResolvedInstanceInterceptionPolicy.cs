@@ -12,7 +12,8 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
     /// </summary>
     public class ResolvedInstanceInterceptionPolicy : IInstanceInterceptionPolicy
     {
-        private readonly NamedTypeBuildKey _buildKey;
+        private readonly Type _type;
+        private readonly string _name;
 
         /// <summary>
         /// Construct a new <see cref="ResolvedInstanceInterceptionPolicy"/> that
@@ -21,10 +22,23 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         /// <param name="buildKey">build key to resolve.</param>
         public ResolvedInstanceInterceptionPolicy(NamedTypeBuildKey buildKey)
         {
-            this._buildKey = buildKey;
+            _type = buildKey.Type;
+            _name = buildKey.Name;
         }
 
-        #region IInstanceInterceptionPolicy Members
+        /// <summary>
+        /// Construct a new <see cref="ResolvedInstanceInterceptionPolicy"/> that
+        /// will resolve the interceptor using the given build key.
+        /// </summary>
+        /// <param name="type">Type of interceptor</param>
+        /// <param name="name">Name of registration</param>
+        public ResolvedInstanceInterceptionPolicy(Type type, string name)
+        {
+            _type = type;
+            _name = name;
+        }
+
+        #region IInstanceInterceptionPolicy
 
         /// <summary>
         /// Interceptor to use.
@@ -33,7 +47,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         public IInstanceInterceptor GetInterceptor(IBuilderContext context)
         {
             return (IInstanceInterceptor)(context ?? throw new ArgumentNullException(nameof(context)))
-                .NewBuildUp(_buildKey.Type, _buildKey.Name);
+                .NewBuildUp(_type, _name);
         }
 
         #endregion

@@ -12,7 +12,9 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
     /// </summary>
     public class ResolvedTypeInterceptionPolicy : ITypeInterceptionPolicy
     {
-        private readonly NamedTypeBuildKey _buildKey;
+        private readonly Type _type;
+        private readonly string _name;
+        private ITypeInterceptor _policy;
 
         /// <summary>
         /// construct a new <see cref="ResolvedTypeInterceptionPolicy"/> that
@@ -21,7 +23,20 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         /// <param name="buildKey">The build key to use to resolve.</param>
         public ResolvedTypeInterceptionPolicy(NamedTypeBuildKey buildKey)
         {
-            _buildKey = buildKey;
+            _type = buildKey.Type;
+            _name = buildKey.Name;
+        }
+
+        /// <summary>
+        /// Create a new <see cref="ResolvedTypeInterceptionPolicy"/> that
+        /// will resolve the interceptor with the given <paramref name="buildKey"/>.
+        /// </summary>
+        /// <param name="type">Type of the policy</param>
+        /// <param name="name">Name of the registration</param>
+        public ResolvedTypeInterceptionPolicy(Type type, string name)
+        {
+            _type = type;
+            _name = name;
         }
 
         #region ITypeInterceptionPolicy Members
@@ -30,10 +45,12 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         /// Interceptor to use to create type proxy
         /// </summary>
         /// <param name="context">Context for current build operation.</param>
-        public ITypeInterceptor GetInterceptor(IBuilderContext context)
+        public ITypeInterceptor GetInterceptor(IUnityContainer container)
         {
-            return (ITypeInterceptor)(context ?? throw new ArgumentNullException(nameof(context)))
-                .NewBuildUp(_buildKey.Type, _buildKey.Name);
+            if (null == _policy)
+                _policy = (ITypeInterceptor)container.Resolve(_type, _name, null);
+
+            return _policy;
         }
 
         /// <summary>

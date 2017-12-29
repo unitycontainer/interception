@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 
 using System;
-using Unity.Builder;
 using Unity.Interception.ContainerIntegration.ObjectBuilder;
 using Unity.Interception.Interceptors;
 using Unity.Interception.Interceptors.InstanceInterceptors;
@@ -19,7 +18,8 @@ namespace Unity.Interception.ContainerIntegration
     public class Interceptor : InterceptionMember
     {
         private readonly IInterceptor _interceptor;
-        private readonly NamedTypeBuildKey _buildKey;
+        private readonly Type _type;
+        private readonly string _name;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Interceptor"/> class with an interceptor instance.
@@ -40,10 +40,12 @@ namespace Unity.Interception.ContainerIntegration
         /// <param name="name">name to use to resolve.</param>
         public Interceptor(Type interceptorType, string name)
         {
-            Guard.ArgumentNotNull(interceptorType, "interceptorType");
-            Guard.TypeIsAssignable(typeof(IInterceptor), interceptorType, "interceptorType");
+            Guard.TypeIsAssignable(typeof(IInterceptor), interceptorType ?? 
+                  throw new ArgumentNullException(nameof(interceptorType)), 
+                                                  nameof(interceptorType));
 
-            _buildKey = new NamedTypeBuildKey(interceptorType, name);
+            _type = interceptorType;
+            _name = name;
         }
 
         /// <summary>
@@ -88,7 +90,7 @@ namespace Unity.Interception.ContainerIntegration
                 {
                     return _interceptor is IInstanceInterceptor;
                 }
-                return typeof(IInstanceInterceptor).IsAssignableFrom(_buildKey.Type);
+                return typeof(IInstanceInterceptor).IsAssignableFrom(_type);
             }
         }
 
@@ -98,7 +100,7 @@ namespace Unity.Interception.ContainerIntegration
             {
                 return new FixedInstanceInterceptionPolicy((IInstanceInterceptor)_interceptor);
             }
-            return new ResolvedInstanceInterceptionPolicy(_buildKey);
+            return new ResolvedInstanceInterceptionPolicy(_type, _name);
         }
 
         private ITypeInterceptionPolicy CreateTypeInterceptionPolicy()
@@ -107,7 +109,7 @@ namespace Unity.Interception.ContainerIntegration
             {
                 return new FixedTypeInterceptionPolicy((ITypeInterceptor)_interceptor);
             }
-            return new ResolvedTypeInterceptionPolicy(_buildKey);
+            return new ResolvedTypeInterceptionPolicy(_type, _name);
         }
     }
 

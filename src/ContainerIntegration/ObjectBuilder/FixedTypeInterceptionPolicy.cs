@@ -28,7 +28,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         /// Interceptor to use to create type proxy
         /// </summary>
         /// <param name="context">Context for current build operation.</param>
-        public ITypeInterceptor GetInterceptor(IBuilderContext context)
+        public ITypeInterceptor GetInterceptor(IUnityContainer container)
         {
             return _interceptor;
         }

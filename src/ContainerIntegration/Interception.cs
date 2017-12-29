@@ -12,8 +12,6 @@ using Unity.Interception.PolicyInjection;
 using Unity.Interception.PolicyInjection.Policies;
 using Unity.Interception.Properties;
 using Unity.Interception.Utilities;
-using Unity.Policy;
-using Unity.Strategy;
 
 namespace Unity.Interception.ContainerIntegration
 {
@@ -40,6 +38,7 @@ namespace Unity.Interception.ContainerIntegration
             Context.Container.RegisterInstance<InjectionPolicy>(typeof(AttributeDrivenPolicy).AssemblyQualifiedName,
                                                                 new AttributeDrivenPolicy());
         }
+
 
         /// <summary>
         /// API to configure interception for a type.

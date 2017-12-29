@@ -15,6 +15,27 @@ namespace UnityInterception.Tests
     [TestClass]
     public class Issues
     {
+        [TestMethod]
+        public void unitycontainer_unity_177()
+        {
+            var container = new UnityContainer();
+            container.AddNewExtension<Interception>();
+
+            container.RegisterType<MyClass>(new ContainerControlledLifetimeManager());
+
+            container.RegisterType<IMyClass, MyClass>(new Interceptor<InterfaceInterceptor>(),
+                                                      new InterceptionBehavior<LoggingInterceptionBehavior>());
+
+            container.RegisterType<IMyOtherClass, MyClass>(new Interceptor<InterfaceInterceptor>(),
+                                                           new InterceptionBehavior<LoggingInterceptionBehavior>());
+
+            var class1 = container.Resolve<IMyClass>();
+            var class2 = container.Resolve<IMyOtherClass>();
+            class1.MyFunction();
+            class2.MyFunction();
+            Assert.AreEqual(1, MyClass.Count);
+        }
+
 
         [TestMethod]
         public void unitycontainer_unity_45()
@@ -72,10 +93,16 @@ namespace UnityInterception.Tests
         }
 
         public interface IMyClass { void MyFunction(); }
-        public class MyClass : IMyClass
+
+        public interface IMyOtherClass { void MyFunction(); }
+
+        public class MyClass : IMyClass, IMyOtherClass
         {
-            public MyClass() { Debug.WriteLine("Create MyClass"); }
-            public void MyFunction() { Debug.WriteLine("Function of MyClass"); }
+            public static int Count = 0;
+
+            public MyClass() { Count++;  }
+
+            public void MyFunction() { Debug.WriteLine("MyFunction"); }
         }
         public class LoggingInterceptionBehavior : IInterceptionBehavior
         {

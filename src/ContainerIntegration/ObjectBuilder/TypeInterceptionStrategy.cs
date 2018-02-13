@@ -5,7 +5,6 @@ using System.Reflection;
 using Unity.Builder;
 using Unity.Builder.Selection;
 using Unity.Builder.Strategy;
-using Unity.Events;
 using Unity.Interception.InterceptionBehaviors;
 using Unity.Interception.Interceptors;
 using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception;

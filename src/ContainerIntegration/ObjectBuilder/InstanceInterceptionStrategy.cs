@@ -24,7 +24,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         /// </summary>
         /// <param name="context">Context of the build operation.</param>
         /// <param name="pre"></param>
-        public override void PostBuildUp(IBuilderContext context, object pre = null)
+        public override void PostBuildUp(IBuilderContext context)
         {
             // If it's already been intercepted, don't do it again.
             if ((context ?? throw new ArgumentNullException(nameof(context))).Existing is IInterceptingProxy)

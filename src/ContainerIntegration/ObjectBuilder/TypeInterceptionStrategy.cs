@@ -16,12 +16,12 @@ using Unity.Strategy;
 namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 {
     /// <summary>
-    /// A <see cref="IBuilderStrategy"/> that hooks up type interception. It looks for
+    /// A <see cref="BuilderStrategy"/> that hooks up type interception. It looks for
     /// a <see cref="ITypeInterceptionPolicy"/> for the current build key, or the current
     /// build type. If present, it substitutes types so that that proxy class gets
     /// built up instead. On the way back, it hooks up the appropriate handlers.
     /// </summary>
-    public class TypeInterceptionStrategy : BuilderStrategy, IRegisterTypeStrategy
+    public class TypeInterceptionStrategy : BuilderStrategy
     {
         #region BuilderStrategy
 

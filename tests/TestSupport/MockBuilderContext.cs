@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Practices.Unity.TestSupport;
 using Unity.Builder;
+using Unity.Builder.Strategy;
 using Unity.Container.Lifetime;
 using Unity.Exceptions;
 using Unity.Lifetime;
@@ -90,7 +91,9 @@ namespace Unity.Interception.Tests.TestSupport
 
         public IBuilderContext ParentContext => throw new NotImplementedException();
 
-        public IRequiresRecovery RequiresRecovery { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public IRequiresRecovery RequiresRecovery { get; set; }
+
+        public BuilderStrategy[] BuildChain => throw new NotImplementedException();
 
         public void AddResolverOverrides(IEnumerable<ResolverOverride> newOverrides)
         {

@@ -12,7 +12,7 @@ using Unity.Policy;
 namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 {
     /// <summary>
-    /// A <see cref="IBuilderStrategy"/> that intercepts objects
+    /// A <see cref="BuilderStrategy"/> that intercepts objects
     /// in the build chain by creating a proxy object.
     /// </summary>
     public class InstanceInterceptionStrategy : BuilderStrategy

@@ -131,19 +131,19 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 
         #region IRegisterTypeStrategy
 
-        public void RegisterType(IContainerContext context, Type typeFrom, Type typeTo, string name, 
-                                 LifetimeManager lifetimeManager, params InjectionMember[] injectionMembers)
-        {
-            Type typeToBuild = typeFrom ?? typeTo;
+        //public void RegisterType(IContainerContext context, Type typeFrom, Type typeTo, string name, 
+        //                         LifetimeManager lifetimeManager, params InjectionMember[] injectionMembers)
+        //{
+        //    Type typeToBuild = typeFrom ?? typeTo;
 
-            var policy = (ITypeInterceptionPolicy)(context.Policies.Get(typeToBuild, name, typeof(ITypeInterceptionPolicy), out _) ??
-                                                   context.Policies.Get(typeToBuild, string.Empty, typeof(ITypeInterceptionPolicy), out _));
-            if (policy == null) return;
+        //    var policy = (ITypeInterceptionPolicy)(context.Policies.Get(typeToBuild, name, typeof(ITypeInterceptionPolicy), out _) ??
+        //                                           context.Policies.Get(typeToBuild, string.Empty, typeof(ITypeInterceptionPolicy), out _));
+        //    if (policy == null) return;
 
-            var interceptor = policy.GetInterceptor(context.Container);
-            if (typeof(VirtualMethodInterceptor) == interceptor?.GetType())
-                context.Policies.Set(typeToBuild, name, typeof(IBuildPlanPolicy), new OverriddenBuildPlanMarkerPolicy());
-        }
+        //    var interceptor = policy.GetInterceptor(context.Container);
+        //    if (typeof(VirtualMethodInterceptor) == interceptor?.GetType())
+        //        context.Policies.Set(typeToBuild, name, typeof(IBuildPlanPolicy), new OverriddenBuildPlanMarkerPolicy());
+        //}
 
         #endregion
 

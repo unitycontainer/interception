@@ -209,17 +209,13 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
                                                                               out var selectorPolicyDestination);
                 if (!(currentSelectorPolicy is DerivedTypeConstructorSelectorPolicy currentDerivedTypeSelectorPolicy))
                 {
-                    selectorPolicyDestination.Set(context.OriginalBuildKey.Type,
-                                                  context.OriginalBuildKey.Name,
-                                                  typeof(IConstructorSelectorPolicy),
+                    context.Registration.Set(typeof(IConstructorSelectorPolicy),
                                                   new DerivedTypeConstructorSelectorPolicy(
                                                       interceptingType, currentSelectorPolicy));
                 }
                 else if (currentDerivedTypeSelectorPolicy._interceptingType != interceptingType)
                 {
-                    selectorPolicyDestination.Set(context.OriginalBuildKey.Type,
-                                                  context.OriginalBuildKey.Name,
-                                                  typeof(IConstructorSelectorPolicy),
+                    context.Registration.Set(typeof(IConstructorSelectorPolicy),
                                                   new DerivedTypeConstructorSelectorPolicy(
                                                       interceptingType,
                                                       currentDerivedTypeSelectorPolicy._originalConstructorSelectorPolicy));

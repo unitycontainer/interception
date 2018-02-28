@@ -72,10 +72,8 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
                 additionalInterfacesPolicy != null ? additionalInterfacesPolicy.AdditionalInterfaces : Type.EmptyTypes;
 
             var enumerable = interceptionBehaviors as IInterceptionBehavior[] ?? interceptionBehaviors.ToArray();
-            context.Policies.Set(context.OriginalBuildKey.Type,
-                                 context.OriginalBuildKey.Name,
-                                 typeof(EffectiveInterceptionBehaviorsPolicy),
-                                 new EffectiveInterceptionBehaviorsPolicy { Behaviors = enumerable });
+            context.Registration.Set(typeof(EffectiveInterceptionBehaviorsPolicy), 
+                new EffectiveInterceptionBehaviorsPolicy { Behaviors = enumerable });
 
             Type[] allAdditionalInterfaces =
                 Intercept.GetAllAdditionalInterfaces(enumerable, additionalInterfaces);

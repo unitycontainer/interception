@@ -50,7 +50,7 @@
   
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <TargetFrameworks>net47;net45;net40</TargetFrameworks>
+    <TargetFrameworks>net47;net46;net45;net40</TargetFrameworks>
     <OutputPath>$(SolutionDir)lib</OutputPath>
   </PropertyGroup>
   

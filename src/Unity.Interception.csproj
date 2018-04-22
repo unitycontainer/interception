@@ -19,6 +19,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>package.snk</AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
+    <TargetFrameworks>netstandard2.0;net47;net46;net45;netcoreapp2.0</TargetFrameworks>
   </PropertyGroup>
   
   <ItemGroup>
@@ -33,6 +34,10 @@
     <None Remove="package.snk" />
     <EmbeddedResource Include="package.snk" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
+  </ItemGroup>
      
   <ItemGroup>
     <EmbeddedResource Update="Properties\Resources.resx">
@@ -46,18 +51,16 @@
     <EmbeddedResource Remove="Utilities\net 4.0\**" />
     <None Remove="Utilities\net 4.0\**" />
   </ItemGroup>
-  
-  
+
+
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <TargetFrameworks>net47;net46;net45;net40</TargetFrameworks>
     <OutputPath>$(SolutionDir)lib</OutputPath>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DebugType>Full</DebugType>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <TargetFramework>net47</TargetFramework>
+    <DebugType>Full</DebugType>
   </PropertyGroup>
   
 
@@ -71,6 +74,22 @@
 
   <ItemGroup Condition="!Exists('$(UnityAbstractions)')">
     <PackageReference Include="Unity.Abstractions" Version="$(UnityAbstractionsVersion)" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
+    <Reference Include="System.Runtime.Remoting" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
+    <Reference Include="System.Runtime.Remoting" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net47'">
+    <Reference Include="System.Runtime.Remoting" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0' OR '$(TargetFramework)' == 'netcoreapp2.0' ">
+    <Compile Remove="Interceptors\InstanceInterceptors\TransparentProxyInterception\*.cs" />
   </ItemGroup>
 
 </Project>

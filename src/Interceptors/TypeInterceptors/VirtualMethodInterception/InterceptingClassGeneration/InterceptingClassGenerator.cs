@@ -28,7 +28,7 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
 
         static InterceptingClassGenerator()
         {
-            AssemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(
+            AssemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(
                 new AssemblyName("Unity_ILEmit_DynamicClasses"),
 #if DEBUG_SAVE_GENERATED_ASSEMBLY
                 AssemblyBuilderAccess.RunAndSave);
@@ -70,7 +70,7 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
                         .Implement(implementedInterfaces, memberCount);
             }
 
-            Type result = _typeBuilder.CreateType();
+            Type result = _typeBuilder.CreateTypeInfo().AsType();
 #if DEBUG_SAVE_GENERATED_ASSEMBLY
             assemblyBuilder.Save("Unity_ILEmit_DynamicClasses.dll");
 #endif

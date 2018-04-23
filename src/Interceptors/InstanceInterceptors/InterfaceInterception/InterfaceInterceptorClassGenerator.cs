@@ -43,7 +43,7 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
                 pair = ms.ToArray();
             }
 
-            AssemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(
+            AssemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(
                 new AssemblyName("Unity_ILEmit_InterfaceProxies") { KeyPair = new StrongNameKeyPair(pair) },
 #if DEBUG_SAVE_GENERATED_ASSEMBLY
                 AssemblyBuilderAccess.RunAndSave);
@@ -129,7 +129,7 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
 
             AddConstructor();
 
-            Type result = _typeBuilder.CreateType();
+            Type result = _typeBuilder.CreateTypeInfo().AsType();
 #if DEBUG_SAVE_GENERATED_ASSEMBLY
             assemblyBuilder.Save("Unity_ILEmit_InterfaceProxies.dll");
 #endif

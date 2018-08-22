@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <UnityAbstractionsVersion>3.3.*</UnityAbstractionsVersion>
-    <UnityContainerVersion>5.8.*</UnityContainerVersion>
+    <UnityAbstractionsVersion>3.*</UnityAbstractionsVersion>
+    <UnityContainerVersion>5.*</UnityContainerVersion>
   </PropertyGroup>
 
 </Project>

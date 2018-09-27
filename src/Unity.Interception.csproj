@@ -59,7 +59,6 @@
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <OutputPath>$(SolutionDir)lib</OutputPath>
     <DebugType>Portable</DebugType>
   </PropertyGroup>
 
@@ -67,20 +66,21 @@
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <DebugType>Full</DebugType>
   </PropertyGroup>
-  
+
 
   <PropertyGroup>
-    <UnityAbstractions>..\..\Abstractions\src\Unity.Abstractions.csproj</UnityAbstractions>
+    <UnityContainer>..\..\Container\src\Unity.Container.csproj</UnityContainer>
   </PropertyGroup>
 
-  <ItemGroup Condition="Exists('$(UnityAbstractions)')">
-    <ProjectReference Include="$(UnityAbstractions)" />
+  <ItemGroup Condition="Exists('$(UnityContainer)')">
+    <ProjectReference Include="$(UnityContainer)" />
   </ItemGroup>
 
-  <ItemGroup Condition="!Exists('$(UnityAbstractions)')">
-    <PackageReference Include="Unity.Abstractions" Version="$(UnityAbstractionsVersion)" />
+  <ItemGroup Condition="!Exists('$(UnityContainer)')">
+    <PackageReference Include="Unity.Container" Version="$(UnityContainerVersion)" />
   </ItemGroup>
 
+  
   <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
     <Reference Include="System.Runtime.Remoting" />
   </ItemGroup>

@@ -106,7 +106,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
                 (EffectiveInterceptionBehaviorsPolicy)context.Policies
                                                              .Get(context.OriginalBuildKey.Type, 
                                                                   context.OriginalBuildKey.Name, 
-                                               typeof(EffectiveInterceptionBehaviorsPolicy), out _);
+                                               typeof(EffectiveInterceptionBehaviorsPolicy));
             if (effectiveInterceptionBehaviorsPolicy == null)
             {
                 return;
@@ -122,8 +122,8 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         private static TPolicy FindInterceptionPolicy<TPolicy>(IBuilderContext context)
             where TPolicy : class, IBuilderPolicy
         {
-            return (TPolicy)context.Policies.GetOrDefault(typeof(TPolicy), context.OriginalBuildKey, out _) ??
-                   (TPolicy)context.Policies.GetOrDefault(typeof(TPolicy), context.OriginalBuildKey.Type, out _);
+            return (TPolicy)context.Policies.GetOrDefault(typeof(TPolicy), context.OriginalBuildKey) ??
+                   (TPolicy)context.Policies.GetOrDefault(typeof(TPolicy), context.OriginalBuildKey.Type);
         }
 
         #endregion
@@ -174,10 +174,10 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
                 _originalConstructorSelectorPolicy = originalConstructorSelectorPolicy;
             }
 
-            public SelectedConstructor SelectConstructor(IBuilderContext context, IPolicyList resolverPolicyDestination)
+            public SelectedConstructor SelectConstructor(IBuilderContext context)
             {
                 SelectedConstructor originalConstructor =
-                    _originalConstructorSelectorPolicy.SelectConstructor(context, resolverPolicyDestination);
+                    _originalConstructorSelectorPolicy.SelectConstructor(context);
 
                 return FindNewConstructor(originalConstructor, _interceptingType);
             }
@@ -203,8 +203,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
             {
                 var currentSelectorPolicy =
                     (IConstructorSelectorPolicy)context.Policies.GetOrDefault(typeof(IConstructorSelectorPolicy),
-                                                                              context.OriginalBuildKey,
-                                                                              out var selectorPolicyDestination);
+                                                                              context.OriginalBuildKey);
                 if (!(currentSelectorPolicy is DerivedTypeConstructorSelectorPolicy currentDerivedTypeSelectorPolicy))
                 {
                     context.Registration.Set(typeof(IConstructorSelectorPolicy),

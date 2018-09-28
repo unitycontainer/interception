@@ -61,7 +61,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
             string name)
         {
             IInterceptionBehaviorsPolicy policy =
-                (IInterceptionBehaviorsPolicy)policies.Get(typeToCreate, name, typeof(IInterceptionBehaviorsPolicy), out _);
+                (IInterceptionBehaviorsPolicy)policies.Get(typeToCreate, name, typeof(IInterceptionBehaviorsPolicy));
             if (!(policy is InterceptionBehaviorsPolicy))
             {
                 policy = new InterceptionBehaviorsPolicy();

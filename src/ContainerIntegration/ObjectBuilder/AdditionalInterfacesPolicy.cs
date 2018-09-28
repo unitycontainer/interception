@@ -39,7 +39,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         {
             NamedTypeBuildKey key = new NamedTypeBuildKey(typeToCreate, name);
             IAdditionalInterfacesPolicy policy =
-                (IAdditionalInterfacesPolicy)policies.Get(typeToCreate, name, typeof(IAdditionalInterfacesPolicy), out _);
+                (IAdditionalInterfacesPolicy)policies.Get(typeToCreate, name, typeof(IAdditionalInterfacesPolicy));
             if (!(policy is AdditionalInterfacesPolicy))
             {
                 policy = new AdditionalInterfacesPolicy();

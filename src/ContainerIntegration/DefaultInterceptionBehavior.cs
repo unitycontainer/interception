@@ -54,7 +54,7 @@ namespace Unity.Interception.ContainerIntegration
         /// <returns>An instance of <see cref="InterceptionBehaviorsPolicy"/>.</returns>
         protected override InterceptionBehaviorsPolicy GetBehaviorsPolicy(IPolicyList policies, Type implementationType, string name)
         {
-            var policy = policies.Get(implementationType, string.Empty, typeof(IInterceptionBehaviorsPolicy), out _);
+            var policy = policies.Get(implementationType, string.Empty, typeof(IInterceptionBehaviorsPolicy));
             if (!(policy is InterceptionBehaviorsPolicy))
             {
                 policy = new InterceptionBehaviorsPolicy();

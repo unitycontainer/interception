@@ -24,7 +24,8 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 
     public static class TypeInterceptionPolicyExtension
     {
-        public static ITypeInterceptor GetInterceptor(this ITypeInterceptionPolicy policy, IBuilderContext context)
+        public static ITypeInterceptor GetInterceptor<TBuilderContext>(this ITypeInterceptionPolicy policy, ref TBuilderContext context)
+            where TBuilderContext : IBuilderContext
         {
             return policy.GetInterceptor(context.Container);
         }

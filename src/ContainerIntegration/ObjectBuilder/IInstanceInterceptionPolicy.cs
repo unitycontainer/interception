@@ -1,6 +1,4 @@
-﻿
-
-using Unity.Builder;
+﻿using Unity.Builder;
 using Unity.Interception.Interceptors.InstanceInterceptors;
 using Unity.Policy;
 
@@ -16,6 +14,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         /// Interceptor to use.
         /// </summary>
         /// <param name="context">Context for current build operation.</param>
-        IInstanceInterceptor GetInterceptor(IBuilderContext context);
+        IInstanceInterceptor GetInterceptor<TBuilderContext>(ref TBuilderContext context)
+            where TBuilderContext : IBuilderContext;
     }
 }

@@ -22,32 +22,32 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         /// </summary>
         /// <param name="context">Context of the build operation.</param>
         /// <param name="pre"></param>
-        public override void PostBuildUp(IBuilderContext context)
+        public override void PostBuildUp<TBuilderContext>(ref TBuilderContext context)
         {
             // If it's already been intercepted, don't do it again.
-            if ((context ?? throw new ArgumentNullException(nameof(context))).Existing is IInterceptingProxy)
+            if (context.Existing is IInterceptingProxy)
             {
                 return;
             }
 
             IInstanceInterceptionPolicy interceptionPolicy =
-                FindInterceptionPolicy<IInstanceInterceptionPolicy>(context, true);
+                FindInterceptionPolicy<TBuilderContext, IInstanceInterceptionPolicy>(ref context, true);
             if (interceptionPolicy == null)
             {
                 return;
             }
 
-            var interceptor = interceptionPolicy.GetInterceptor(context);
+            var interceptor = interceptionPolicy.GetInterceptor(ref context);
 
             IInterceptionBehaviorsPolicy interceptionBehaviorsPolicy =
-                FindInterceptionPolicy<IInterceptionBehaviorsPolicy>(context, true);
+                FindInterceptionPolicy<TBuilderContext, IInterceptionBehaviorsPolicy>(ref context, true);
             if (interceptionBehaviorsPolicy == null)
             {
                 return;
             }
 
             IAdditionalInterfacesPolicy additionalInterfacesPolicy =
-                FindInterceptionPolicy<IAdditionalInterfacesPolicy>(context, false);
+                FindInterceptionPolicy<TBuilderContext, IAdditionalInterfacesPolicy>(ref context, false);
             IEnumerable<Type> additionalInterfaces =
                 additionalInterfacesPolicy != null ? additionalInterfacesPolicy.AdditionalInterfaces : Type.EmptyTypes;
 
@@ -56,7 +56,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 
             IInterceptionBehavior[] interceptionBehaviors =
                 interceptionBehaviorsPolicy.GetEffectiveBehaviors(
-                    context, interceptor, typeToIntercept, implementationType)
+                    ref context, interceptor, typeToIntercept, implementationType)
                 .ToArray();
 
             if (interceptionBehaviors.Length > 0)
@@ -71,7 +71,8 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
             }
         }
 
-        private static T FindInterceptionPolicy<T>(IBuilderContext context, bool probeOriginalKey)
+        private static T FindInterceptionPolicy<TBuilderContext, T>(ref TBuilderContext context, bool probeOriginalKey)
+            where TBuilderContext : IBuilderContext
             where T : class, IBuilderPolicy
         {
             // First, try for an original build key

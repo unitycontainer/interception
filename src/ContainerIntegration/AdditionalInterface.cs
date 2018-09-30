@@ -46,7 +46,7 @@ namespace Unity.Interception.ContainerIntegration
         /// <param name="implementationType">Type to register.</param>
         /// <param name="name">Name used to resolve the type object.</param>
         /// <param name="policies">Policy list to add policies to.</param>
-        public override void AddPolicies(Type serviceType, Type implementationType, string name, IPolicyList policies)
+        public override void AddPolicies<TPolicyList>(Type serviceType, Type implementationType, string name, ref TPolicyList policies)
         {
             AdditionalInterfacesPolicy policy =
                 AdditionalInterfacesPolicy.GetOrCreate(policies, serviceType, name);

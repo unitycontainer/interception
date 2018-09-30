@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Unity.Build;
 using Unity.Builder;
 using Unity.Builder.Selection;
 using Unity.Builder.Strategy;
@@ -170,10 +171,10 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
                 _originalConstructorSelectorPolicy = originalConstructorSelectorPolicy;
             }
 
-            public SelectedConstructor SelectConstructor<TBuilderContext>(ref TBuilderContext context)
-                where TBuilderContext : IBuilderContext
+            public object SelectConstructor<TContext>(ref TContext context)
+                where TContext : IBuildContext
             {
-                SelectedConstructor originalConstructor =
+                SelectedConstructor originalConstructor = (SelectedConstructor)
                     _originalConstructorSelectorPolicy.SelectConstructor(ref context);
 
                 return FindNewConstructor(originalConstructor, _interceptingType);

@@ -21,7 +21,6 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         /// phase and executes in reverse order from the PreBuildUp calls.
         /// </summary>
         /// <param name="context">Context of the build operation.</param>
-        /// <param name="pre"></param>
         public override void PostBuildUp<TBuilderContext>(ref TBuilderContext context)
         {
             // If it's already been intercepted, don't do it again.
@@ -73,7 +72,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 
         private static T FindInterceptionPolicy<TBuilderContext, T>(ref TBuilderContext context, bool probeOriginalKey)
             where TBuilderContext : IBuilderContext
-            where T : class, IBuilderPolicy
+            where T : class
         {
             // First, try for an original build key
             var policy = (T)context.Policies.GetOrDefault(typeof(T), context.OriginalBuildKey) ??

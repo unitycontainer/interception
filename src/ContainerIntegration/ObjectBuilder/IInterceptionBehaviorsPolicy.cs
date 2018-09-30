@@ -11,7 +11,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
     /// An <see cref="IBuilderPolicy"/> that returns a sequence of <see cref="IInterceptionBehavior"/> 
     /// instances for an intercepted object.
     /// </summary>
-    public interface IInterceptionBehaviorsPolicy : IBuilderPolicy
+    public interface IInterceptionBehaviorsPolicy 
     {
         /// <summary>
         /// GetOrDefault the set of <see cref="NamedTypeBuildKey"/> that can be used to resolve the

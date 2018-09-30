@@ -8,7 +8,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
     /// An interface that determines when to intercept instances
     /// and which interceptor to use.
     /// </summary>
-    public interface IInstanceInterceptionPolicy : IBuilderPolicy
+    public interface IInstanceInterceptionPolicy 
     {
         /// <summary>
         /// Interceptor to use.

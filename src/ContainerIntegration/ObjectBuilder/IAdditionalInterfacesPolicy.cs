@@ -11,7 +11,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
     /// An <see cref="IBuilderPolicy"/> that returns a sequence of <see cref="Type"/> 
     /// instances representing the additional interfaces for an intercepted object.
     /// </summary>
-    public interface IAdditionalInterfacesPolicy : IBuilderPolicy
+    public interface IAdditionalInterfacesPolicy 
     {
         /// <summary>
         /// Gets the <see cref="Type"/> instances accumulated by this policy.

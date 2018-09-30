@@ -8,7 +8,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
     /// <summary>
     /// Interface that controls when and how types get intercepted.
     /// </summary>
-    public interface ITypeInterceptionPolicy : IBuilderPolicy
+    public interface ITypeInterceptionPolicy 
     {
         /// <summary>
         /// Interceptor to use to create type proxy

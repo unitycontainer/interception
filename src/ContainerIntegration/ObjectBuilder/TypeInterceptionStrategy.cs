@@ -148,7 +148,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         #region Nested Types
 
 
-        private class EffectiveInterceptionBehaviorsPolicy : IBuilderPolicy
+        private class EffectiveInterceptionBehaviorsPolicy 
         {
             public EffectiveInterceptionBehaviorsPolicy()
             {

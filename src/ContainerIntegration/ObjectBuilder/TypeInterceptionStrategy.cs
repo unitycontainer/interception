@@ -174,24 +174,32 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
             public object SelectConstructor<TContext>(ref TContext context)
                 where TContext : IBuildContext
             {
-                SelectedConstructor originalConstructor = (SelectedConstructor)
+                object originalConstructor =
                     _originalConstructorSelectorPolicy.SelectConstructor(ref context);
 
                 return FindNewConstructor(originalConstructor, _interceptingType);
             }
 
-            private static SelectedConstructor FindNewConstructor(SelectedConstructor originalConstructor, Type interceptingType)
+            private static SelectedConstructor FindNewConstructor(object originalConstructor, Type interceptingType)
             {
-                ParameterInfo[] originalParams = originalConstructor.Constructor.GetParameters();
+                ParameterInfo[] originalParams = 
+                    originalConstructor is ConstructorInfo info 
+                        ? info.GetParameters() 
+                        : originalConstructor is SelectedConstructor selected 
+                            ? selected.Constructor.GetParameters() 
+                            : throw new InvalidOperationException("Unknown type");
 
                 ConstructorInfo newConstructorInfo =
                     interceptingType.GetConstructor(originalParams.Select(pi => pi.ParameterType).ToArray());
 
                 SelectedConstructor newConstructor = new SelectedConstructor(newConstructorInfo);
 
-                foreach (IResolverPolicy resolver in originalConstructor.GetParameterResolvers())
+                if (originalConstructor is SelectedConstructor original)
                 {
-                    newConstructor.AddParameterResolver(resolver);
+                    foreach (IResolverPolicy resolver in original.GetParameterResolvers())
+                    {
+                        newConstructor.AddParameterResolver(resolver);
+                    }
                 }
 
                 return newConstructor;

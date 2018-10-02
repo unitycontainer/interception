@@ -42,14 +42,14 @@ namespace Unity.Interception.ContainerIntegration
         /// Add policies to the <paramref name="policies"/> to configure the container to use the represented 
         /// <see cref="Type"/> as an additional interface for the supplied parameters.
         /// </summary>
-        /// <param name="serviceType">Interface being registered.</param>
-        /// <param name="implementationType">Type to register.</param>
+        /// <param name="registeredType">Interface being registered.</param>
+        /// <param name="mappedToType">Type to register.</param>
         /// <param name="name">Name used to resolve the type object.</param>
         /// <param name="policies">Policy list to add policies to.</param>
-        public override void AddPolicies<TPolicyList>(Type serviceType, Type implementationType, string name, ref TPolicyList policies)
+        public override void AddPolicies<TContext, TPolicyList>(Type registeredType, Type mappedToType, string name, ref TPolicyList policies)
         {
             AdditionalInterfacesPolicy policy =
-                AdditionalInterfacesPolicy.GetOrCreate(policies, serviceType, name);
+                AdditionalInterfacesPolicy.GetOrCreate(policies, registeredType, name);
             policy.AddAdditionalInterface(_additionalInterface);
         }
     }

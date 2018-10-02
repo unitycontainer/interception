@@ -54,11 +54,11 @@ namespace Unity.Interception.ContainerIntegration
         /// Add policies to the <paramref name="policies"/> to configure the container to use the represented 
         /// <see cref="IInterceptionBehavior"/> for the supplied parameters.
         /// </summary>
-        /// <param name="serviceType">Interface being registered.</param>
-        /// <param name="implementationType">Type to register.</param>
+        /// <param name="registeredType">Interface being registered.</param>
+        /// <param name="mappedToType">Type to register.</param>
         /// <param name="name">Name used to resolve the type object.</param>
         /// <param name="policies">Policy list to add policies to.</param>
-        public override void AddPolicies<TPolicyList>(Type serviceType, Type implementationType, string name, ref TPolicyList policies)
+        public override void AddPolicies<TContext, TPolicyList>(Type registeredType, Type mappedToType, string name, ref TPolicyList policies)
         {
             if (_explicitBehavior != null)
             {
@@ -68,12 +68,12 @@ namespace Unity.Interception.ContainerIntegration
                 var newBehaviorKey = new NamedTypeBuildKey(_explicitBehavior.GetType(), behaviorName);
 
                 policies.Set(newBehaviorKey.Type, newBehaviorKey.Name, typeof(ILifetimePolicy), lifetimeManager);
-                InterceptionBehaviorsPolicy behaviorsPolicy = GetBehaviorsPolicy(policies, serviceType, name);
+                InterceptionBehaviorsPolicy behaviorsPolicy = GetBehaviorsPolicy(policies, registeredType, name);
                 behaviorsPolicy.AddBehaviorKey(newBehaviorKey);
             }
             else
             {
-                var behaviorsPolicy = GetBehaviorsPolicy(policies, serviceType, name);
+                var behaviorsPolicy = GetBehaviorsPolicy(policies, registeredType, name);
                 behaviorsPolicy.AddBehaviorKey(_behaviorKey);
             }
         }

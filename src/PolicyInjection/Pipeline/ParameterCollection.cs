@@ -95,7 +95,7 @@ namespace Unity.Interception.PolicyInjection.Pipeline
         /// Gets the value of a parameter based on index.
         /// </summary>
         /// <param name="index">Index of parameter to get the value for.</param>
-        /// <value>Value of the requested parameter.</value>
+        /// <value>InjectionParameterValue of the requested parameter.</value>
         public object this[int index]
         {
             get => _arguments[_argumentInfo[index].Index];

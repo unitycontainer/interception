@@ -1,8 +1,5 @@
-﻿
-
-using System.Reflection;
-using Microsoft.Practices.Unity.InterceptionExtension;
-using Unity.Attributes;
+﻿using System.Reflection;
+using Unity;
 using Unity.Interception.PolicyInjection.MatchingRules;
 
 namespace Microsoft.Practices.Unity.TestSupport

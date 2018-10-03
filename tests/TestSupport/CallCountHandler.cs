@@ -1,7 +1,4 @@
-﻿
-
-using Microsoft.Practices.Unity.InterceptionExtension;
-using Unity.Attributes;
+﻿using Unity;
 using Unity.Interception.PolicyInjection.Pipeline;
 
 namespace Microsoft.Practices.Unity.TestSupport

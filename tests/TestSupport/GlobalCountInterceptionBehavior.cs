@@ -1,9 +1,6 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using Microsoft.Practices.Unity.InterceptionExtension;
-using Unity.Attributes;
+using Unity;
 using Unity.Interception.InterceptionBehaviors;
 using Unity.Interception.PolicyInjection.Pipeline;
 

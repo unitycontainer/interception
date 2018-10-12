@@ -196,7 +196,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 
                 if (originalConstructor is SelectedConstructor original)
                 {
-                    foreach (IResolverPolicy resolver in original.GetParameterResolvers())
+                    foreach (var resolver in original.GetParameterResolvers())
                     {
                         newConstructor.AddParameterResolver(resolver);
                     }

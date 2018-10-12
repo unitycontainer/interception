@@ -1,6 +1,4 @@
-﻿
-
-using Unity.Registration;
+﻿using Unity.Injection;
 
 namespace Unity.Interception.ContainerIntegration
 {

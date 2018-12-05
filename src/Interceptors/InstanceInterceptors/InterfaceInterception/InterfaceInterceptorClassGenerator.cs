@@ -172,11 +172,12 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
             il.Emit(OpCodes.Ret);
         }
 
+        private static ModuleBuilder moduleBuilder = null;
         private void CreateTypeBuilder()
         {
             TypeAttributes newAttributes = TypeAttributes.Public | TypeAttributes.Class;
 
-            ModuleBuilder moduleBuilder = GetModuleBuilder();
+            moduleBuilder = moduleBuilder ?? GetModuleBuilder();
             _typeBuilder = moduleBuilder.DefineType(CreateTypeName(), newAttributes);
 
             _mainInterfaceMapper = DefineGenericArguments();

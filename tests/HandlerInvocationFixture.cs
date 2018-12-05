@@ -3,7 +3,6 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Unity;
-using Unity.Injection;
 using Unity.Interception.ContainerIntegration;
 using Unity.Interception.Interceptors.InstanceInterceptors.InterfaceInterception;
 using Unity.Interception.PolicyInjection;

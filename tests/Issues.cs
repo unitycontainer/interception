@@ -5,7 +5,6 @@ using Unity.Interception.InterceptionBehaviors;
 using Unity.Interception.Interceptors.InstanceInterceptors.InterfaceInterception;
 using Unity.Interception.PolicyInjection.Pipeline;
 using Unity.Interception.ContainerIntegration;
-using Unity.Lifetime;
 using System.Diagnostics;
 using Unity;
 using Unity.Interception;

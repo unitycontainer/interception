@@ -7,7 +7,6 @@ using Unity.Interception.PolicyInjection.MatchingRules;
 using Unity.Interception.PolicyInjection.Pipeline;
 using Unity.Interception.PolicyInjection.Policies;
 using Unity.Interception.Utilities;
-using Unity.Lifetime;
 using Unity.Registration;
 
 namespace Unity.Interception.ContainerIntegration

@@ -12,7 +12,6 @@ using Unity.Interception.Interceptors.InstanceInterceptors.InterfaceInterception
 using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception;
 using Unity.Interception.PolicyInjection;
 using Unity.Interception.PolicyInjection.Pipeline;
-using Unity.Lifetime;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
 {

@@ -172,37 +172,50 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
             }
 
             public object SelectConstructor<TContext>(ref TContext context)
-                where TContext : IBuildContext
+                where TContext : IBuilderContext
             {
                 object originalConstructor =
                     _originalConstructorSelectorPolicy.SelectConstructor(ref context);
 
-                return FindNewConstructor(originalConstructor, _interceptingType);
+                switch (originalConstructor)
+                {
+                    case ConstructorInfo info:
+                        return FromConstructorInfo(info, _interceptingType);
+
+                    case SelectedConstructor selectedConstructor:
+                        return FromSelectedConstructor(selectedConstructor, _interceptingType);
+
+                    case InjectionConstructor ctor:
+                        return FromSelectedConstructor(ctor.SelectConstructor(ref context), _interceptingType);
+                }
+
+                throw new InvalidOperationException("Unknown type");
             }
 
-            private static SelectedConstructor FindNewConstructor(object originalConstructor, Type interceptingType)
+            private static SelectedConstructor FromSelectedConstructor(SelectedConstructor selectedConstructor, Type interceptingType)
             {
-                ParameterInfo[] originalParams = 
-                    originalConstructor is ConstructorInfo info 
-                        ? info.GetParameters() 
-                        : originalConstructor is SelectedConstructor selected 
-                            ? selected.Constructor.GetParameters() 
-                            : throw new InvalidOperationException("Unknown type");
+                var originalParams =selectedConstructor.Constructor.GetParameters();
 
-                ConstructorInfo newConstructorInfo =
+                var newConstructorInfo =
                     interceptingType.GetConstructor(originalParams.Select(pi => pi.ParameterType).ToArray());
 
-                SelectedConstructor newConstructor = new SelectedConstructor(newConstructorInfo);
+                var newConstructor = new SelectedConstructor(newConstructorInfo);
 
-                if (originalConstructor is SelectedConstructor original)
+                foreach (var resolver in selectedConstructor.GetParameterResolvers())
                 {
-                    foreach (var resolver in original.GetParameterResolvers())
-                    {
-                        newConstructor.AddParameterResolver(resolver);
-                    }
+                    newConstructor.AddParameterResolver(resolver);
                 }
 
                 return newConstructor;
+            }
+
+            private static SelectedConstructor FromConstructorInfo(ConstructorInfo info, Type interceptingType)
+            {
+                var originalParams = info.GetParameters();
+
+                var newConstructorInfo = interceptingType.GetConstructor(originalParams.Select(pi => pi.ParameterType).ToArray());
+
+                return new SelectedConstructor(newConstructorInfo);
             }
 
             public static void SetPolicyForInterceptingType<TBuilderContext>(ref TBuilderContext context, Type interceptingType)

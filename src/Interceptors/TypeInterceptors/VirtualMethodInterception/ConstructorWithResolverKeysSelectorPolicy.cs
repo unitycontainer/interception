@@ -1,4 +1,4 @@
-﻿using Unity.Build;
+﻿using Unity.Builder;
 using Unity.Builder.Selection;
 using Unity.Policy;
 
@@ -27,7 +27,7 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
         /// <param name="context">Current build context</param>
         /// <returns>The chosen constructor.</returns>
         public object SelectConstructor<TContext>(ref TContext context)
-            where TContext : IBuildContext
+            where TContext : IBuilderContext
         {
             return _selectedConstructor;
         }

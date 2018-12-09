@@ -186,7 +186,8 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
                         return FromSelectedConstructor(selectedConstructor, _interceptingType);
 
                     case InjectionConstructor ctor:
-                        return FromSelectedConstructor(ctor.SelectConstructor(ref context), _interceptingType);
+                        return FromSelectedConstructor(
+                            new SelectedConstructor(ctor.GetInfo(context.Type), ctor.GetParameters()), _interceptingType);
                 }
 
                 throw new InvalidOperationException("Unknown type");

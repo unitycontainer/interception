@@ -116,7 +116,7 @@ namespace Unity.Interception.ContainerIntegration
         /// </returns>
         public PolicyDefinition AddMatchingRule(
             Type type,
-            params InjectionMember[] injectionMembers)
+            params IInjectionMember[] injectionMembers)
         {
             return AddElement<IMatchingRule>(
                 type,
@@ -140,7 +140,7 @@ namespace Unity.Interception.ContainerIntegration
         public PolicyDefinition AddMatchingRule(
             Type type,
             LifetimeManager lifetimeManager,
-            params InjectionMember[] injectionMembers)
+            params IInjectionMember[] injectionMembers)
         {
             return AddElement<IMatchingRule>(
                 type,
@@ -163,7 +163,7 @@ namespace Unity.Interception.ContainerIntegration
         public PolicyDefinition AddMatchingRule(
             Type type,
             string name,
-            params InjectionMember[] injectionMembers)
+            params IInjectionMember[] injectionMembers)
         {
             return AddElement<IMatchingRule>(
                 type,
@@ -189,7 +189,7 @@ namespace Unity.Interception.ContainerIntegration
             Type type,
             string name,
             LifetimeManager lifetimeManager,
-            params InjectionMember[] injectionMembers)
+            params IInjectionMember[] injectionMembers)
         {
             return AddElement<IMatchingRule>(
                 type,
@@ -209,7 +209,7 @@ namespace Unity.Interception.ContainerIntegration
         /// The <see cref="PolicyDefinition"/> than allows further configuration of the policy.
         /// </returns>
         public PolicyDefinition AddMatchingRule<TMatchingRule>(
-            params InjectionMember[] injectionMembers)
+            params IInjectionMember[] injectionMembers)
             where TMatchingRule : IMatchingRule
         {
             return AddElement<IMatchingRule, TMatchingRule>(
@@ -232,7 +232,7 @@ namespace Unity.Interception.ContainerIntegration
         /// </returns>
         public PolicyDefinition AddMatchingRule<TMatchingRule>(
             LifetimeManager lifetimeManager,
-            params InjectionMember[] injectionMembers)
+            params IInjectionMember[] injectionMembers)
             where TMatchingRule : IMatchingRule
         {
             return AddElement<IMatchingRule, TMatchingRule>(
@@ -254,7 +254,7 @@ namespace Unity.Interception.ContainerIntegration
         /// </returns>
         public PolicyDefinition AddMatchingRule<TMatchingRule>(
             string name,
-            params InjectionMember[] injectionMembers)
+            params IInjectionMember[] injectionMembers)
             where TMatchingRule : IMatchingRule
         {
             return AddElement<IMatchingRule, TMatchingRule>(
@@ -280,7 +280,7 @@ namespace Unity.Interception.ContainerIntegration
         public PolicyDefinition AddMatchingRule<TMatchingRule>(
             string name,
             LifetimeManager lifetimeManager,
-            params InjectionMember[] injectionMembers)
+            params IInjectionMember[] injectionMembers)
             where TMatchingRule : IMatchingRule
         {
             return AddElement<IMatchingRule, TMatchingRule>(
@@ -329,7 +329,7 @@ namespace Unity.Interception.ContainerIntegration
         /// </returns>
         public PolicyDefinition AddCallHandler(
             Type type,
-            params InjectionMember[] injectionMembers)
+            params IInjectionMember[] injectionMembers)
         {
             return AddElement<ICallHandler>(
                 type,
@@ -353,7 +353,7 @@ namespace Unity.Interception.ContainerIntegration
         public PolicyDefinition AddCallHandler(
             Type type,
             LifetimeManager lifetimeManager,
-            params InjectionMember[] injectionMembers)
+            params IInjectionMember[] injectionMembers)
         {
             return AddElement<ICallHandler>(
                 type,
@@ -376,7 +376,7 @@ namespace Unity.Interception.ContainerIntegration
         public PolicyDefinition AddCallHandler(
             Type type,
             string name,
-            params InjectionMember[] injectionMembers)
+            params IInjectionMember[] injectionMembers)
         {
             return AddElement<ICallHandler>(
                 type,
@@ -403,7 +403,7 @@ namespace Unity.Interception.ContainerIntegration
             Type type,
             string name,
             LifetimeManager lifetimeManager,
-            params InjectionMember[] injectionMembers)
+            params IInjectionMember[] injectionMembers)
         {
             return AddElement<ICallHandler>(
                 type,
@@ -423,7 +423,7 @@ namespace Unity.Interception.ContainerIntegration
         /// The <see cref="PolicyDefinition"/> than allows further configuration of the policy.
         /// </returns>
         public PolicyDefinition AddCallHandler<TCallHandler>(
-            params InjectionMember[] injectionMembers)
+            params IInjectionMember[] injectionMembers)
             where TCallHandler : ICallHandler
         {
             return AddElement<ICallHandler, TCallHandler>(
@@ -446,7 +446,7 @@ namespace Unity.Interception.ContainerIntegration
         /// </returns>
         public PolicyDefinition AddCallHandler<TCallHandler>(
             LifetimeManager lifetimeManager,
-            params InjectionMember[] injectionMembers)
+            params IInjectionMember[] injectionMembers)
             where TCallHandler : ICallHandler
         {
             return AddElement<ICallHandler, TCallHandler>(
@@ -468,7 +468,7 @@ namespace Unity.Interception.ContainerIntegration
         /// </returns>
         public PolicyDefinition AddCallHandler<TCallHandler>(
             string name,
-            params InjectionMember[] injectionMembers)
+            params IInjectionMember[] injectionMembers)
             where TCallHandler : ICallHandler
         {
             return AddElement<ICallHandler, TCallHandler>(
@@ -494,7 +494,7 @@ namespace Unity.Interception.ContainerIntegration
         public PolicyDefinition AddCallHandler<TCallHandler>(
             string name,
             LifetimeManager lifetimeManager,
-            params InjectionMember[] injectionMembers)
+            params IInjectionMember[] injectionMembers)
             where TCallHandler : ICallHandler
         {
             return AddElement<ICallHandler, TCallHandler>(
@@ -525,7 +525,7 @@ namespace Unity.Interception.ContainerIntegration
             Type type,
             string name,
             LifetimeManager lifetimeManager,
-            InjectionMember[] injectionMembers,
+            IInjectionMember[] injectionMembers,
             UpdateElements update)
         {
             Guard.ArgumentNotNullOrEmpty(name, "name");
@@ -541,7 +541,7 @@ namespace Unity.Interception.ContainerIntegration
         private PolicyDefinition AddElement<T, TElement>(
             string name,
             LifetimeManager lifetimeManager,
-            InjectionMember[] injectionMembers,
+            IInjectionMember[] injectionMembers,
             UpdateElements update)
             where TElement : T
         {

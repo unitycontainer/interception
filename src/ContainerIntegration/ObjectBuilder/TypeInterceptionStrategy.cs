@@ -129,7 +129,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         #region IRegisterTypeStrategy
 
         //public void RegisterType(IContainerContext context, Type typeFrom, Type typeTo, string name, 
-        //                         LifetimeManager lifetimeManager, params IInjectionMember[] injectionMembers)
+        //                         LifetimeManager lifetimeManager, params InjectionMember[] injectionMembers)
         //{
         //    Type typeToBuild = typeFrom ?? typeTo;
 
@@ -185,9 +185,10 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
                     case SelectedConstructor selectedConstructor:
                         return FromSelectedConstructor(selectedConstructor, _interceptingType);
 
-                    case InjectionConstructor ctor:
+                    case ISelect<ConstructorInfo, object[]> ctor:
+                        var (cInfo, args) = ctor.Select(context.Type);
                         return FromSelectedConstructor(
-                            new SelectedConstructor(ctor.GetInfo(context.Type), ctor.GetParameters()), _interceptingType);
+                            new SelectedConstructor(cInfo, args), _interceptingType);
                 }
 
                 throw new InvalidOperationException("Unknown type");

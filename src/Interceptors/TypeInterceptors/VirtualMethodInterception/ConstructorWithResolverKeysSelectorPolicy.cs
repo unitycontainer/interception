@@ -1,5 +1,4 @@
 ﻿using Unity.Builder;
-using Unity.Builder.Selection;
 using Unity.Policy;
 
 namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception

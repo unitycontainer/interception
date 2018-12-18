@@ -35,7 +35,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
                 return;
             }
 
-            Type typeToBuild = context.BuildKey.Type;
+            Type typeToBuild = context.Type;
 
             var interceptionPolicy = FindInterceptionPolicy<TBuilderContext, ITypeInterceptionPolicy>(ref context);
             if (interceptionPolicy == null)
@@ -183,8 +183,8 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
                     case SelectedConstructor selectedConstructor:
                         return FromSelectedConstructor(selectedConstructor, _interceptingType);
 
-                    case ISelect<ConstructorInfo, object[]> ctor:
-                        var (cInfo, args) = ctor.Select(context.Type);
+                    case MethodBaseMember<ConstructorInfo> methodBaseMember:
+                        var (cInfo, args) = methodBaseMember.FromType(context.Type);
                         return FromSelectedConstructor(
                             new SelectedConstructor(cInfo, args), _interceptingType);
                 }

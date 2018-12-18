@@ -45,7 +45,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         public IInstanceInterceptor GetInterceptor<TBuilderContext>(ref TBuilderContext context)
             where TBuilderContext : IBuilderContext
         {
-            return (IInstanceInterceptor)context.NewBuildUp(_type, _name);
+            return (IInstanceInterceptor)context.Resolve(_type, _name);
         }
 
         #endregion

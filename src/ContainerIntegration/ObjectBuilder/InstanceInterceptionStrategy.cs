@@ -87,8 +87,8 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
             }
 
             // Next, try the build type
-            policy = (T)context.Policies.GetOrDefault(typeof(T), context.BuildKey) ??
-                     (T)context.Policies.GetOrDefault(typeof(T), context.BuildKey.Type);
+            policy = (T)context.Policies.GetOrDefault(typeof(T), context.Type, context.Name) ??
+                     (T)context.Policies.GetOrDefault(typeof(T), context.Type);
 
             return policy;
         }

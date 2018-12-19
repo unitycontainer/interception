@@ -42,8 +42,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         /// Interceptor to use.
         /// </summary>
         /// <param name="context">Context for current build operation.</param>
-        public IInstanceInterceptor GetInterceptor<TBuilderContext>(ref TBuilderContext context)
-            where TBuilderContext : IBuilderContext
+        public IInstanceInterceptor GetInterceptor(ref BuilderContext context)
         {
             return (IInstanceInterceptor)context.Resolve(_type, _name);
         }

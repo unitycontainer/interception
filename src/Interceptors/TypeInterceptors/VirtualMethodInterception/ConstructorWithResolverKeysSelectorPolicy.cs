@@ -25,8 +25,7 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
         /// </summary>
         /// <param name="context">Current build context</param>
         /// <returns>The chosen constructor.</returns>
-        public object SelectConstructor<TContext>(ref TContext context)
-            where TContext : IBuilderContext
+        public object SelectConstructor(ref BuilderContext context)
         {
             return _selectedConstructor;
         }

@@ -28,7 +28,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         /// <remarks>In this class, PreBuildUp is responsible for figuring out if the
         /// class is proxyable, and if so, replacing it with a proxy class.</remarks>
         /// <param name="context">Context of the build operation.</param>
-        public override void PreBuildUp<TBuilderContext>(ref TBuilderContext context)
+        public override void PreBuildUp(ref BuilderContext context)
         {
             if (context.Existing != null)
             {
@@ -37,7 +37,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 
             Type typeToBuild = context.Type;
 
-            var interceptionPolicy = FindInterceptionPolicy<TBuilderContext, ITypeInterceptionPolicy>(ref context);
+            var interceptionPolicy = FindInterceptionPolicy<ITypeInterceptionPolicy>(ref context);
             if (interceptionPolicy == null)
             {
                 return;
@@ -49,7 +49,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
                 return;
             }
 
-            var interceptionBehaviorsPolicy = FindInterceptionPolicy<TBuilderContext, IInterceptionBehaviorsPolicy>(ref context);
+            var interceptionBehaviorsPolicy = FindInterceptionPolicy<IInterceptionBehaviorsPolicy>(ref context);
 
             IEnumerable<IInterceptionBehavior> interceptionBehaviors =
                 interceptionBehaviorsPolicy == null
@@ -61,7 +61,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
                         .Where(ib => ib.WillExecute);
 
             IAdditionalInterfacesPolicy additionalInterfacesPolicy =
-                FindInterceptionPolicy<TBuilderContext, IAdditionalInterfacesPolicy>(ref context);
+                FindInterceptionPolicy<IAdditionalInterfacesPolicy>(ref context);
 
             IEnumerable<Type> additionalInterfaces =
                 additionalInterfacesPolicy != null ? additionalInterfacesPolicy.AdditionalInterfaces : Type.EmptyTypes;
@@ -88,7 +88,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         /// and if it was, wires up the handlers.</remarks>
         /// <param name="context">Context of the build operation.</param>
         /// <param name="pre"></param>
-        public override void PostBuildUp<TBuilderContext>(ref TBuilderContext context)
+        public override void PostBuildUp(ref BuilderContext context)
         {
             IInterceptingProxy proxy = context.Existing as IInterceptingProxy;
 
@@ -114,8 +114,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         }
 
 
-        private static TPolicy FindInterceptionPolicy<TBuilderContext, TPolicy>(ref TBuilderContext context)
-            where TBuilderContext : IBuilderContext
+        private static TPolicy FindInterceptionPolicy<TPolicy>(ref BuilderContext context)
         {
             return (TPolicy)(context.Policies.GetOrDefault(typeof(TPolicy), context.OriginalBuildKey) ??
                    (TPolicy)context.Policies.GetOrDefault(typeof(TPolicy), context.OriginalBuildKey.Type));
@@ -169,8 +168,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
                 _originalConstructorSelectorPolicy = originalConstructorSelectorPolicy;
             }
 
-            public object SelectConstructor<TContext>(ref TContext context)
-                where TContext : IBuilderContext
+            public object SelectConstructor(ref BuilderContext context)
             {
                 object originalConstructor =
                     _originalConstructorSelectorPolicy.SelectConstructor(ref context);
@@ -218,8 +216,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
                 return new SelectedConstructor(newConstructorInfo);
             }
 
-            public static void SetPolicyForInterceptingType<TBuilderContext>(ref TBuilderContext context, Type interceptingType)
-                where TBuilderContext : IBuilderContext
+            public static void SetPolicyForInterceptingType(ref BuilderContext context, Type interceptingType)
             {
                 var currentSelectorPolicy =
                     (IConstructorSelectorPolicy)context.Policies.GetOrDefault(typeof(IConstructorSelectorPolicy),

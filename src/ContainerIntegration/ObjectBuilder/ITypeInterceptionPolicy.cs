@@ -1,7 +1,6 @@
 ﻿using System;
 using Unity.Builder;
 using Unity.Interception.Interceptors.TypeInterceptors;
-using Unity.Policy;
 
 namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 {
@@ -24,8 +23,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 
     public static class TypeInterceptionPolicyExtension
     {
-        public static ITypeInterceptor GetInterceptor<TBuilderContext>(this ITypeInterceptionPolicy policy, ref TBuilderContext context)
-            where TBuilderContext : IBuilderContext
+        public static ITypeInterceptor GetInterceptor(this ITypeInterceptionPolicy policy, ref BuilderContext context)
         {
             return policy.GetInterceptor(context.Container);
         }

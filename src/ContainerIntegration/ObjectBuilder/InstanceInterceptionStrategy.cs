@@ -49,7 +49,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
             IEnumerable<Type> additionalInterfaces =
                 additionalInterfacesPolicy != null ? additionalInterfacesPolicy.AdditionalInterfaces : Type.EmptyTypes;
 
-            Type typeToIntercept = context.OriginalBuildKey.Type;
+            Type typeToIntercept = context.Registration.Type;
             Type implementationType = context.Existing.GetType();
 
             IInterceptionBehavior[] interceptionBehaviors =
@@ -73,8 +73,8 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
             where T : class
         {
             // First, try for an original build key
-            var policy = (T)context.Policies.GetOrDefault(typeof(T), context.OriginalBuildKey) ??
-                         (T)context.Policies.GetOrDefault(typeof(T), context.OriginalBuildKey.Type);
+            var policy = (T)context.GetOrDefault(typeof(T), context.Registration) ??
+                         (T)context.GetOrDefault(typeof(T), context.Registration.Type);
 
             if (policy != null)
             {
@@ -87,8 +87,8 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
             }
 
             // Next, try the build type
-            policy = (T)context.Policies.GetOrDefault(typeof(T), context.Type, context.Name) ??
-                     (T)context.Policies.GetOrDefault(typeof(T), context.Type);
+            policy = (T)context.GetOrDefault(typeof(T), context.Type, context.Name) ??
+                     (T)context.GetOrDefault(typeof(T), context.Type);
 
             return policy;
         }

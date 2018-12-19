@@ -7,6 +7,7 @@ using Unity.Injection;
 using Unity.Interception.InterceptionBehaviors;
 using Unity.Interception.Interceptors;
 using Unity.Policy;
+using Unity.Storage;
 
 namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 {
@@ -67,7 +68,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
                 additionalInterfacesPolicy != null ? additionalInterfacesPolicy.AdditionalInterfaces : Type.EmptyTypes;
 
             var enumerable = interceptionBehaviors as IInterceptionBehavior[] ?? interceptionBehaviors.ToArray();
-            context.Registration.Set(typeof(EffectiveInterceptionBehaviorsPolicy), 
+            ((IPolicySet)context.Registration).Set(typeof(EffectiveInterceptionBehaviorsPolicy), 
                 new EffectiveInterceptionBehaviorsPolicy { Behaviors = enumerable });
 
             Type[] allAdditionalInterfaces =
@@ -87,7 +88,6 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         /// <remarks>In this class, PostBuildUp checks to see if the object was proxyable,
         /// and if it was, wires up the handlers.</remarks>
         /// <param name="context">Context of the build operation.</param>
-        /// <param name="pre"></param>
         public override void PostBuildUp(ref BuilderContext context)
         {
             IInterceptingProxy proxy = context.Existing as IInterceptingProxy;
@@ -97,11 +97,9 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
                 return;
             }
 
-            var effectiveInterceptionBehaviorsPolicy =
-                (EffectiveInterceptionBehaviorsPolicy)context.Policies
-                                                             .Get(context.OriginalBuildKey.Type, 
-                                                                  context.OriginalBuildKey.Name, 
-                                               typeof(EffectiveInterceptionBehaviorsPolicy));
+            var effectiveInterceptionBehaviorsPolicy = context.Get<EffectiveInterceptionBehaviorsPolicy>(
+                context.Registration.Type, context.Registration.Name);
+
             if (effectiveInterceptionBehaviorsPolicy == null)
             {
                 return;
@@ -116,28 +114,9 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 
         private static TPolicy FindInterceptionPolicy<TPolicy>(ref BuilderContext context)
         {
-            return (TPolicy)(context.Policies.GetOrDefault(typeof(TPolicy), context.OriginalBuildKey) ??
-                   (TPolicy)context.Policies.GetOrDefault(typeof(TPolicy), context.OriginalBuildKey.Type));
+            return (TPolicy)(context.GetOrDefault(typeof(TPolicy), context.Registration) ??
+                   (TPolicy) context.GetOrDefault(typeof(TPolicy), context.Registration.Type));
         }
-
-        #endregion
-
-
-        #region IRegisterTypeStrategy
-
-        //public void RegisterType(IContainerContext context, Type typeFrom, Type typeTo, string name, 
-        //                         LifetimeManager lifetimeManager, params InjectionMember[] injectionMembers)
-        //{
-        //    Type typeToBuild = typeFrom ?? typeTo;
-
-        //    var policy = (ITypeInterceptionPolicy)(context.Policies.Get(typeToBuild, name, typeof(ITypeInterceptionPolicy), out _) ??
-        //                                           context.Policies.Get(typeToBuild, string.Empty, typeof(ITypeInterceptionPolicy), out _));
-        //    if (policy == null) return;
-
-        //    var interceptor = policy.GetInterceptor(context.Container);
-        //    if (typeof(VirtualMethodInterceptor) == interceptor?.GetType())
-        //        context.Policies.Set(typeToBuild, name, typeof(IBuildPlanPolicy), new OverriddenBuildPlanMarkerPolicy());
-        //}
 
         #endregion
 
@@ -157,34 +136,34 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 
         private class DerivedTypeConstructorSelectorPolicy : IConstructorSelectorPolicy
         {
-            internal readonly Type _interceptingType;
-            internal readonly IConstructorSelectorPolicy _originalConstructorSelectorPolicy;
+            internal readonly Type InterceptingType;
+            internal readonly IConstructorSelectorPolicy OriginalConstructorSelectorPolicy;
 
             internal DerivedTypeConstructorSelectorPolicy(
                 Type interceptingType,
                 IConstructorSelectorPolicy originalConstructorSelectorPolicy)
             {
-                _interceptingType = interceptingType;
-                _originalConstructorSelectorPolicy = originalConstructorSelectorPolicy;
+                InterceptingType = interceptingType;
+                OriginalConstructorSelectorPolicy = originalConstructorSelectorPolicy;
             }
 
             public object SelectConstructor(ref BuilderContext context)
             {
                 object originalConstructor =
-                    _originalConstructorSelectorPolicy.SelectConstructor(ref context);
+                    OriginalConstructorSelectorPolicy.SelectConstructor(ref context);
 
                 switch (originalConstructor)
                 {
                     case ConstructorInfo info:
-                        return FromConstructorInfo(info, _interceptingType);
+                        return FromConstructorInfo(info, InterceptingType);
 
                     case SelectedConstructor selectedConstructor:
-                        return FromSelectedConstructor(selectedConstructor, _interceptingType);
+                        return FromSelectedConstructor(selectedConstructor, InterceptingType);
 
                     case MethodBaseMember<ConstructorInfo> methodBaseMember:
                         var (cInfo, args) = methodBaseMember.FromType(context.Type);
                         return FromSelectedConstructor(
-                            new SelectedConstructor(cInfo, args), _interceptingType);
+                            new SelectedConstructor(cInfo, args), InterceptingType);
                 }
 
                 throw new InvalidOperationException("Unknown type");
@@ -219,20 +198,19 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
             public static void SetPolicyForInterceptingType(ref BuilderContext context, Type interceptingType)
             {
                 var currentSelectorPolicy =
-                    (IConstructorSelectorPolicy)context.Policies.GetOrDefault(typeof(IConstructorSelectorPolicy),
-                                                                              context.OriginalBuildKey);
+                    (IConstructorSelectorPolicy)context.GetOrDefault(
+                        typeof(IConstructorSelectorPolicy), context.Registration);
+
                 if (!(currentSelectorPolicy is DerivedTypeConstructorSelectorPolicy currentDerivedTypeSelectorPolicy))
                 {
-                    context.Registration.Set(typeof(IConstructorSelectorPolicy),
-                                                  new DerivedTypeConstructorSelectorPolicy(
-                                                      interceptingType, currentSelectorPolicy));
+                    ((IPolicySet)context.Registration).Set(typeof(IConstructorSelectorPolicy),
+                        new DerivedTypeConstructorSelectorPolicy(interceptingType, currentSelectorPolicy));
                 }
-                else if (currentDerivedTypeSelectorPolicy._interceptingType != interceptingType)
+                else if (currentDerivedTypeSelectorPolicy.InterceptingType != interceptingType)
                 {
-                    context.Registration.Set(typeof(IConstructorSelectorPolicy),
-                                                  new DerivedTypeConstructorSelectorPolicy(
-                                                      interceptingType,
-                                                      currentDerivedTypeSelectorPolicy._originalConstructorSelectorPolicy));
+                    ((IPolicySet)context.Registration).Set(typeof(IConstructorSelectorPolicy),
+                        new DerivedTypeConstructorSelectorPolicy(interceptingType, 
+                            currentDerivedTypeSelectorPolicy.OriginalConstructorSelectorPolicy));
                 }
             }
         }

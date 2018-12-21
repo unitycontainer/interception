@@ -68,7 +68,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
                 additionalInterfacesPolicy != null ? additionalInterfacesPolicy.AdditionalInterfaces : Type.EmptyTypes;
 
             var enumerable = interceptionBehaviors as IInterceptionBehavior[] ?? interceptionBehaviors.ToArray();
-            ((IPolicySet)context.Registration).Set(typeof(EffectiveInterceptionBehaviorsPolicy), 
+            context.Registration.Set(typeof(EffectiveInterceptionBehaviorsPolicy), 
                 new EffectiveInterceptionBehaviorsPolicy { Behaviors = enumerable });
 
             Type[] allAdditionalInterfaces =
@@ -97,8 +97,8 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
                 return;
             }
 
-            var effectiveInterceptionBehaviorsPolicy = context.Get<EffectiveInterceptionBehaviorsPolicy>(
-                context.Registration.Type, context.Registration.Name);
+            var effectiveInterceptionBehaviorsPolicy = (EffectiveInterceptionBehaviorsPolicy)context.Get(
+                context.RegistrationType, context.RegistrationName, typeof(EffectiveInterceptionBehaviorsPolicy));
 
             if (effectiveInterceptionBehaviorsPolicy == null)
             {
@@ -114,8 +114,8 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 
         private static TPolicy FindInterceptionPolicy<TPolicy>(ref BuilderContext context)
         {
-            return (TPolicy)(context.GetOrDefault(typeof(TPolicy), context.Registration) ??
-                   (TPolicy) context.GetOrDefault(typeof(TPolicy), context.Registration.Type));
+            return GetPolicyOrDefault<TPolicy>(ref context, context.RegistrationType, context.RegistrationName);
+
         }
 
         #endregion
@@ -198,17 +198,16 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
             public static void SetPolicyForInterceptingType(ref BuilderContext context, Type interceptingType)
             {
                 var currentSelectorPolicy =
-                    (IConstructorSelectorPolicy)context.GetOrDefault(
-                        typeof(IConstructorSelectorPolicy), context.Registration);
+                    GetPolicy<IConstructorSelectorPolicy>(ref context, context.RegistrationType, context.RegistrationName);
 
                 if (!(currentSelectorPolicy is DerivedTypeConstructorSelectorPolicy currentDerivedTypeSelectorPolicy))
                 {
-                    ((IPolicySet)context.Registration).Set(typeof(IConstructorSelectorPolicy),
+                    context.Registration.Set(typeof(IConstructorSelectorPolicy),
                         new DerivedTypeConstructorSelectorPolicy(interceptingType, currentSelectorPolicy));
                 }
                 else if (currentDerivedTypeSelectorPolicy.InterceptingType != interceptingType)
                 {
-                    ((IPolicySet)context.Registration).Set(typeof(IConstructorSelectorPolicy),
+                    context.Registration.Set(typeof(IConstructorSelectorPolicy),
                         new DerivedTypeConstructorSelectorPolicy(interceptingType, 
                             currentDerivedTypeSelectorPolicy.OriginalConstructorSelectorPolicy));
                 }

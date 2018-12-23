@@ -161,27 +161,30 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
                         return FromSelectedConstructor(selectedConstructor, InterceptingType);
 
                     case MethodBaseMember<ConstructorInfo> methodBaseMember:
-                        var (cInfo, args) = methodBaseMember.FromType(context.Type);
-                        return FromSelectedConstructor(
-                            new SelectedConstructor(cInfo, args), InterceptingType);
+                        return FromMethodBaseMember(methodBaseMember, InterceptingType);
                 }
 
                 throw new InvalidOperationException("Unknown type");
             }
 
+
+            private static SelectedConstructor FromMethodBaseMember(MethodBaseMember<ConstructorInfo> methodBaseMember, Type type)
+            {
+                var (cInfo, args) = methodBaseMember.FromType(type);
+
+                var newConstructorInfo = type.GetConstructor(cInfo.GetParameters().Select(pi => pi.ParameterType).ToArray());
+
+                return new SelectedConstructor(newConstructorInfo, args);
+            }
+
             private static SelectedConstructor FromSelectedConstructor(SelectedConstructor selectedConstructor, Type interceptingType)
             {
-                var originalParams =selectedConstructor.Constructor.GetParameters();
+                var originalParams = selectedConstructor.Constructor.GetParameters();
 
                 var newConstructorInfo =
                     interceptingType.GetConstructor(originalParams.Select(pi => pi.ParameterType).ToArray());
 
-                var newConstructor = new SelectedConstructor(newConstructorInfo);
-
-                foreach (var resolver in selectedConstructor.GetParameterResolvers())
-                {
-                    newConstructor.AddParameterResolver(resolver);
-                }
+                var newConstructor = new SelectedConstructor(newConstructorInfo, originalParams);
 
                 return newConstructor;
             }

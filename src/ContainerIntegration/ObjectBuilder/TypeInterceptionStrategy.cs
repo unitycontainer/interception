@@ -7,7 +7,6 @@ using Unity.Injection;
 using Unity.Interception.InterceptionBehaviors;
 using Unity.Interception.Interceptors;
 using Unity.Policy;
-using Unity.Storage;
 using Unity.Strategies;
 
 namespace Unity.Interception.ContainerIntegration.ObjectBuilder
@@ -135,34 +134,35 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
             public IEnumerable<IInterceptionBehavior> Behaviors { get; set; }
         }
 
-        private class DerivedTypeConstructorSelectorPolicy : IConstructorSelectorPolicy
+        private class DerivedTypeConstructorSelectorPolicy : ISelect<ConstructorInfo>
         {
             internal readonly Type InterceptingType;
-            internal readonly IConstructorSelectorPolicy OriginalConstructorSelectorPolicy;
+            internal readonly ISelect<ConstructorInfo> OriginalConstructorSelectorPolicy;
 
             internal DerivedTypeConstructorSelectorPolicy(
                 Type interceptingType,
-                IConstructorSelectorPolicy originalConstructorSelectorPolicy)
+                ISelect<ConstructorInfo> originalConstructorSelectorPolicy)
             {
                 InterceptingType = interceptingType;
                 OriginalConstructorSelectorPolicy = originalConstructorSelectorPolicy;
             }
 
-            public object SelectConstructor(ref BuilderContext context)
+            public IEnumerable<object> Select(ref BuilderContext context)
             {
                 object originalConstructor =
-                    OriginalConstructorSelectorPolicy.SelectConstructor(ref context);
+                    OriginalConstructorSelectorPolicy.Select(ref context)
+                                                     .First();
 
                 switch (originalConstructor)
                 {
                     case ConstructorInfo info:
-                        return FromConstructorInfo(info, InterceptingType);
+                        return new []{ FromConstructorInfo(info, InterceptingType) };
 
                     case SelectedConstructor selectedConstructor:
-                        return FromSelectedConstructor(selectedConstructor, InterceptingType);
+                        return new []{ FromSelectedConstructor(selectedConstructor, InterceptingType) };
 
                     case MethodBaseMember<ConstructorInfo> methodBaseMember:
-                        return FromMethodBaseMember(methodBaseMember, InterceptingType);
+                        return new []{ FromMethodBaseMember(methodBaseMember, InterceptingType) };
                 }
 
                 throw new InvalidOperationException("Unknown type");
@@ -202,16 +202,16 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
             public static void SetPolicyForInterceptingType(ref BuilderContext context, Type interceptingType)
             {
                 var currentSelectorPolicy =
-                    GetPolicy<IConstructorSelectorPolicy>(ref context, context.RegistrationType, context.RegistrationName);
+                    GetPolicy<ISelect<ConstructorInfo>>(ref context, context.RegistrationType, context.RegistrationName);
 
                 if (!(currentSelectorPolicy is DerivedTypeConstructorSelectorPolicy currentDerivedTypeSelectorPolicy))
                 {
-                    context.Registration.Set(typeof(IConstructorSelectorPolicy),
+                    context.Registration.Set(typeof(ISelect<ConstructorInfo>),
                         new DerivedTypeConstructorSelectorPolicy(interceptingType, currentSelectorPolicy));
                 }
                 else if (currentDerivedTypeSelectorPolicy.InterceptingType != interceptingType)
                 {
-                    context.Registration.Set(typeof(IConstructorSelectorPolicy),
+                    context.Registration.Set(typeof(ISelect<ConstructorInfo>),
                         new DerivedTypeConstructorSelectorPolicy(interceptingType, 
                             currentDerivedTypeSelectorPolicy.OriginalConstructorSelectorPolicy));
                 }

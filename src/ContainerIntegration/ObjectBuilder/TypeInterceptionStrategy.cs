@@ -8,6 +8,7 @@ using Unity.Interception.InterceptionBehaviors;
 using Unity.Interception.Interceptors;
 using Unity.Policy;
 using Unity.Storage;
+using Unity.Strategies;
 
 namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 {

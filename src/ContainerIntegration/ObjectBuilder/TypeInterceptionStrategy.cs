@@ -97,8 +97,8 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
                 return;
             }
 
-            var effectiveInterceptionBehaviorsPolicy = (EffectiveInterceptionBehaviorsPolicy)context.Get(
-                context.RegistrationType, context.RegistrationName, typeof(EffectiveInterceptionBehaviorsPolicy));
+            var effectiveInterceptionBehaviorsPolicy = (EffectiveInterceptionBehaviorsPolicy)context.Registration.Get(
+                typeof(EffectiveInterceptionBehaviorsPolicy));
 
             if (effectiveInterceptionBehaviorsPolicy == null)
             {
@@ -114,7 +114,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 
         private static TPolicy FindInterceptionPolicy<TPolicy>(ref BuilderContext context)
         {
-            return GetPolicyOrDefault<TPolicy>(ref context, context.RegistrationType, context.RegistrationName);
+            return GetPolicyOrDefault<TPolicy>(ref context);
 
         }
 
@@ -202,7 +202,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
             public static void SetPolicyForInterceptingType(ref BuilderContext context, Type interceptingType)
             {
                 var currentSelectorPolicy =
-                    GetPolicy<ISelect<ConstructorInfo>>(ref context, context.RegistrationType, context.RegistrationName);
+                    GetPolicy<ISelect<ConstructorInfo>>(ref context);
 
                 if (!(currentSelectorPolicy is DerivedTypeConstructorSelectorPolicy currentDerivedTypeSelectorPolicy))
                 {

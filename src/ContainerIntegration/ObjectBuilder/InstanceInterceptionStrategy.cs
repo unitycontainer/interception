@@ -74,14 +74,14 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
             where T : class
         {
             // First, try for an original build key
-            var policy = GetPolicyOrDefault<T>(ref context, context.RegistrationType, context.RegistrationName);
+            var policy = GetPolicyOrDefault<T>(ref context);
 
             if (policy != null) return policy;
 
             if (!probeOriginalKey) return null;
 
             // Next, try the build type
-            policy = GetPolicyOrDefault<T>(ref context, context.Type, context.Name);
+            policy = GetPolicyOrDefault<T>(ref context);
 
             return policy;
         }

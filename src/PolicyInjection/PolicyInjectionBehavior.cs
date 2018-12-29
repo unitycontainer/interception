@@ -34,6 +34,7 @@ namespace Unity.Interception.PolicyInjection
         /// <param name="interceptionRequest">Information about what will be injected.</param>
         /// <param name="policies">Current injection policies.</param>
         /// <param name="container">Unity container that can be used to resolve call handlers.</param>
+        [InjectionConstructor]
         public PolicyInjectionBehavior(CurrentInterceptionRequest interceptionRequest, InjectionPolicy[] policies,
             IUnityContainer container)
         {

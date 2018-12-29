@@ -7,6 +7,7 @@ using Unity.Injection;
 using Unity.Interception.InterceptionBehaviors;
 using Unity.Interception.Interceptors;
 using Unity.Policy;
+using Unity.Storage;
 using Unity.Strategies;
 
 namespace Unity.Interception.ContainerIntegration.ObjectBuilder
@@ -147,12 +148,12 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
                 OriginalConstructorSelectorPolicy = originalConstructorSelectorPolicy;
             }
 
-            public IEnumerable<object> Select(ref BuilderContext context)
+
+            public IEnumerable<object> Select(Type type, IPolicySet registration)
             {
                 object originalConstructor =
-                    OriginalConstructorSelectorPolicy.Select(ref context)
+                    OriginalConstructorSelectorPolicy.Select(type, registration)
                                                      .First();
-
                 switch (originalConstructor)
                 {
                     case ConstructorInfo info:

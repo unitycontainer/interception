@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Unity.Builder;
 using Unity.Injection;
+using Unity.Interception.ContainerIntegration.Selection;
 using Unity.Interception.InterceptionBehaviors;
 using Unity.Interception.Interceptors;
 using Unity.Policy;

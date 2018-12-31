@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using Unity.Injection;
 
-namespace Unity.Builder
+namespace Unity.Interception.ContainerIntegration.Selection
 {
     /// <summary>
     /// Objects of this type encapsulate <see cref="ConstructorInfo"/> and resolve

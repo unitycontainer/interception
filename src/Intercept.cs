@@ -1,6 +1,4 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -84,8 +82,6 @@ namespace Unity.Interception
         /// <exception cref="ArgumentNullException">when <paramref name="additionalInterfaces"/> is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentException">when <paramref name="interceptor"/> cannot intercept 
         /// <paramref name="interceptedType"/>.</exception>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
-            Justification = "Validation done by Guard class")]
         public static object ThroughProxyWithAdditionalInterfaces(
             Type interceptedType,
             object target,
@@ -230,8 +226,6 @@ namespace Unity.Interception
         /// <exception cref="ArgumentNullException">when <paramref name="additionalInterfaces"/> is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentException">when <paramref name="interceptor"/> cannot intercept 
         /// <paramref name="type"/>.</exception>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
-            Justification = "Validation done by Guard class")]
         public static object NewInstanceWithAdditionalInterfaces(
             Type type,
             ITypeInterceptor interceptor,
@@ -312,10 +306,6 @@ namespace Unity.Interception
         /// <param name="additionalInterfaces">Any additional interfaces the instance must implement.</param>
         /// <returns>An array with the required interfaces for </returns>
         /// <exception cref="ArgumentException">when the interfaces are not valid.</exception>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage(
-            "Microsoft.Usage",
-            "CA2208:InstantiateArgumentExceptionsCorrectly",
-            Justification = "Argument ok, confused by use within a lambda expression")]
         public static Type[] GetAllAdditionalInterfaces(
             IEnumerable<IInterceptionBehavior> interceptionBehaviors,
             IEnumerable<Type> additionalInterfaces)

@@ -4,7 +4,6 @@ using Unity.Interception.ContainerIntegration.ObjectBuilder;
 using Unity.Interception.InterceptionBehaviors;
 using Unity.Interception.Utilities;
 using Unity.Policy;
-using Unity.Storage;
 
 namespace Unity.Interception.ContainerIntegration
 {
@@ -58,22 +57,16 @@ namespace Unity.Interception.ContainerIntegration
         /// <param name="mappedToType">Type to register.</param>
         /// <param name="name">Name used to resolve the type object.</param>
         /// <param name="policies">Policy list to add policies to.</param>
-        public override void AddPolicies<TContext, TPolicyList>(Type registeredType, Type mappedToType, string name, ref TPolicyList policies)
+        public override void AddPolicies<TContext, TPolicySet>(Type registeredType, Type mappedToType, string name, ref TPolicySet policies)
         {
             if (_explicitBehavior != null)
             {
-                var lifetimeManager = new ContainerControlledLifetimeManager();
-                lifetimeManager.SetValue(_explicitBehavior);
-                var behaviorName = Guid.NewGuid().ToString();
-                var newBehaviorKey = new NamedTypeBuildKey(_explicitBehavior.GetType(), behaviorName);
-
-                policies.Set(newBehaviorKey.Type, newBehaviorKey.Name, typeof(LifetimeManager), lifetimeManager);
-                InterceptionBehaviorsPolicy behaviorsPolicy = GetBehaviorsPolicy(policies, registeredType, name);
-                behaviorsPolicy.AddBehaviorKey(newBehaviorKey);
+                var behaviorsPolicy = GetBehaviorsPolicy(ref policies);
+                behaviorsPolicy.AddBehavior(_explicitBehavior);
             }
             else
             {
-                var behaviorsPolicy = GetBehaviorsPolicy(policies, registeredType, name);
+                var behaviorsPolicy = GetBehaviorsPolicy(ref policies);
                 behaviorsPolicy.AddBehaviorKey(_behaviorKey);
             }
         }
@@ -82,9 +75,8 @@ namespace Unity.Interception.ContainerIntegration
         /// GetOrDefault the list of behaviors for the current type so that it can be added to.
         /// </summary>
         /// <param name="policies">Policy list.</param>
-        /// <param name="implementationType">Implementation type to set behaviors for.</param>
-        /// <param name="name">Name type is registered under.</param>
         /// <returns>An instance of <see cref="InterceptionBehaviorsPolicy"/>.</returns>
-        protected abstract InterceptionBehaviorsPolicy GetBehaviorsPolicy(IPolicyList policies, Type implementationType, string name);
+        protected abstract InterceptionBehaviorsPolicy GetBehaviorsPolicy<TPolicySet>(ref TPolicySet policies)
+            where TPolicySet : IPolicySet;
     }
 }

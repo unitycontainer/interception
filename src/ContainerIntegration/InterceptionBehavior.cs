@@ -1,8 +1,6 @@
 ﻿using System;
 using Unity.Interception.ContainerIntegration.ObjectBuilder;
 using Unity.Interception.InterceptionBehaviors;
-using Unity.Policy;
-using Unity.Storage;
 
 namespace Unity.Interception.ContainerIntegration
 {
@@ -48,12 +46,10 @@ namespace Unity.Interception.ContainerIntegration
         /// GetOrDefault the list of behaviors for the current type so that it can be added to.
         /// </summary>
         /// <param name="policies">Policy list.</param>
-        /// <param name="implementationType">Implementation type to set behaviors for.</param>
-        /// <param name="name">Name type is registered under.</param>
         /// <returns>An instance of <see cref="InterceptionBehaviorsPolicy"/>.</returns>
-        protected override InterceptionBehaviorsPolicy GetBehaviorsPolicy(IPolicyList policies, Type implementationType, string name)
+        protected override InterceptionBehaviorsPolicy GetBehaviorsPolicy<TPolicySet>(ref TPolicySet policies)
         {
-            return InterceptionBehaviorsPolicy.GetOrCreate(policies, implementationType, name);
+            return InterceptionBehaviorsPolicy.GetOrCreate(ref policies);
         }
     }
 

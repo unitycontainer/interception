@@ -4,7 +4,6 @@ using System.Linq;
 using Unity.Builder;
 using Unity.Interception.InterceptionBehaviors;
 using Unity.Interception.Interceptors;
-using Unity.Policy;
 using Unity.Strategies;
 
 namespace Unity.Interception.ContainerIntegration.ObjectBuilder
@@ -86,7 +85,22 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
             return policy;
         }
 
+        public static TPolicyInterface GetPolicyOrDefault<TPolicyInterface>(ref BuilderContext context)
+        {
+            return (TPolicyInterface)(GetNamedPolicy(ref context, context.RegistrationType, context.Name) ??
+                                      GetNamedPolicy(ref context, context.RegistrationType, UnityContainer.All));
 
-
+            object GetNamedPolicy(ref BuilderContext c, Type t, string n)
+            {
+                return (c.Get(t, n, typeof(TPolicyInterface)) ?? (
+#if NETCOREAPP1_0 || NETSTANDARD1_0
+                            t.GetTypeInfo().IsGenericType
+#else
+                                    t.IsGenericType
+#endif
+                                        ? c.Get(t.GetGenericTypeDefinition(), n, typeof(TPolicyInterface)) ?? c.Get(null, null, typeof(TPolicyInterface))
+                                : c.Get(null, null, typeof(TPolicyInterface))));
+            }
+        }
     }
 }

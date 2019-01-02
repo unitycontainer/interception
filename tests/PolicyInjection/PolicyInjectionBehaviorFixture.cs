@@ -1,8 +1,7 @@
-﻿
-
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Unity;
+using Unity.Interception;
 using Unity.Interception.ContainerIntegration;
 using Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyInterception;
 using Unity.Interception.PolicyInjection;

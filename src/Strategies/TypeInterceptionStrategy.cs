@@ -8,7 +8,6 @@ using Unity.Interception.ContainerIntegration.Selection;
 using Unity.Interception.InterceptionBehaviors;
 using Unity.Interception.Interceptors;
 using Unity.Policy;
-using Unity.Storage;
 using Unity.Strategies;
 
 namespace Unity.Interception.ContainerIntegration.ObjectBuilder
@@ -40,7 +39,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 
             Type typeToBuild = context.Type;
 
-            var interceptionPolicy = FindInterceptionPolicy<ITypeInterceptionPolicy>(ref context);
+            var interceptionPolicy = GetPolicyOrDefault<ITypeInterceptionPolicy>(ref context);
             if (interceptionPolicy == null)
             {
                 return;
@@ -52,7 +51,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
                 return;
             }
 
-            var interceptionBehaviorsPolicy = FindInterceptionPolicy<IInterceptionBehaviorsPolicy>(ref context);
+            var interceptionBehaviorsPolicy = GetPolicyOrDefault<IInterceptionBehaviorsPolicy>(ref context);
 
             IEnumerable<IInterceptionBehavior> interceptionBehaviors =
                 interceptionBehaviorsPolicy == null
@@ -64,7 +63,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
                         .Where(ib => ib.WillExecute);
 
             IAdditionalInterfacesPolicy additionalInterfacesPolicy =
-                FindInterceptionPolicy<IAdditionalInterfacesPolicy>(ref context);
+                GetPolicyOrDefault<IAdditionalInterfacesPolicy>(ref context);
 
             IEnumerable<Type> additionalInterfaces =
                 additionalInterfacesPolicy != null ? additionalInterfacesPolicy.AdditionalInterfaces : Type.EmptyTypes;
@@ -113,11 +112,22 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
             }
         }
 
-
-        private static TPolicy FindInterceptionPolicy<TPolicy>(ref BuilderContext context)
+        public static TPolicyInterface GetPolicyOrDefault<TPolicyInterface>(ref BuilderContext context)
         {
-            return GetPolicyOrDefault<TPolicy>(ref context);
+            return (TPolicyInterface)(GetNamedPolicy(ref context, context.RegistrationType, context.Name) ?? 
+                                      GetNamedPolicy(ref context, context.RegistrationType, UnityContainer.All));
 
+            object GetNamedPolicy(ref BuilderContext c, Type t, string n)
+            {
+                return (c.Get(t, n, typeof(TPolicyInterface)) ?? (
+#if NETCOREAPP1_0 || NETSTANDARD1_0
+                    t.GetTypeInfo().IsGenericType
+#else
+                            t.IsGenericType
+#endif
+                                ? c.Get(t.GetGenericTypeDefinition(), n, typeof(TPolicyInterface)) ?? c.Get(null, null, typeof(TPolicyInterface))
+                                : c.Get(null, null, typeof(TPolicyInterface))));
+            }
         }
 
         #endregion

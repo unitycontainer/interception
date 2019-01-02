@@ -1,11 +1,8 @@
-﻿
-
-using Microsoft.Practices.Unity.InterceptionExtension.Tests.ObjectsUnderTest;
-using Microsoft.Practices.Unity.TestSupport;
+﻿using Microsoft.Practices.Unity.TestSupport;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Unity;
+using Unity.Interception;
 using Unity.Interception.ContainerIntegration;
-using Unity.Interception.Interceptors;
 using Unity.Interception.Interceptors.InstanceInterceptors.InterfaceInterception;
 using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception;
 using Unity.Interception.PolicyInjection;
@@ -187,20 +184,6 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
             wrappedOverInterface.Method();
 
             Assert.AreEqual(1, GlobalCountCallHandler.Calls["CanCreateWrappedObjectOverInterface"]);
-        }
-
-        [TestMethod]
-        public void InstanceInterceptionDoesNotReturnProxyWhenNoHandlerAreConfigured()
-        {
-            IUnityContainer container = new UnityContainer()
-                .AddNewExtension<Interception>()
-                .RegisterType<IDal, MockDal>(
-                    new DefaultInterceptor(new InterfaceInterceptor()),
-                    new DefaultInterceptionBehavior<PolicyInjectionBehavior>());
-
-            IDal dal = container.Resolve<IDal>();
-
-            Assert.IsFalse(dal is IInterceptingProxy);
         }
 
         private IUnityContainer CreateContainer(string globalCallHandlerName)

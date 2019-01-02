@@ -4,7 +4,6 @@ using Unity.Builder;
 using Unity.Interception.InterceptionBehaviors;
 using Unity.Interception.Interceptors;
 using Unity.Policy;
-using Unity.Storage;
 using Unity.Resolution;
 
 namespace Unity.Interception.ContainerIntegration.ObjectBuilder
@@ -22,6 +21,8 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         /// behaviors.
         /// </summary>
         public IEnumerable<NamedTypeBuildKey> BehaviorKeys => _behaviorKeys;
+
+        private readonly List<IInterceptionBehavior> _explicitBehaviors = new List<IInterceptionBehavior>();
 
         /// <summary>
         /// GetOrDefault the set of <see cref="IInterceptionBehavior"/> object to be used for the given type and
@@ -41,10 +42,14 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         {
             var interceptionRequest = new CurrentInterceptionRequest(interceptor, typeToIntercept, implementationType);
 
+            foreach (var behavior in _explicitBehaviors)
+            {
+                yield return behavior;
+            }
+
             foreach (var key in BehaviorKeys)
             {
-                var behavior = (IInterceptionBehavior)container.Resolve(key.Type, key.Name, 
-                    new DependencyOverride<CurrentInterceptionRequest>(interceptionRequest));
+                var behavior = (IInterceptionBehavior)container.Resolve(key.Type, key.Name, new DependencyOverride<CurrentInterceptionRequest>(interceptionRequest));
                 yield return behavior;
             }
         }
@@ -54,17 +59,20 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
             _behaviorKeys.Add(key);
         }
 
-        internal static InterceptionBehaviorsPolicy GetOrCreate(
-            IPolicyList policies,
-            Type typeToCreate,
-            string name)
+        public void AddBehavior(IInterceptionBehavior behavior)
         {
-            IInterceptionBehaviorsPolicy policy =
-                (IInterceptionBehaviorsPolicy)policies.Get(typeToCreate, name, typeof(IInterceptionBehaviorsPolicy));
+            _explicitBehaviors.Add(behavior);
+        }
+
+        internal static InterceptionBehaviorsPolicy GetOrCreate<TPolicySet>(ref TPolicySet policies)
+            where TPolicySet : IPolicySet
+        {
+            IInterceptionBehaviorsPolicy policy = (IInterceptionBehaviorsPolicy)policies.Get(typeof(IInterceptionBehaviorsPolicy));
+
             if (!(policy is InterceptionBehaviorsPolicy))
             {
                 policy = new InterceptionBehaviorsPolicy();
-                policies.Set(typeToCreate, name, typeof(IInterceptionBehaviorsPolicy), policy);
+                policies.Set(typeof(IInterceptionBehaviorsPolicy), policy);
             }
             return (InterceptionBehaviorsPolicy)policy;
         }

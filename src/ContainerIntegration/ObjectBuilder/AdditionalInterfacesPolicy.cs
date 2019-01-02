@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Unity.Builder;
 using Unity.Policy;
-using Unity.Storage;
 
 namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 {
@@ -32,17 +31,14 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
             _additionalInterfaces.Add(additionalInterface);
         }
 
-        internal static AdditionalInterfacesPolicy GetOrCreate(IPolicyList policies,
-                                                               Type typeToCreate,
-                                                               string name)
+        internal static AdditionalInterfacesPolicy GetOrCreate<TPolicySet>(ref TPolicySet policies)
+            where  TPolicySet : IPolicySet
         {
-            NamedTypeBuildKey key = new NamedTypeBuildKey(typeToCreate, name);
-            IAdditionalInterfacesPolicy policy =
-                (IAdditionalInterfacesPolicy)policies.Get(typeToCreate, name, typeof(IAdditionalInterfacesPolicy));
+            var policy = policies.Get<IAdditionalInterfacesPolicy>();
             if (!(policy is AdditionalInterfacesPolicy))
             {
                 policy = new AdditionalInterfacesPolicy();
-                policies.Set(typeToCreate, name, typeof(IAdditionalInterfacesPolicy), policy);
+                policies.Set<IAdditionalInterfacesPolicy>(policy);
             }
             return (AdditionalInterfacesPolicy)policy;
         }

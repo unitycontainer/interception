@@ -7,7 +7,7 @@ using Unity.Interception.Interceptors;
 namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 {
     /// <summary>
-    /// An <see cref="IBuilderPolicy"/> that returns a sequence of <see cref="IInterceptionBehavior"/> 
+    /// An policy that returns a sequence of <see cref="IInterceptionBehavior"/> 
     /// instances for an intercepted object.
     /// </summary>
     public interface IInterceptionBehaviorsPolicy 

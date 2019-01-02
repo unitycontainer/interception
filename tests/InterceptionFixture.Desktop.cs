@@ -1,14 +1,10 @@
-﻿
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Remoting;
-using System.Text;
-using Microsoft.Practices.Unity.TestSupport;
+﻿using Microsoft.Practices.Unity.TestSupport;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Runtime.Remoting;
 using Unity;
 using Unity.Injection;
+using Unity.Interception;
 using Unity.Interception.ContainerIntegration;
 using Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyInterception;
 using Unity.Interception.PolicyInjection;
@@ -127,20 +123,6 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
             Wrappable wrappable = container.Resolve<Wrappable>("someName");
             var wrappable2 = container.Resolve<Wrappable>("another");
             Assert.IsNotNull(wrappable);
-            Assert.IsTrue(RemotingServices.IsTransparentProxy(wrappable));
-            Assert.IsTrue(RemotingServices.IsTransparentProxy(wrappable2));
-        }
-
-        [TestMethod]
-        public void CanSetDefaultInterceptionPolicyThroughRegisterType()
-        {
-            IUnityContainer container = CreateContainer("CanCreateWrappedObject");
-            container.RegisterType<Wrappable>(
-                new DefaultInterceptor(new TransparentProxyInterceptor()),
-                new DefaultInterceptionBehavior<PolicyInjectionBehavior>());
-
-            var wrappable = container.Resolve<Wrappable>("someName");
-            var wrappable2 = container.Resolve<Wrappable>("another");
             Assert.IsTrue(RemotingServices.IsTransparentProxy(wrappable));
             Assert.IsTrue(RemotingServices.IsTransparentProxy(wrappable2));
         }

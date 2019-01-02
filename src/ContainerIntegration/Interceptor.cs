@@ -65,19 +65,19 @@ namespace Unity.Interception.ContainerIntegration
         /// <param name="mappedToType">Type to register.</param>
         /// <param name="name">Name used to resolve the type object.</param>
         /// <param name="policies">Policy list to add policies to.</param>
-        public override void AddPolicies<TContext, TPolicyList>(Type registeredType, Type mappedToType, string name, ref TPolicyList policies)
+        public override void AddPolicies<TContext, TPolicySet>(Type registeredType, Type mappedToType, string name, ref TPolicySet policies)
         {
             if (IsInstanceInterceptor)
             {
                 var policy = CreateInstanceInterceptionPolicy();
-                policies.Set(registeredType, name, typeof(IInstanceInterceptionPolicy), policy);
-                policies.Clear(registeredType, name, typeof(ITypeInterceptionPolicy));
+                policies.Set(typeof(IInstanceInterceptionPolicy), policy);
+                policies.Clear(typeof(ITypeInterceptionPolicy));
             }
             else
             {
                 var policy = CreateTypeInterceptionPolicy();
-                policies.Set(registeredType, name, typeof(ITypeInterceptionPolicy), policy);
-                policies.Clear(registeredType, name, typeof(IInstanceInterceptionPolicy));
+                policies.Set(typeof(ITypeInterceptionPolicy), policy);
+                policies.Clear(typeof(IInstanceInterceptionPolicy));
             }
         }
 

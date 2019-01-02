@@ -1,9 +1,8 @@
-﻿
-
-using System;
+﻿using System;
 using System.Globalization;
 using Unity.Builder;
 using Unity.Extension;
+using Unity.Interception.ContainerIntegration;
 using Unity.Interception.ContainerIntegration.ObjectBuilder;
 using Unity.Interception.Interceptors;
 using Unity.Interception.Interceptors.InstanceInterceptors;
@@ -13,7 +12,7 @@ using Unity.Interception.PolicyInjection.Policies;
 using Unity.Interception.Properties;
 using Unity.Interception.Utilities;
 
-namespace Unity.Interception.ContainerIntegration
+namespace Unity.Interception
 {
     /// <summary>
     /// A Unity container extension that allows you to configure
@@ -21,11 +20,11 @@ namespace Unity.Interception.ContainerIntegration
     /// be used to do it, and also provides a convenient set of methods for
     /// configuring injection for <see cref="RuleDrivenPolicy"/> instances.
     /// </summary>
-    /// <seealso cref="Interception.SetDefaultInterceptorFor(Type, IInstanceInterceptor)"/>
-    /// <seealso cref="Interception.SetDefaultInterceptorFor(Type, ITypeInterceptor)"/>
-    /// <seealso cref="Interception.SetInterceptorFor(Type, string, IInstanceInterceptor)"/>
-    /// <seealso cref="Interception.SetInterceptorFor(Type, string, ITypeInterceptor)"/>
-    /// <seealso cref="Interception.AddPolicy"/>
+    /// <seealso cref="SetDefaultInterceptorFor(Type, IInstanceInterceptor)"/>
+    /// <seealso cref="SetDefaultInterceptorFor(Type, ITypeInterceptor)"/>
+    /// <seealso cref="SetInterceptorFor(Type, string, IInstanceInterceptor)"/>
+    /// <seealso cref="SetInterceptorFor(Type, string, ITypeInterceptor)"/>
+    /// <seealso cref="AddPolicy"/>
     public class Interception : UnityContainerExtension
     {
         /// <summary>
@@ -138,13 +137,13 @@ namespace Unity.Interception.ContainerIntegration
             Guard.ArgumentNotNull(interceptor, "interceptor");
             GuardTypeInterceptable(typeToIntercept, interceptor);
 
-            Context.Policies.Set(typeToIntercept, string.Empty, typeof(ITypeInterceptionPolicy), 
+            Context.Policies.Set(typeToIntercept, UnityContainer.All, typeof(ITypeInterceptionPolicy), 
                                  new FixedTypeInterceptionPolicy(interceptor));
 
             // add policy injection behavior if using this configuration API to set the interceptor
             var interceptionBehaviorsPolicy = new InterceptionBehaviorsPolicy();
             interceptionBehaviorsPolicy.AddBehaviorKey(NamedTypeBuildKey.Make<PolicyInjectionBehavior>());
-            Context.Policies.Set(typeToIntercept, string.Empty, 
+            Context.Policies.Set(typeToIntercept, UnityContainer.All, 
                                 typeof(IInterceptionBehaviorsPolicy), interceptionBehaviorsPolicy);
             return this;
         }
@@ -206,12 +205,12 @@ namespace Unity.Interception.ContainerIntegration
             Guard.ArgumentNotNull(interceptor, "interceptor");
             GuardTypeInterceptable(typeToIntercept, interceptor);
 
-            Context.Policies.Set(typeToIntercept, string.Empty, typeof(IInstanceInterceptionPolicy), new FixedInstanceInterceptionPolicy(interceptor));
+            Context.Policies.Set(typeToIntercept, UnityContainer.All, typeof(IInstanceInterceptionPolicy), new FixedInstanceInterceptionPolicy(interceptor));
 
             // add policy injection behavior if using this configuration API to set the interceptor
             var interceptionBehaviorsPolicy = new InterceptionBehaviorsPolicy();
             interceptionBehaviorsPolicy.AddBehaviorKey(NamedTypeBuildKey.Make<PolicyInjectionBehavior>());
-            Context.Policies.Set(typeToIntercept, string.Empty, typeof(IInterceptionBehaviorsPolicy), interceptionBehaviorsPolicy);
+            Context.Policies.Set(typeToIntercept, UnityContainer.All, typeof(IInterceptionBehaviorsPolicy), interceptionBehaviorsPolicy);
 
             return this;
         }

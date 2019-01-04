@@ -173,7 +173,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
                     case SelectedConstructor selectedConstructor:
                         return new []{ FromSelectedConstructor(selectedConstructor, InterceptingType) };
 
-                    case MethodBaseMember<ConstructorInfo> methodBaseMember:
+                    case MethodBase<ConstructorInfo> methodBaseMember:
                         return new []{ FromMethodBaseMember(methodBaseMember, InterceptingType) };
                 }
 
@@ -181,7 +181,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
             }
 
 
-            private static SelectedConstructor FromMethodBaseMember(MethodBaseMember<ConstructorInfo> methodBaseMember, Type type)
+            private static SelectedConstructor FromMethodBaseMember(MethodBase<ConstructorInfo> methodBaseMember, Type type)
             {
                 var (cInfo, args) = methodBaseMember.FromType(type);
 

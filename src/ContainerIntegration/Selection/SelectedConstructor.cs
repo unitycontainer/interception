@@ -9,7 +9,7 @@ namespace Unity.Interception.ContainerIntegration.Selection
     /// Objects of this type encapsulate <see cref="ConstructorInfo"/> and resolve
     /// parameters.
     /// </summary>
-    public class SelectedConstructor : MethodBaseMember<ConstructorInfo>
+    public class SelectedConstructor : MethodBase<ConstructorInfo>
     {
         /// <summary>
         /// Create a new <see cref="SelectedConstructor"/> instance which

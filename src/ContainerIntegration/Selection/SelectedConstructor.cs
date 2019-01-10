@@ -29,7 +29,7 @@ namespace Unity.Interception.ContainerIntegration.Selection
         /// <summary>
         /// The constructor this object wraps.
         /// </summary>
-        public ConstructorInfo Constructor => MemberInfo;
+        public ConstructorInfo Constructor => Selection;
 
 
         #region Overrides

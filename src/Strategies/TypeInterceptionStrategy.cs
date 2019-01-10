@@ -183,7 +183,8 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 
             private static SelectedConstructor FromMethodBaseMember(MethodBase<ConstructorInfo> methodBaseMember, Type type)
             {
-                var (cInfo, args) = methodBaseMember.FromType(type);
+                var cInfo = methodBaseMember.MemberInfo(type);
+                var args  = methodBaseMember.Data;
 
                 var newConstructorInfo = type.GetConstructor(cInfo.GetParameters().Select(pi => pi.ParameterType).ToArray());
 

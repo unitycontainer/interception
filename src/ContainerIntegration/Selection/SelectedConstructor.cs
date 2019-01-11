@@ -34,7 +34,7 @@ namespace Unity.Interception.ContainerIntegration.Selection
 
         #region Overrides
 
-        protected override IEnumerable<ConstructorInfo> DeclaredMembers(Type type)
+        public override IEnumerable<ConstructorInfo> DeclaredMembers(Type type)
         {
 #if NETCOREAPP1_0 || NETSTANDARD1_0
             return type.GetTypeInfo().DeclaredConstructors

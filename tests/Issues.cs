@@ -1,13 +1,14 @@
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Unity.Interception.InterceptionBehaviors;
-using Unity.Interception.Interceptors.InstanceInterceptors.InterfaceInterception;
-using Unity.Interception.PolicyInjection.Pipeline;
-using Unity.Interception.ContainerIntegration;
 using System.Diagnostics;
 using Unity;
 using Unity.Interception;
+using Unity.Interception.ContainerIntegration;
+using Unity.Interception.InterceptionBehaviors;
+using Unity.Interception.Interceptors.InstanceInterceptors.InterfaceInterception;
+using Unity.Interception.PolicyInjection.Pipeline;
+using Unity.Lifetime;
 
 namespace UnityInterception.Tests
 {

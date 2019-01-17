@@ -1,5 +1,7 @@
-﻿
-
+﻿using Microsoft.Practices.Unity.InterceptionExtension.Tests.MatchingRules;
+using Microsoft.Practices.Unity.InterceptionExtension.Tests.ObjectsUnderTest;
+using Microsoft.Practices.Unity.TestSupport;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,13 +9,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Microsoft.Practices.Unity.InterceptionExtension.Tests.MatchingRules;
-using Microsoft.Practices.Unity.InterceptionExtension.Tests.ObjectsUnderTest;
-using Microsoft.Practices.Unity.TestSupport;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Unity;
 using Unity.Interception;
-using Unity.Interception.ContainerIntegration;
 using Unity.Interception.Interceptors;
 using Unity.Interception.Interceptors.InstanceInterceptors;
 using Unity.Interception.Interceptors.InstanceInterceptors.InterfaceInterception;
@@ -22,6 +19,7 @@ using Unity.Interception.PolicyInjection.MatchingRules;
 using Unity.Interception.PolicyInjection.Pipeline;
 using Unity.Interception.PolicyInjection.Policies;
 using Unity.Interception.Utilities;
+using Unity.Lifetime;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterception
 {

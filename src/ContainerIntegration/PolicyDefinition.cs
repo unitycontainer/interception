@@ -1,13 +1,11 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Unity.Injection;
 using Unity.Interception.PolicyInjection.MatchingRules;
 using Unity.Interception.PolicyInjection.Pipeline;
 using Unity.Interception.PolicyInjection.Policies;
 using Unity.Interception.Utilities;
-using Unity.Registration;
+using Unity.Lifetime;
 
 namespace Unity.Interception.ContainerIntegration
 {

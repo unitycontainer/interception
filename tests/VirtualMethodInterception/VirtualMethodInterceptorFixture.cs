@@ -1,20 +1,18 @@
-﻿
-
+﻿using Microsoft.Practices.Unity.TestSupport;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Microsoft.Practices.Unity.TestSupport;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Runtime.CompilerServices;
 using Unity;
 using Unity.Interception;
-using Unity.Interception.ContainerIntegration;
 using Unity.Interception.Interceptors;
 using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception;
 using Unity.Interception.PolicyInjection;
 using Unity.Interception.PolicyInjection.Pipeline;
-using System.Runtime.CompilerServices;
+using Unity.Lifetime;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInterceptorTests
 {

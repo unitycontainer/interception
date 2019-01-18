@@ -531,7 +531,7 @@ namespace Unity.Interception.ContainerIntegration
             Guard.TypeIsAssignable(typeof(T), type, "type");
             Guard.ArgumentNotNull(injectionMembers, "injectionMembers");
 
-            Container.RegisterType(typeof(T), type, name, lifetimeManager, injectionMembers);
+            Container.RegisterType(typeof(T), type, name, (ITypeLifetimeManager)lifetimeManager, injectionMembers);
 
             return update(name);
         }

@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.27004.2002
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Unity.Interception", "src\Unity.Interception.csproj", "{B73259E0-77F8-41FD-9A7A-CAB8AC231086}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Interception.Tests", "tests\Interception.Tests.csproj", "{83D32085-6A48-4EDE-B1CD-1B6D00BE10C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Interception.Tests", "tests\Unity.Interception.Tests.csproj", "{83D32085-6A48-4EDE-B1CD-1B6D00BE10C9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

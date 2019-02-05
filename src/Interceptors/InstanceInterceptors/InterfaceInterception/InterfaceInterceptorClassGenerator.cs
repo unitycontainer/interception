@@ -176,7 +176,7 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
         {
             TypeAttributes newAttributes = TypeAttributes.Public | TypeAttributes.Class;
 
-            ModuleBuilder moduleBuilder = GetModuleBuilder();
+            ModuleBuilder moduleBuilder = InterceptorClassGenerator.CreateModuleBuilder(AssemblyBuilder);
             _typeBuilder = moduleBuilder.DefineType(CreateTypeName(), newAttributes);
 
             _mainInterfaceMapper = DefineGenericArguments();

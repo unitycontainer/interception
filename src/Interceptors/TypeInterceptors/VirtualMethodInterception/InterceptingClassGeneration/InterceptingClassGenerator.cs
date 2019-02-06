@@ -214,7 +214,7 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
 
             Type baseClass = GetGenericType(_typeToIntercept);
 
-            ModuleBuilder moduleBuilder = InterceptingClassGenerator.GetModuleBuilder();
+            ModuleBuilder moduleBuilder = InterceptorClassGenerator.CreateModuleBuilder(AssemblyBuilder);
             _typeBuilder = moduleBuilder.DefineType(
                 "DynamicModule.ns.Wrapped_" + _typeToIntercept.Name + "_" + Guid.NewGuid().ToString("N"),
                 newAttributes,

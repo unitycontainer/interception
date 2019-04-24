@@ -1,7 +1,7 @@
 <Project>
 
   <PropertyGroup>
-    <Version>5.10.0</Version>
+    <Version>5.10.1</Version>
     <PackageReleaseNotes>This package is compatible with Net Standard 2.0, Net Core 2.0, .NET 4.5, 4.6, and 4.7 frameworks.</PackageReleaseNotes>
   </PropertyGroup>
 

@@ -28,14 +28,13 @@ namespace UnityInterception.Tests
 
             container.RegisterType<IMyOtherClass, MyClass>(new Interceptor<InterfaceInterceptor>(),
                                                            new InterceptionBehavior<LoggingInterceptionBehavior>());
-
+            MyClass.Reset();
             var class1 = container.Resolve<IMyClass>();
             var class2 = container.Resolve<IMyOtherClass>();
             class1.MyFunction();
             class2.MyFunction();
             Assert.AreEqual(1, MyClass.Count);
         }
-
 
         [TestMethod]
         public void unitycontainer_unity_45()
@@ -103,7 +102,11 @@ namespace UnityInterception.Tests
             public MyClass() { Count++;  }
 
             public void MyFunction() { Debug.WriteLine("MyFunction"); }
+
+            public static void Reset() => Count = 0;
         }
+
+
         public class LoggingInterceptionBehavior : IInterceptionBehavior
         {
             public IMethodReturn Invoke(IMethodInvocation input, GetNextInterceptionBehaviorDelegate getNext)

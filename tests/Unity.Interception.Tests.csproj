@@ -33,7 +33,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="!Exists('$(UnityAbstractions)')">
-    <PackageReference Include="Unity.Abstractions" Version="$(UnityAbstractionsVersion)" />
+    <PackageReference Include="Unity.Abstractions" Version="5.11.1" />
   </ItemGroup>
 
   <ItemGroup Condition="!Exists('$(UnityContainer)')">

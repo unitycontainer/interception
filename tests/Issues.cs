@@ -28,6 +28,7 @@ namespace UnityInterception.Tests
 
             container.RegisterType<IMyOtherClass, MyClass>(new Interceptor<InterfaceInterceptor>(),
                                                            new InterceptionBehavior<LoggingInterceptionBehavior>());
+            MyClass.Count = 0;
 
             var class1 = container.Resolve<IMyClass>();
             var class2 = container.Resolve<IMyOtherClass>();

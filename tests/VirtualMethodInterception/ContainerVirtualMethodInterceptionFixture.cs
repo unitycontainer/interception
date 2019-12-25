@@ -200,7 +200,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
                         new Interceptor<VirtualMethodInterceptor>(),
                         new InterceptionBehavior(callCountBehavior));
 
-            ClassWithSingleNonDefaultConstructor instance = container.Resolve<ClassWithSingleNonDefaultConstructor>();
+            var instance = container.Resolve<ClassWithSingleNonDefaultConstructor>();
 
             string value = instance.GetValue();
 

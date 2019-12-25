@@ -75,10 +75,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
             Type[] allAdditionalInterfaces =
                 Intercept.GetAllAdditionalInterfaces(enumerable, additionalInterfaces);
 
-            Type interceptingType =
-                interceptor.CreateProxyType(typeToBuild, allAdditionalInterfaces);
-
-            DerivedTypeConstructorSelectorPolicy.SetPolicyForInterceptingType(ref context, interceptingType);
+            context.Type = interceptor.CreateProxyType(typeToBuild, allAdditionalInterfaces);
         }
 
         /// <summary>

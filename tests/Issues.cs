@@ -18,7 +18,7 @@ namespace UnityInterception.Tests
         [TestMethod]
         public void unitycontainer_unity_177()
         {
-            var container = new UnityContainer();
+            IUnityContainer container = new UnityContainer();
             container.AddNewExtension<Interception>();
 
             container.RegisterType<MyClass>(new ContainerControlledLifetimeManager());
@@ -79,7 +79,8 @@ namespace UnityInterception.Tests
         [TestMethod]
         public void unitycontainer_interception_162()
         {
-            var container = new UnityContainer();
+            IUnityContainer container = new UnityContainer();
+
             container.AddNewExtension<Interception>();
             container.RegisterType<IMyClass, MyClass>(new ContainerControlledLifetimeManager(),
                 new Interceptor<InterfaceInterceptor>(),

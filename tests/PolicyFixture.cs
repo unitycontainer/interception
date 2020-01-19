@@ -111,11 +111,10 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
 
         private static IUnityContainer CreateConfiguredContainer()
         {
-            IUnityContainer container =
-                new UnityContainer()
-                .RegisterType<ICallHandler, Handler1>("handler1")
-                .RegisterType<ICallHandler, Handler2>("handler2")
-                .RegisterType<ICallHandler, Handler3>("handler3");
+            IUnityContainer container = new UnityContainer();
+            container.RegisterType<ICallHandler, Handler1>("handler1")
+                     .RegisterType<ICallHandler, Handler2>("handler2")
+                     .RegisterType<ICallHandler, Handler3>("handler3");
             return container;
         }
 

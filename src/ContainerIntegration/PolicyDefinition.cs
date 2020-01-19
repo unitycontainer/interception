@@ -32,8 +32,8 @@ namespace Unity.Interception.ContainerIntegration
 
         private PolicyDefinition UpdateRuleDrivenPolicyInjection()
         {
-            _extension.Container
-                .RegisterType<InjectionPolicy, RuleDrivenPolicy>(_policyName,
+            
+                UnityContainerExtensions.RegisterType<InjectionPolicy, RuleDrivenPolicy>(_extension.Container, _policyName,
                     new InjectionConstructor(_policyName,
                         new ResolvedArrayParameter<IMatchingRule>(_rulesParameters.ToArray()),
                         _handlersNames.ToArray()));

@@ -22,17 +22,19 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.PolicyInjection
         protected virtual void Arrange()
         {
             Container =
-                new UnityContainer()
-                    .RegisterType<BaseClass, DerivedClass>("derived",
+               new UnityContainer();
+
+            Container.RegisterType<BaseClass, DerivedClass>("derived",
                         new Interceptor<TransparentProxyInterceptor>(),
-                        new InterceptionBehavior<PolicyInjectionBehavior>())
-                    .RegisterType<BaseClass, DerivedWithNoOverrideClass>("derived-nooverride",
+                        new InterceptionBehavior<PolicyInjectionBehavior>());
+            Container.RegisterType<BaseClass, DerivedWithNoOverrideClass>("derived-nooverride",
                         new Interceptor<TransparentProxyInterceptor>(),
-                        new InterceptionBehavior<PolicyInjectionBehavior>())
-                    .RegisterType<BaseClass>(
+                        new InterceptionBehavior<PolicyInjectionBehavior>());
+            Container.RegisterType<BaseClass>(
                         new Interceptor<TransparentProxyInterceptor>(),
-                        new InterceptionBehavior<PolicyInjectionBehavior>())
-                    .AddNewExtension<Interception>()
+                        new InterceptionBehavior<PolicyInjectionBehavior>());
+            
+            Container.AddNewExtension<Interception>()
                     .Configure<Interception>()
                         .AddPolicy("base")
                             .AddMatchingRule(new TypeMatchingRule(typeof(BaseClass)))
@@ -47,9 +49,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.PolicyInjection
                         .AddPolicy("derived")
                             .AddMatchingRule(new TypeMatchingRule(typeof(DerivedClass)))
                             .AddMatchingRule(new MemberNameMatchingRule("InterceptedMethod"))
-                            .AddCallHandler(new AppendSuffixCallHandler { Suffix = "-derivedhandler", Order = 3 })
-                        .Interception
-                    .Container;
+                            .AddCallHandler(new AppendSuffixCallHandler { Suffix = "-derivedhandler", Order = 3 });
         }
 
         public IUnityContainer Container { get; set; }

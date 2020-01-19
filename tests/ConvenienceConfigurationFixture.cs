@@ -237,15 +237,16 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
                     .AddPolicy("policy1")
                         .AddMatchingRule("rule1")
                         .AddCallHandler("handler1")
-                        .AddCallHandler("handler2").Interception.Container
-                .RegisterType<IMatchingRule, AlwaysMatchingRule>("rule1")
-                .RegisterType<ICallHandler, GlobalCountCallHandler>(
-                    "handler1",
-                    new InjectionConstructor("handler1"))
-                .RegisterType<ICallHandler, GlobalCountCallHandler>(
-                    "handler2",
-                    new InjectionConstructor("handler2"),
-                    new InjectionProperty("Order", 10));
+                        .AddCallHandler("handler2");
+            
+            container.RegisterType<IMatchingRule, AlwaysMatchingRule>("rule1")
+                     .RegisterType<ICallHandler, GlobalCountCallHandler>(
+                         "handler1",
+                         new InjectionConstructor("handler1"))
+                     .RegisterType<ICallHandler, GlobalCountCallHandler>(
+                         "handler2",
+                         new InjectionConstructor("handler2"),
+                         new InjectionProperty("Order", 10));
 
             GlobalCountCallHandler.Calls.Clear();
 

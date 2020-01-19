@@ -78,10 +78,10 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
             callCountHandler = new CallCountHandler();
             returnHandler = new StringReturnRewriteHandler("REWRITE");
 
-            IUnityContainer container
-                = new UnityContainer()
-                    .RegisterInstance<ICallHandler>("call count", callCountHandler)
-                    .RegisterInstance<ICallHandler>("rewrite", returnHandler);
+            IUnityContainer container = new UnityContainer();
+
+            container.RegisterInstance<ICallHandler>("call count", callCountHandler)
+                     .RegisterInstance<ICallHandler>("rewrite", returnHandler);
 
             return container;
         }

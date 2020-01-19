@@ -118,14 +118,12 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         [TestMethod]
         public void CanInterceptWithInterceptorSetAsDefaultForBaseClassWithMultipleImplementations()
         {
-            IUnityContainer container =
-                new UnityContainer()
-                    .RegisterType<BaseClass, ImplementationOne>("one")
-                    .RegisterType<BaseClass, ImplementationTwo>("two")
-                    .AddNewExtension<Interception>()
-                    .Configure<Interception>()
-                        .SetDefaultInterceptorFor<BaseClass>(new VirtualMethodInterceptor())
-                    .Container;
+            IUnityContainer container = new UnityContainer();
+            container.RegisterType<BaseClass, ImplementationOne>("one")
+                     .RegisterType<BaseClass, ImplementationTwo>("two")
+                     .AddNewExtension<Interception>()
+                     .Configure<Interception>()
+                         .SetDefaultInterceptorFor<BaseClass>(new VirtualMethodInterceptor());
 
             BaseClass instanceOne = container.Resolve<BaseClass>("one");
             BaseClass instanceTwo = container.Resolve<BaseClass>("two");

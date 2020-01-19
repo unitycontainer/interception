@@ -15,7 +15,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.TransparentProxy
         [TestMethod]
         public void CanInterceptGenericMethodWithHandlerAttributeThroughInterface()
         {
-            var container = new UnityContainer();
+            IUnityContainer container = new UnityContainer();
+
             container.AddNewExtension<Interception>();
             container.RegisterType<IInterfaceWithGenericMethod, ClassWithGenericMethod>(
                 new Interceptor(new TransparentProxyInterceptor()));

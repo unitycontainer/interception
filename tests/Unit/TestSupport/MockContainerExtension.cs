@@ -13,7 +13,7 @@ namespace Microsoft.Practices.Unity.TestSupport
             get { return this.initializeWasCalled; }
         }
 
-        public new IExtensionContext Context
+        public new ExtensionContext Context
         {
             get { return base.Context; }
         }

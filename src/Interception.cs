@@ -32,7 +32,6 @@ namespace Unity.Interception
         /// </summary>
         protected override void Initialize()
         {
-            throw new NotImplementedException();
             //Context.Strategies.Add(new InstanceInterceptionStrategy(),  UnityBuildStage.Lifetime);
             //Context.Strategies.Add(new TypeInterceptionStrategy(), UnityBuildStage.PreCreation);
             //Context.Container.RegisterInstance<InjectionPolicy>(typeof(AttributeDrivenPolicy).AssemblyQualifiedName,

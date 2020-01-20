@@ -15,6 +15,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>package.snk</AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
+    <LangVersion>latest</LangVersion>
     <TargetFrameworks>netstandard2.0;net48;net47;net46;net45;netcoreapp2.0</TargetFrameworks>
   </PropertyGroup>
 

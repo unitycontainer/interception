@@ -12,7 +12,7 @@ using Unity.Interception.Interceptors.InstanceInterceptors.InterfaceInterception
 using Unity.Interception.Interceptors.TypeInterceptors;
 using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
+namespace InterceptFixture.Tests
 {
     [TestClass]
     public class InterceptFixture

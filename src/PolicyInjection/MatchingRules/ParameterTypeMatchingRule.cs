@@ -78,7 +78,7 @@ namespace Unity.Interception.PolicyInjection.MatchingRules
                 }
                 if (matchInfo.Kind == ParameterKind.ReturnValue)
                 {
-                    MethodInfo method = member as MethodInfo;
+                    MethodInfo? method = member as MethodInfo;
                     if (method != null)
                     {
                         if (typeRule.Matches(method.ReturnType))

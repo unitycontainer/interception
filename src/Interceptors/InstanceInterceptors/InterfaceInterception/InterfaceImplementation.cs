@@ -17,7 +17,7 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
         private readonly GenericParameterMapper _genericParameterMapper;
         private readonly FieldBuilder _proxyInterceptionPipelineField;
         private readonly bool _explicitImplementation;
-        private readonly FieldBuilder _targetField;
+        private readonly FieldBuilder? _targetField;
 
         public InterfaceImplementation(
             TypeBuilder typeBuilder,
@@ -32,7 +32,7 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
             Type @interface,
             FieldBuilder proxyInterceptionPipelineField,
             bool explicitImplementation,
-            FieldBuilder targetField)
+            FieldBuilder? targetField)
             : this(typeBuilder, @interface, GenericParameterMapper.DefaultMapper, proxyInterceptionPipelineField, explicitImplementation, targetField)
         { }
 
@@ -42,7 +42,7 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
             GenericParameterMapper genericParameterMapper,
             FieldBuilder proxyInterceptionPipelineField,
             bool explicitImplementation,
-            FieldBuilder targetField)
+            FieldBuilder? targetField)
         {
             _typeBuilder = typeBuilder;
             _interface = @interface;
@@ -57,8 +57,10 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
                 // in this case, the targetInterface is a constructed version using the generic type parameters
                 // from the generated type generate type
                 var definition = @interface.GetGenericTypeDefinition();
+
                 Debug.Assert(definition != null, nameof(definition) + " != null");
-                var mappedParameters = definition.GetGenericArguments().Select(t => genericParameterMapper.Map(t)).ToArray();
+
+                var mappedParameters = definition!.GetGenericArguments().Select(t => genericParameterMapper.Map(t)).ToArray();
                 _targetInterface = definition.MakeGenericType(mappedParameters);
             }
             else
@@ -144,12 +146,12 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
 
         private void OverrideProperty(PropertyInfo property, int count)
         {
-            MethodBuilder getMethod = OverridePropertyMethod(property.GetGetMethod(), count);
-            MethodBuilder setMethod = OverridePropertyMethod(property.GetSetMethod(), count);
+            MethodBuilder? getMethod = OverridePropertyMethod(property.GetGetMethod(), count);
+            MethodBuilder? setMethod = OverridePropertyMethod(property.GetSetMethod(), count);
             AddPropertyDefinition(property, getMethod, setMethod);
         }
 
-        private void AddPropertyDefinition(PropertyInfo property, MethodBuilder getMethod, MethodBuilder setMethod)
+        private void AddPropertyDefinition(PropertyInfo property, MethodBuilder? getMethod, MethodBuilder? setMethod)
         {
             PropertyBuilder newProperty =
                 _typeBuilder.DefineProperty(
@@ -169,7 +171,7 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
             }
         }
 
-        private MethodBuilder OverridePropertyMethod(MethodInfo method, int count)
+        private MethodBuilder? OverridePropertyMethod(MethodInfo method, int count)
         {
             return method == null
                 ? null
@@ -193,12 +195,12 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
 
         private void OverrideEvent(EventInfo @event, int count)
         {
-            MethodBuilder addMethod = OverrideEventMethod(@event.GetAddMethod(), count);
-            MethodBuilder removeMethod = OverrideEventMethod(@event.GetRemoveMethod(), count);
+            MethodBuilder? addMethod = OverrideEventMethod(@event.GetAddMethod(), count);
+            MethodBuilder? removeMethod = OverrideEventMethod(@event.GetRemoveMethod(), count);
             AddEventDefinition(@event, addMethod, removeMethod);
         }
 
-        private void AddEventDefinition(EventInfo @event, MethodBuilder addMethod, MethodBuilder removeMethod)
+        private void AddEventDefinition(EventInfo @event, MethodBuilder? addMethod, MethodBuilder? removeMethod)
         {
             EventBuilder newEvent = _typeBuilder.DefineEvent(@event.Name, @event.Attributes, @event.EventHandlerType);
 
@@ -213,7 +215,7 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
             }
         }
 
-        private MethodBuilder OverrideEventMethod(MethodInfo method, int count)
+        private MethodBuilder? OverrideEventMethod(MethodInfo method, int count)
         {
             return method == null
                 ? null

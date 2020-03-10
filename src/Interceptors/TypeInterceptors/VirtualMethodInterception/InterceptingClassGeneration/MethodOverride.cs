@@ -172,8 +172,8 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
                 Label done = il.DefineLabel();
                 LocalBuilder ex = il.DeclareLocal(typeof(Exception));
 
-                LocalBuilder baseReturn = null;
-                LocalBuilder parameters = null;
+                LocalBuilder? baseReturn = null;
+                LocalBuilder? parameters = null;
                 if (MethodHasReturnValue)
                 {
                     baseReturn = il.DeclareLocal(paramMapper.GetParameterType(_methodToOverride.ReturnType));

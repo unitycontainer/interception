@@ -18,7 +18,7 @@ namespace Unity.Interception.InterceptionBehaviors
         /// <param name="input">Inputs to the current call to the target.</param>
         /// <param name="getNext">Delegate to execute to get the next delegate in the behavior chain.</param>
         /// <returns>Return value from the target.</returns>
-        IMethodReturn Invoke(IMethodInvocation input, GetNextInterceptionBehaviorDelegate getNext);
+        IMethodReturn Invoke(IMethodInvocation input, GetNextInterceptionBehaviorDelegate? getNext);
 
         /// <summary>
         /// Returns the interfaces required by the behavior for the objects it intercepts.
@@ -42,7 +42,7 @@ namespace Unity.Interception.InterceptionBehaviors
     /// <param name="input">Inputs to the current method call.</param>
     /// <param name="getNext">Delegate to get the next interceptor in the chain.</param>
     /// <returns>Return from the next method in the chain.</returns>
-    public delegate IMethodReturn InvokeInterceptionBehaviorDelegate(IMethodInvocation input, GetNextInterceptionBehaviorDelegate getNext);
+    public delegate IMethodReturn InvokeInterceptionBehaviorDelegate(IMethodInvocation input, GetNextInterceptionBehaviorDelegate? getNext);
 
     /// <summary>
     /// This delegate type is passed to each interceptor's Invoke method.

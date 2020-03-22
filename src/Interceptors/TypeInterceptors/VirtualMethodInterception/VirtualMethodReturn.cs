@@ -57,12 +57,12 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
         /// Returns value from the method call.
         /// </summary>
         /// <remarks>This value is null if the method has no return value.</remarks>
-        public object ReturnValue { get; set; }
+        public object? ReturnValue { get; set; }
 
         /// <summary>
         /// If the method threw an exception, the exception object is here.
         /// </summary>
-        public Exception Exception { get; set; }
+        public Exception? Exception { get; set; }
 
         /// <summary>
         /// Retrieves a dictionary that can be used to store arbitrary additional

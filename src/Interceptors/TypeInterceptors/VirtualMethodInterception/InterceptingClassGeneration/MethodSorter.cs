@@ -95,8 +95,11 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
             while (index < sortedMethods.Count)
             {
                 int overloadStart = index;
-                List<MethodInfo> overloads = new List<MethodInfo>();
-                overloads.Add(sortedMethods[overloadStart]);
+                List<MethodInfo> overloads = new List<MethodInfo>
+                {
+                    sortedMethods[overloadStart]
+                };
+
                 ++index;
                 while (index < sortedMethods.Count &&
                     CompareMethodInfosByParameterLists(sortedMethods[overloadStart], sortedMethods[index]) == 0)
@@ -121,18 +124,20 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
             }
 
             int minDepth = int.MaxValue;
-            MethodInfo selectedMethod = null;
+            MethodInfo? selectedMethod = null;
+
             foreach (MethodInfo method in overloads)
             {
                 int thisDepth = DeclarationDepth(method);
                 if (thisDepth < minDepth)
-                {
+                { 
                     minDepth = thisDepth;
                     selectedMethod = method;
                 }
             }
 
-            return selectedMethod;
+            System.Diagnostics.Debug.Assert(null != selectedMethod);
+            return selectedMethod!;
         }
 
         /// <summary>

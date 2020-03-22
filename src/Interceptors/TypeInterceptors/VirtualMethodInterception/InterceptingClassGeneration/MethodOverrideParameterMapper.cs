@@ -1,6 +1,7 @@
 ﻿
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -16,7 +17,7 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
     internal class MethodOverrideParameterMapper
     {
         private readonly MethodInfo _methodToOverride;
-        private GenericParameterMapper _genericParameterMapper;
+        private GenericParameterMapper? _genericParameterMapper;
 
         public MethodOverrideParameterMapper(MethodInfo methodToOverride)
         {
@@ -63,7 +64,8 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
 
         public Type GetParameterType(Type originalParameterType)
         {
-            return _genericParameterMapper.Map(originalParameterType);
+            Debug.Assert(null != _genericParameterMapper);
+            return _genericParameterMapper!.Map(originalParameterType);
         }
 
         public Type GetElementType(Type originalParameterType)
@@ -76,6 +78,13 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
             return GetParameterType(_methodToOverride.ReturnType);
         }
 
-        public Type[] GenericMethodParameters => _genericParameterMapper.GetGeneratedParameters();
+        public Type[] GenericMethodParameters
+        {
+            get
+            {
+                Debug.Assert(null != _genericParameterMapper);
+                return _genericParameterMapper!.GetGeneratedParameters();
+            }
+        }
     }
 }

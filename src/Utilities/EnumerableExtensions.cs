@@ -68,7 +68,7 @@ namespace Unity.Interception.Utilities
         /// <returns>The resulting string.</returns>
         public static string JoinStrings<TItem>(this IEnumerable<TItem> sequence, string separator)
         {
-            return sequence.JoinStrings(separator, item => item.ToString());
+            return sequence.JoinStrings(separator, item => item?.ToString() ?? string.Empty);
         }
     }
 }

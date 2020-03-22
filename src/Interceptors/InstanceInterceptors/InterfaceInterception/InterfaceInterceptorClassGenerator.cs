@@ -1,6 +1,4 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -10,6 +8,8 @@ using System.Reflection.Emit;
 using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration;
 using Unity.Interception.Properties;
 using Unity.Interception.Utilities;
+using Unity.Interception.InterceptionBehaviors;
+using System.Diagnostics;
 
 namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceInterception
 {
@@ -19,15 +19,18 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
     /// </summary>
     public partial class InterfaceInterceptorClassGenerator
     {
+        private static readonly ConstructorInfo ObjectConstructorInfo =
+            typeof(object).GetConstructor(new Type[0]);
+
         private static readonly AssemblyBuilder AssemblyBuilder;
         private readonly Type _typeToIntercept;
         private readonly IEnumerable<Type> _additionalInterfaces;
-        private GenericParameterMapper _mainInterfaceMapper;
+        private readonly GenericParameterMapper _mainInterfaceMapper;
 
-        private FieldBuilder _proxyInterceptionPipelineField;
-        private FieldBuilder _targetField;
-        private FieldBuilder _typeToProxyField;
-        private TypeBuilder _typeBuilder;
+        private readonly FieldBuilder _proxyInterceptionPipelineField;
+        private readonly FieldBuilder _targetField;
+        private readonly FieldBuilder _typeToProxyField;
+        private readonly TypeBuilder _typeBuilder;
 
         static InterfaceInterceptorClassGenerator()
         {
@@ -35,6 +38,7 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
 
             using (MemoryStream ms = new MemoryStream())
             {
+                // TODO: "Unity.Interception.package.snk"
                 typeof(InterfaceInterceptorClassGenerator)
                     .Assembly
                     .GetManifestResourceStream("Unity.Interception.package.snk")
@@ -65,7 +69,17 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
 
             _typeToIntercept = typeToIntercept;
             _additionalInterfaces = interfaces;
-            CreateTypeBuilder();
+
+            TypeAttributes newAttributes = TypeAttributes.Public | TypeAttributes.Class;
+
+            ModuleBuilder moduleBuilder = InterceptorClassGenerator.CreateModuleBuilder(AssemblyBuilder);
+            _typeBuilder = moduleBuilder.DefineType(CreateTypeName(), newAttributes);
+
+            _mainInterfaceMapper = DefineGenericArguments();
+
+            _proxyInterceptionPipelineField = InterceptingProxyImplementor.ImplementIInterceptingProxy(_typeBuilder);
+            _targetField = _typeBuilder.DefineField("target", _typeToIntercept, FieldAttributes.Private);
+            _typeToProxyField = _typeBuilder.DefineField("typeToProxy", typeof(Type), FieldAttributes.Private);
         }
 
         private static void CheckAdditionalInterfaces(IEnumerable<Type> additionalInterfaces)
@@ -129,7 +143,9 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
 
             AddConstructor();
 
-            Type result = _typeBuilder.CreateTypeInfo().AsType();
+            var info = _typeBuilder.CreateTypeInfo(); Debug.Assert(null != info);
+            Type result = info!.AsType();
+
 #if DEBUG_SAVE_GENERATED_ASSEMBLY
             assemblyBuilder.Save("Unity_ILEmit_InterfaceProxies.dll");
 #endif
@@ -152,11 +168,11 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
             // Call base class constructor
 
             il.Emit(OpCodes.Ldarg_0);
-            il.Emit(OpCodes.Call, ObjectMethods.Constructor);
+            il.Emit(OpCodes.Call, ObjectConstructorInfo);
 
             // Initialize pipeline field
             il.Emit(OpCodes.Ldarg_0);
-            il.Emit(OpCodes.Newobj, InterceptionBehaviorPipelineMethods.Constructor);
+            il.Emit(OpCodes.Newobj, InterceptionBehaviorPipeline.DefauleConstructorInfo);
             il.Emit(OpCodes.Stfld, _proxyInterceptionPipelineField);
 
             // Initialize the target field
@@ -170,20 +186,6 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
             il.Emit(OpCodes.Stfld, _typeToProxyField);
 
             il.Emit(OpCodes.Ret);
-        }
-
-        private void CreateTypeBuilder()
-        {
-            TypeAttributes newAttributes = TypeAttributes.Public | TypeAttributes.Class;
-
-            ModuleBuilder moduleBuilder = InterceptorClassGenerator.CreateModuleBuilder(AssemblyBuilder);
-            _typeBuilder = moduleBuilder.DefineType(CreateTypeName(), newAttributes);
-
-            _mainInterfaceMapper = DefineGenericArguments();
-
-            _proxyInterceptionPipelineField = InterceptingProxyImplementor.ImplementIInterceptingProxy(_typeBuilder);
-            _targetField = _typeBuilder.DefineField("target", _typeToIntercept, FieldAttributes.Private);
-            _typeToProxyField = _typeBuilder.DefineField("typeToProxy", typeof(Type), FieldAttributes.Private);
         }
 
         private string CreateTypeName()

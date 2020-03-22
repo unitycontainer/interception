@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Unity.Builder;
 using Unity.Interception.ContainerIntegration.ObjectBuilder;
 using Unity.Interception.InterceptionBehaviors;
@@ -13,8 +14,8 @@ namespace Unity.Interception.ContainerIntegration
     /// </summary>
     public abstract class InterceptionBehaviorBase : InterceptionMember
     {
-        private readonly NamedTypeBuildKey _behaviorKey;
-        private readonly IInterceptionBehavior _explicitBehavior;
+        private readonly NamedTypeBuildKey? _behaviorKey;
+        private readonly IInterceptionBehavior? _explicitBehavior;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IInterceptionBehavior"/> with a 
@@ -32,7 +33,7 @@ namespace Unity.Interception.ContainerIntegration
         /// </summary>
         /// <param name="behaviorType">Type of behavior to </param>
         /// <param name="name"></param>
-        protected InterceptionBehaviorBase(Type behaviorType, string name)
+        protected InterceptionBehaviorBase(Type behaviorType, string? name)
         {
             Guard.ArgumentNotNull(behaviorType, "behaviorType");
             Guard.TypeIsAssignable(typeof(IInterceptionBehavior), behaviorType, "behaviorType");
@@ -57,7 +58,7 @@ namespace Unity.Interception.ContainerIntegration
         /// <param name="mappedToType">Type to register.</param>
         /// <param name="name">Name used to resolve the type object.</param>
         /// <param name="policies">Policy list to add policies to.</param>
-        public override void AddPolicies<TContext, TPolicySet>(Type registeredType, Type mappedToType, string name, ref TPolicySet policies)
+        public override void AddPolicies<TContext, TPolicySet>(Type registeredType, Type? mappedToType, string? name, ref TPolicySet policies)
         {
             if (_explicitBehavior != null)
             {
@@ -67,7 +68,7 @@ namespace Unity.Interception.ContainerIntegration
             else
             {
                 var behaviorsPolicy = GetBehaviorsPolicy(ref policies);
-                behaviorsPolicy.AddBehaviorKey(_behaviorKey);
+                behaviorsPolicy.AddBehaviorKey(_behaviorKey!);
             }
         }
 

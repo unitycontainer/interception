@@ -1,12 +1,11 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 using Unity.Interception.InterceptionBehaviors;
 using Unity.Interception.PolicyInjection.Pipeline;
 using Unity.Interception.Properties;
@@ -19,8 +18,29 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
     /// </summary>
     public class MethodOverride
     {
-        private static readonly MethodInfo BuildAbstractMethodInvokedExceptionMethod =
-            StaticReflection.GetMethodInfo(() => BuildAbstractMethodInvokedException());
+        private static readonly MethodInfo BuildAbstractMethodInvokedExceptionMethod = 
+            typeof(MethodOverride).GetMethod(nameof(MethodOverride.BuildAbstractMethodInvokedException));
+        private static readonly MethodInfo CreateExceptionMethodReturnMethod =
+            typeof(IMethodInvocation).GetMethod(nameof(IMethodInvocation.CreateExceptionMethodReturn));
+        private static readonly MethodInfo CreateReturnMethod = 
+            typeof(IMethodInvocation).GetMethod(nameof(IMethodInvocation.CreateMethodReturn));
+        private static readonly MethodInfo GetArgumentsMethod =
+            typeof(IMethodInvocation).GetProperty(nameof(IMethodInvocation.Arguments)).GetGetMethod();
+        private static readonly ConstructorInfo CompilerGeneratedAttributeCtor =
+            typeof(CompilerGeneratedAttribute).GetConstructor(new Type[0]);
+        private static readonly MethodInfo GetExceptionMethod =
+            typeof(IMethodReturn).GetProperty(nameof(IMethodReturn.Exception)).GetGetMethod();
+        private static readonly MethodInfo GetReturnValueMethod =
+            typeof(IMethodReturn).GetProperty(nameof(IMethodReturn.ReturnValue)).GetGetMethod();
+        private static readonly MethodInfo GetOutputsMethod =
+            typeof(IMethodReturn).GetProperty(nameof(IMethodReturn.Outputs)).GetGetMethod();
+        private static readonly MethodInfo GetMethodFromHandleMethod =
+            typeof(MethodBase).GetMethod(nameof(MethodBase.GetMethodFromHandle), new Type[] { typeof(RuntimeMethodHandle) });
+        private static readonly MethodInfo GetMethodForGenericFromHandleMethod =
+            typeof(MethodBase).GetMethod(nameof(MethodBase.GetMethodFromHandle), new Type[] { typeof(RuntimeMethodHandle), typeof(RuntimeTypeHandle) });
+        private static readonly MethodInfo GetItemMethod =
+            typeof(System.Collections.IList).GetProperty("Item").GetGetMethod();
+
 
         private readonly TypeBuilder _typeBuilder;
         private readonly MethodInfo _methodToOverride;
@@ -163,7 +183,7 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
             // Parameter 
             methodBuilder.DefineParameter(2, ParameterAttributes.None, "getNext");
 
-            methodBuilder.SetCustomAttribute(new CustomAttributeBuilder(CompilerGeneratedAttributeMethods.CompilerGeneratedAttribute, new object[0]));
+            methodBuilder.SetCustomAttribute(new CustomAttributeBuilder(CompilerGeneratedAttributeCtor, new object[0]));
 
             ILGenerator il = methodBuilder.GetILGenerator();
 
@@ -188,14 +208,14 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
                 {
                     parameters = il.DeclareLocal(typeof(IParameterCollection));
                     il.Emit(OpCodes.Ldarg_1);
-                    il.EmitCall(OpCodes.Callvirt, IMethodInvocationMethods.GetArguments, null);
+                    il.EmitCall(OpCodes.Callvirt, GetArgumentsMethod, null);
                     il.Emit(OpCodes.Stloc, parameters);
 
                     for (int i = 0; i < _methodParameters.Length; ++i)
                     {
                         il.Emit(OpCodes.Ldloc, parameters);
                         EmitLoadConstant(il, i);
-                        il.EmitCall(OpCodes.Callvirt, IListMethods.GetItem, null);
+                        il.EmitCall(OpCodes.Callvirt, GetItemMethod, null);
 
                         if (_methodParameters[i].ParameterType.IsByRef)
                         {
@@ -270,21 +290,21 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
                         {
                             il.Emit(OpCodes.Ldloc, parameters);
                             EmitLoadConstant(il, paramNum);
-                            il.Emit(OpCodes.Callvirt, IListMethods.GetItem);
+                            il.Emit(OpCodes.Callvirt, GetItemMethod);
                         }
                         il.Emit(OpCodes.Stelem_Ref);
                     }
                     il.Emit(OpCodes.Ldloc, outputParamArray);
                 }
 
-                il.Emit(OpCodes.Callvirt, IMethodInvocationMethods.CreateReturn);
+                il.Emit(OpCodes.Callvirt, CreateReturnMethod);
                 il.Emit(OpCodes.Stloc, retval);
                 il.BeginCatchBlock(typeof(Exception));
                 il.Emit(OpCodes.Stloc, ex);
                 // Create an exception return
                 il.Emit(OpCodes.Ldarg_1);
                 il.Emit(OpCodes.Ldloc, ex);
-                il.EmitCall(OpCodes.Callvirt, IMethodInvocationMethods.CreateExceptionMethodReturn, null);
+                il.EmitCall(OpCodes.Callvirt, CreateExceptionMethodReturnMethod, null);
                 il.Emit(OpCodes.Stloc, retval);
                 il.EndExceptionBlock();
                 il.MarkLabel(done);
@@ -296,7 +316,7 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
                 // exception-throwing implementation
                 il.Emit(OpCodes.Ldarg_1);
                 il.EmitCall(OpCodes.Call, BuildAbstractMethodInvokedExceptionMethod, null);
-                il.EmitCall(OpCodes.Callvirt, IMethodInvocationMethods.CreateExceptionMethodReturn, null);
+                il.EmitCall(OpCodes.Callvirt, CreateExceptionMethodReturnMethod, null);
                 il.Emit(OpCodes.Ret);
             }
 
@@ -345,11 +365,11 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
             {
                 // if the declaring type is generic, we need to get the method from the target type
                 il.Emit(OpCodes.Ldtoken, _targetType);
-                il.Emit(OpCodes.Call, MethodBaseMethods.GetMethodForGenericFromHandle);
+                il.Emit(OpCodes.Call, GetMethodForGenericFromHandleMethod);
             }
             else
             {
-                il.Emit(OpCodes.Call, MethodBaseMethods.GetMethodFromHandle); // target method
+                il.Emit(OpCodes.Call, GetMethodFromHandleMethod); // target method
             }
 
             EmitLoadConstant(il, _methodParameters.Length);
@@ -382,7 +402,7 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
 
                 il.Emit(OpCodes.Ldloc, parameterArray);
             }
-            il.Emit(OpCodes.Newobj, VirtualMethodInvocationMethods.VirtualMethodInvocation);
+            il.Emit(OpCodes.Newobj, VirtualMethodInvocation.ConstructorInfo);
             il.Emit(OpCodes.Stloc, inputs);
 
             il.Emit(OpCodes.Ldarg_0);
@@ -402,14 +422,14 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
             il.Emit(OpCodes.Newobj, InvokeInterceptionBehaviorDelegateMethods.InvokeInterceptionBehaviorDelegate);
 
             // And call the pipeline
-            il.Emit(OpCodes.Call, InterceptionBehaviorPipelineMethods.Invoke);
+            il.Emit(OpCodes.Call, InterceptionBehaviorPipeline.InvokeMethodInfo);
 
             il.Emit(OpCodes.Stloc, methodReturn);
 
             // Was there an exception?
             Label noException = il.DefineLabel();
             il.Emit(OpCodes.Ldloc, methodReturn);
-            il.EmitCall(OpCodes.Callvirt, IMethodReturnMethods.GetException, null);
+            il.EmitCall(OpCodes.Callvirt, GetExceptionMethod, null);
             il.Emit(OpCodes.Stloc, ex);
             il.Emit(OpCodes.Ldloc, ex);
             il.Emit(OpCodes.Ldnull);
@@ -434,7 +454,7 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
             if (MethodHasReturnValue)
             {
                 il.Emit(OpCodes.Ldloc, methodReturn);
-                il.EmitCall(OpCodes.Callvirt, IMethodReturnMethods.GetReturnValue, null);
+                il.EmitCall(OpCodes.Callvirt, GetReturnValueMethod, null);
                 if (ReturnType.IsValueType || ReturnType.IsGenericParameter)
                 {
                     il.Emit(OpCodes.Unbox_Any, paramMapper.GetReturnType());
@@ -457,9 +477,9 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
 
                     // GetOrDefault result of output parameter out of the results array
                     il.Emit(OpCodes.Ldloc, methodReturn);
-                    il.Emit(OpCodes.Callvirt, IMethodReturnMethods.GetOutputs);
+                    il.Emit(OpCodes.Callvirt, GetOutputsMethod);
                     EmitLoadConstant(il, outArgIndex);
-                    il.Emit(OpCodes.Callvirt, IListMethods.GetItem);
+                    il.Emit(OpCodes.Callvirt, GetItemMethod);
                     EmitUnboxOrCast(il, elementType);
 
                     // And store the results

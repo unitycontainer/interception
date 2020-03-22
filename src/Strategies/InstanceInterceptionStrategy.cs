@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Unity.Builder;
 using Unity.Interception.InterceptionBehaviors;
@@ -23,38 +24,32 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         public override void PostBuildUp(ref BuilderContext context)
         {
             // If it's already been intercepted, don't do it again.
-            if (context.Existing is IInterceptingProxy)
-            {
-                return;
-            }
+            if (context.Existing is IInterceptingProxy) return;
 
-            IInstanceInterceptionPolicy interceptionPolicy =
+            IInstanceInterceptionPolicy? interceptionPolicy =
                 FindInterceptionPolicy<IInstanceInterceptionPolicy>(ref context, true);
-            if (interceptionPolicy == null)
-            {
-                return;
-            }
+            if (interceptionPolicy == null) return;
 
             var interceptor = interceptionPolicy.GetInterceptor(ref context);
+            if (null == interceptor) return;
 
-            IInterceptionBehaviorsPolicy interceptionBehaviorsPolicy =
+            IInterceptionBehaviorsPolicy? interceptionBehaviorsPolicy =
                 FindInterceptionPolicy<IInterceptionBehaviorsPolicy>(ref context, true);
-            if (interceptionBehaviorsPolicy == null)
-            {
-                return;
-            }
+            if (null == interceptionBehaviorsPolicy) return;
 
-            IAdditionalInterfacesPolicy additionalInterfacesPolicy =
+            IAdditionalInterfacesPolicy? additionalInterfacesPolicy =
                 FindInterceptionPolicy<IAdditionalInterfacesPolicy>(ref context, false);
             IEnumerable<Type> additionalInterfaces =
                 additionalInterfacesPolicy != null ? additionalInterfacesPolicy.AdditionalInterfaces : Type.EmptyTypes;
 
+            Debug.Assert(null != context.Existing);
+
             Type typeToIntercept = context.RegistrationType;
-            Type implementationType = context.Existing.GetType();
+            Type implementationType = context.Existing!.GetType();
 
             IInterceptionBehavior[] interceptionBehaviors =
                 interceptionBehaviorsPolicy.GetEffectiveBehaviors(
-                    ref context, interceptor, typeToIntercept, implementationType)
+                    ref context, interceptor!, typeToIntercept, implementationType)
                 .ToArray();
 
             if (interceptionBehaviors.Length > 0)
@@ -62,14 +57,14 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
                 context.Existing =
                     Intercept.ThroughProxyWithAdditionalInterfaces(
                         typeToIntercept,
-                        context.Existing,
-                        interceptor,
+                        context.Existing!,
+                        interceptor!,
                         interceptionBehaviors,
                         additionalInterfaces);
             }
         }
 
-        private static T FindInterceptionPolicy<T>(ref BuilderContext context, bool probeOriginalKey)
+        private static T? FindInterceptionPolicy<T>(ref BuilderContext context, bool probeOriginalKey)
             where T : class
         {
             // First, try for an original build key
@@ -85,12 +80,13 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
             return policy;
         }
 
-        public static TPolicyInterface GetPolicyOrDefault<TPolicyInterface>(ref BuilderContext context)
+        public static TPolicyInterface? GetPolicyOrDefault<TPolicyInterface>(ref BuilderContext context) 
+            where TPolicyInterface : class
         {
-            return (TPolicyInterface)(GetNamedPolicy(ref context, context.RegistrationType, context.Name) ??
+            return (TPolicyInterface?)(GetNamedPolicy(ref context, context.RegistrationType, context.Name) ??
                                       GetNamedPolicy(ref context, context.RegistrationType, UnityContainer.All));
 
-            object GetNamedPolicy(ref BuilderContext c, Type t, string n)
+            static object? GetNamedPolicy(ref BuilderContext c, Type t, string? n)
             {
                 return (c.Get(t, n, typeof(TPolicyInterface)) ?? (
 #if NETCOREAPP1_0 || NETSTANDARD1_0

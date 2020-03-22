@@ -1,7 +1,6 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Unity.Interception.PolicyInjection.Pipeline;
 
 namespace Unity.Interception.InterceptionBehaviors
@@ -12,6 +11,10 @@ namespace Unity.Interception.InterceptionBehaviors
     /// </summary>
     public class InterceptionBehaviorPipeline
     {
+        internal static readonly MethodInfo AddMethodInfo = typeof(InterceptionBehaviorPipeline).GetMethod(nameof(InterceptionBehaviorPipeline.Add));
+        internal static readonly MethodInfo InvokeMethodInfo = typeof(InterceptionBehaviorPipeline).GetMethod(nameof(InterceptionBehaviorPipeline.Invoke));
+        internal static readonly ConstructorInfo DefauleConstructorInfo = typeof(InterceptionBehaviorPipeline).GetConstructor(new Type[0]);
+
         private readonly List<IInterceptionBehavior> _interceptionBehaviors;
 
         /// <summary>
@@ -68,7 +71,7 @@ namespace Unity.Interception.InterceptionBehaviors
         /// Adds a <see cref="IInterceptionBehavior"/> to the pipeline.
         /// </summary>
         /// <param name="interceptionBehavior">The interception behavior to add.</param>
-        public void Add(IInterceptionBehavior interceptionBehavior)
+        public void Add(IInterceptionBehavior? interceptionBehavior)
         {
             _interceptionBehaviors.Add(interceptionBehavior ?? throw new ArgumentNullException(nameof(interceptionBehavior)));
         }

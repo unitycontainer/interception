@@ -46,7 +46,7 @@ namespace Unity.Interception
         /// <param name="name">Name type is registered under.</param>
         /// <param name="interceptor">Interceptor to use.</param>
         /// <returns>This extension object.</returns>
-        public Interception SetInterceptorFor(Type typeToIntercept, string name, ITypeInterceptor interceptor)
+        public Interception SetInterceptorFor(Type typeToIntercept, string? name, ITypeInterceptor interceptor)
         {
             Guard.ArgumentNotNull(typeToIntercept, "typeToIntercept");
             Guard.ArgumentNotNull(interceptor, "interceptor");
@@ -83,7 +83,7 @@ namespace Unity.Interception
         /// <param name="name">Name type is registered under.</param>
         /// <param name="interceptor">Interceptor object to use.</param>
         /// <returns>This extension object.</returns>
-        public Interception SetInterceptorFor<T>(string name, ITypeInterceptor interceptor)
+        public Interception SetInterceptorFor<T>(string? name, ITypeInterceptor interceptor)
         {
             return SetInterceptorFor(typeof(T), name, interceptor);
         }
@@ -106,7 +106,7 @@ namespace Unity.Interception
         /// <param name="name">Name type is registered under.</param>
         /// <param name="interceptor">Instance interceptor to use.</param>
         /// <returns>This extension object.</returns>
-        public Interception SetInterceptorFor(Type typeToIntercept, string name, IInstanceInterceptor interceptor)
+        public Interception SetInterceptorFor(Type typeToIntercept, string? name, IInstanceInterceptor interceptor)
         {
             Guard.ArgumentNotNull(typeToIntercept, "typeToIntercept");
             Guard.ArgumentNotNull(interceptor, "interceptor");
@@ -177,7 +177,7 @@ namespace Unity.Interception
         /// <param name="name">Name type is registered under.</param>
         /// <param name="interceptor">Instance interceptor to use.</param>
         /// <returns>This extension object.</returns>
-        public Interception SetInterceptorFor<T>(string name, IInstanceInterceptor interceptor)
+        public Interception SetInterceptorFor<T>(string? name, IInstanceInterceptor interceptor)
         {
             return SetInterceptorFor(typeof(T), name, interceptor);
         }

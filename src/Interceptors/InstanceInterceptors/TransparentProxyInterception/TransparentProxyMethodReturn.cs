@@ -1,6 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.Remoting.Messaging;
@@ -22,8 +20,8 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyI
         private readonly ParameterCollection _outputs;
         private readonly IDictionary<string, object> _invocationContext;
         private readonly object[] _arguments;
-        private object _returnValue;
-        private Exception _exception;
+        private object? _returnValue;
+        private Exception? _exception;
 
         /// <summary>
         /// Creates a new <see cref="TransparentProxyMethodReturn"/> object that contains a
@@ -75,7 +73,7 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyI
         /// </summary>
         /// <remarks>This value is null if the method has no return value.</remarks>
         /// <value>The return value.</value>
-        public object ReturnValue
+        public object? ReturnValue
         {
             [SecuritySafeCritical]
             get { return _returnValue; }
@@ -91,7 +89,7 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyI
         /// If the method threw an exception, the exception object is here.
         /// </summary>
         /// <value>The exception, or null if no exception was thrown.</value>
-        public Exception Exception
+        public Exception? Exception
         {
             [SecuritySafeCritical]
             get { return _exception; }

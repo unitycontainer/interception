@@ -1,15 +1,12 @@
-﻿
-
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Unity;
 using Unity.Interception.Interceptors;
 using Unity.Interception.PolicyInjection.MatchingRules;
 using Unity.Interception.PolicyInjection.Pipeline;
 using Unity.Interception.PolicyInjection.Policies;
-using Unity.Interception.Utilities;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
 {
@@ -44,10 +41,10 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
             hasAttributeMethod = MakeMethodImpl<SecondAttributeTestTarget>("HasAttribute");
             doesntHaveAttributeMethod = MakeMethodImpl<SecondAttributeTestTarget>("DoesntHaveAttribute");
             newMethod = MakeMethodImpl<DerivedAttributeTestTarget>("ANewMethod");
-            getNewNameMethod = new MethodImplementationInfo(null, StaticReflection.GetPropertyGetMethodInfo((DerivedAttributeTestTarget t) => t.Name));
+            getNewNameMethod = new MethodImplementationInfo(null, typeof(DerivedAttributeTestTarget).GetProperty(nameof(DerivedAttributeTestTarget.Name)).GetGetMethod());
 
-            getItemMethod = new MethodImplementationInfo(null, StaticReflection.GetPropertyGetMethodInfo((DerivedAttributeTestTarget t) => t.Item));
-            setItemMethod = new MethodImplementationInfo(null, StaticReflection.GetPropertySetMethodInfo((DerivedAttributeTestTarget t) => t.Item));
+            getItemMethod = new MethodImplementationInfo(null, typeof(DerivedAttributeTestTarget).GetProperty(nameof(DerivedAttributeTestTarget.Item), new Type[0]).GetGetMethod());
+            setItemMethod = new MethodImplementationInfo(null, typeof(DerivedAttributeTestTarget).GetProperty(nameof(DerivedAttributeTestTarget.Item), new Type[0]).GetSetMethod());
 
             getItemIntMethod = new MethodImplementationInfo(null, typeof(DerivedAttributeTestTarget).GetMethod("get_Item", new[] { typeof(int) }));
             setItemIntMethod = new MethodImplementationInfo(null, typeof(DerivedAttributeTestTarget).GetMethod("set_Item", new[] { typeof(int), typeof(object) }));
@@ -272,16 +269,17 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
         }
 
         [CallHandler3]
-        public string DoSomething(string key,
-                                  int value)
+        public string DoSomething(string key, int value)
         {
-            return "I did something";
+            return $"I did something with key: '{key}' and value: '{value}'";
         }
 
+#pragma warning disable IDE0060 // Remove unused parameter
         public int GetCriticalInformation(string key)
         {
             return 42;
         }
+#pragma warning restore IDE0060 // Remove unused parameter
 
         [ApplyNoPolicies]
         public void MustBeFast() { }

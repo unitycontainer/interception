@@ -17,7 +17,7 @@ namespace Unity.Interception.Interceptors
 
         private readonly IDictionary<Type, Type> _mappedTypesCache = new Dictionary<Type, Type>();
         private readonly ICollection<KeyValuePair<Type, Type>> _localMappings;
-        private readonly GenericParameterMapper _parent;
+        private readonly GenericParameterMapper? _parent;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GenericParameterMapper"/> class.
@@ -63,7 +63,7 @@ namespace Unity.Interception.Interceptors
         /// <param name="reflectedParameters">The reflected generic parameters.</param>
         /// <param name="generatedParameters">The generated generic parameters.</param>
         /// <param name="parent">The parent mapper, or <see langword="null"/>.</param>
-        public GenericParameterMapper(Type[] reflectedParameters, Type[] generatedParameters, GenericParameterMapper parent)
+        public GenericParameterMapper(Type[] reflectedParameters, Type[] generatedParameters, GenericParameterMapper? parent)
         {
             _parent = parent;
             _localMappings = CreateMappings(reflectedParameters, generatedParameters);

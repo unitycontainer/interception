@@ -49,7 +49,7 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
 
         private IEnumerable<MethodImplementationInfo> DoGetInterceptableMethods(Type implementationType)
         {
-            var interceptableMethodsToInterfaceMap = new Dictionary<MethodInfo, MethodInfo>();
+            var interceptableMethodsToInterfaceMap = new Dictionary<MethodInfo, MethodInfo?>();
 
             foreach (MethodInfo method in
                 implementationType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))

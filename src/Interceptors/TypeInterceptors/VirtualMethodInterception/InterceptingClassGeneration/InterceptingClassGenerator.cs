@@ -4,9 +4,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using Unity.Interception.InterceptionBehaviors;
 using Unity.Interception.Interceptors.InstanceInterceptors.InterfaceInterception;
 
 namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration
@@ -20,11 +22,11 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
 
         private readonly Type _typeToIntercept;
         private readonly IEnumerable<Type> _additionalInterfaces;
-        private Type _targetType;
-        private GenericParameterMapper _mainTypeMapper;
+        private readonly Type _targetType;
+        private readonly GenericParameterMapper _mainTypeMapper;
 
-        private FieldBuilder _proxyInterceptionPipelineField;
-        private TypeBuilder _typeBuilder;
+        private readonly FieldBuilder _proxyInterceptionPipelineField;
+        private readonly TypeBuilder _typeBuilder;
 
         static InterceptingClassGenerator()
         {
@@ -47,7 +49,32 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
         {
             _typeToIntercept = typeToIntercept;
             _additionalInterfaces = additionalInterfaces;
-            CreateTypeBuilder();
+
+            TypeAttributes newAttributes = _typeToIntercept.Attributes;
+            newAttributes = FilterTypeAttributes(newAttributes);
+
+            Type baseClass = GetGenericType(_typeToIntercept);
+
+            ModuleBuilder moduleBuilder = InterceptorClassGenerator.CreateModuleBuilder(AssemblyBuilder);
+            _typeBuilder = moduleBuilder.DefineType(
+                "DynamicModule.ns.Wrapped_" + _typeToIntercept.Name + "_" + Guid.NewGuid().ToString("N"),
+                newAttributes,
+                baseClass);
+
+            _mainTypeMapper = DefineGenericArguments(_typeBuilder, baseClass);
+
+            if (_typeToIntercept.IsGenericType)
+            {
+                var definition = _typeToIntercept.GetGenericTypeDefinition();
+                var mappedParameters = definition.GetGenericArguments().Select(t => _mainTypeMapper.Map(t)).ToArray();
+                _targetType = definition.MakeGenericType(mappedParameters);
+            }
+            else
+            {
+                _targetType = _typeToIntercept;
+            }
+
+            _proxyInterceptionPipelineField = InterceptingProxyImplementor.ImplementIInterceptingProxy(_typeBuilder);
         }
 
         /// <summary>
@@ -66,11 +93,11 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
             foreach (var @interface in _additionalInterfaces)
             {
                 memberCount =
-                    new InterfaceImplementation(_typeBuilder, @interface, _proxyInterceptionPipelineField, true)
+                    new InterfaceImplementation(_typeBuilder!, @interface, _proxyInterceptionPipelineField, true)
                         .Implement(implementedInterfaces, memberCount);
             }
 
-            Type result = _typeBuilder.CreateTypeInfo().AsType();
+            Type result = _typeBuilder!.CreateTypeInfo()!.AsType() ;
 #if DEBUG_SAVE_GENERATED_ASSEMBLY
             assemblyBuilder.Save("Unity_ILEmit_DynamicClasses.dll");
 #endif
@@ -192,7 +219,7 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
 
             // Initialize pipeline field
             il.Emit(OpCodes.Ldarg_0);
-            il.Emit(OpCodes.Newobj, InterceptionBehaviorPipelineMethods.Constructor);
+            il.Emit(OpCodes.Newobj, InterceptionBehaviorPipeline.DefauleConstructorInfo);
             il.Emit(OpCodes.Stfld, _proxyInterceptionPipelineField);
 
             // call base class constructor
@@ -205,35 +232,6 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
             il.Emit(OpCodes.Call, ctor);
 
             il.Emit(OpCodes.Ret);
-        }
-
-        private void CreateTypeBuilder()
-        {
-            TypeAttributes newAttributes = _typeToIntercept.Attributes;
-            newAttributes = FilterTypeAttributes(newAttributes);
-
-            Type baseClass = GetGenericType(_typeToIntercept);
-
-            ModuleBuilder moduleBuilder = InterceptorClassGenerator.CreateModuleBuilder(AssemblyBuilder);
-            _typeBuilder = moduleBuilder.DefineType(
-                "DynamicModule.ns.Wrapped_" + _typeToIntercept.Name + "_" + Guid.NewGuid().ToString("N"),
-                newAttributes,
-                baseClass);
-
-            _mainTypeMapper = DefineGenericArguments(_typeBuilder, baseClass);
-
-            if (_typeToIntercept.IsGenericType)
-            {
-                var definition = _typeToIntercept.GetGenericTypeDefinition();
-                var mappedParameters = definition.GetGenericArguments().Select(t => _mainTypeMapper.Map(t)).ToArray();
-                _targetType = definition.MakeGenericType(mappedParameters);
-            }
-            else
-            {
-                _targetType = _typeToIntercept;
-            }
-
-            _proxyInterceptionPipelineField = InterceptingProxyImplementor.ImplementIInterceptingProxy(_typeBuilder);
         }
 
         private static Type GetGenericType(Type typeToIntercept)

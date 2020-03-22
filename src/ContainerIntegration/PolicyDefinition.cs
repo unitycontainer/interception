@@ -511,10 +511,8 @@ namespace Unity.Interception.ContainerIntegration
 
         private PolicyDefinition AddElement<T>(T instance, UpdateElements update)
         {
-            Guard.ArgumentNotNull(instance, "instance");
-
             string newName = NewName();
-            Container.RegisterInstance(newName, instance);
+            Container.RegisterInstance(newName, instance ?? throw new ArgumentNullException(nameof(instance)));
 
             return update(newName);
         }
@@ -522,7 +520,7 @@ namespace Unity.Interception.ContainerIntegration
         private PolicyDefinition AddElement<T>(
             Type type,
             string name,
-            LifetimeManager lifetimeManager,
+            LifetimeManager? lifetimeManager,
             InjectionMember[] injectionMembers,
             UpdateElements update)
         {
@@ -531,14 +529,14 @@ namespace Unity.Interception.ContainerIntegration
             Guard.TypeIsAssignable(typeof(T), type, "type");
             Guard.ArgumentNotNull(injectionMembers, "injectionMembers");
 
-            Container.RegisterType(typeof(T), type, name, (ITypeLifetimeManager)lifetimeManager, injectionMembers);
+            Container.RegisterType(typeof(T), type, name, (ITypeLifetimeManager?)lifetimeManager, injectionMembers);
 
             return update(name);
         }
 
         private PolicyDefinition AddElement<T, TElement>(
             string name,
-            LifetimeManager lifetimeManager,
+            LifetimeManager? lifetimeManager,
             InjectionMember[] injectionMembers,
             UpdateElements update)
             where TElement : T

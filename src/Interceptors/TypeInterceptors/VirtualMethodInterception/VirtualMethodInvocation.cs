@@ -1,11 +1,7 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Unity.Interception.PolicyInjection.Pipeline;
-using Unity.Interception.Utilities;
 
 namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception
 {
@@ -19,6 +15,8 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
         private readonly ParameterCollection _arguments;
         private readonly Dictionary<string, object> _context;
 
+        internal static readonly ConstructorInfo ConstructorInfo = typeof(VirtualMethodInvocation).GetConstructor(new Type[] { typeof(object), typeof(MethodBase), typeof(object[]) });
+
         /// <summary>
         /// Construct a new <see cref="VirtualMethodInvocation"/> instance for the
         /// given target object and method, passing the <paramref name="parameterValues"/>
@@ -27,14 +25,10 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
         /// <param name="target">Object that is target of this invocation.</param>
         /// <param name="targetMethod">Method on <paramref name="target"/> to call.</param>
         /// <param name="parameterValues">Values for the parameters.</param>
-        [SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
-            Justification = "Validation done by Guard class")]
         public VirtualMethodInvocation(object target, MethodBase targetMethod, params object[] parameterValues)
         {
-            Guard.ArgumentNotNull(targetMethod, "targetMethod");
-
             Target = target;
-            MethodBase = targetMethod;
+            MethodBase = targetMethod ?? throw new ArgumentNullException(nameof(targetMethod));
             _context = new Dictionary<string, object>();
 
             ParameterInfo[] targetParameters = targetMethod.GetParameters();

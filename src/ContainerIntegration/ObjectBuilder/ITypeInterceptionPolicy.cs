@@ -18,7 +18,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         /// <summary>
         /// Cache for proxied type.
         /// </summary>
-        Type ProxyType { get; set; }
+        Type? ProxyType { get; set; }
     }
 
     public static class TypeInterceptionPolicyExtension

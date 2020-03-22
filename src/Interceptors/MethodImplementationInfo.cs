@@ -18,7 +18,7 @@ namespace Unity.Interception.Interceptors
         /// </summary>
         /// <param name="interfaceMethodInfo">MethodInfo for the interface method (may be null if no interface).</param>
         /// <param name="implementationMethodInfo">MethodInfo for implementing method.</param>
-        public MethodImplementationInfo(MethodInfo interfaceMethodInfo, MethodInfo implementationMethodInfo)
+        public MethodImplementationInfo(MethodInfo? interfaceMethodInfo, MethodInfo implementationMethodInfo)
         {
             InterfaceMethodInfo = interfaceMethodInfo;
             ImplementationMethodInfo = implementationMethodInfo;
@@ -27,7 +27,7 @@ namespace Unity.Interception.Interceptors
         /// <summary>
         /// The interface method MethodInfo.
         /// </summary>
-        public MethodInfo InterfaceMethodInfo { get; }
+        public MethodInfo? InterfaceMethodInfo { get; }
 
         /// <summary>
         /// The implementing method MethodInfo.
@@ -43,15 +43,12 @@ namespace Unity.Interception.Interceptors
         /// <param name="obj">The <see cref="T:System.Object" /> to compare with the current <see cref="T:System.Object" />. </param>
         /// <exception cref="T:System.NullReferenceException">The <paramref name="obj" /> parameter is null.</exception>
         /// <filterpriority>2</filterpriority>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
-            MethodImplementationInfo other = obj as MethodImplementationInfo;
-            if (obj == null || other == null)
-            {
-                return false;
-            }
+            if (obj is MethodImplementationInfo other)
+                return this == other;
 
-            return this == other;
+            return false;
         }
 
         /// <summary>
@@ -73,18 +70,18 @@ namespace Unity.Interception.Interceptors
         /// </summary>
         public static bool operator ==(MethodImplementationInfo left, MethodImplementationInfo right)
         {
-            if (ReferenceEquals(left, null) && ReferenceEquals(right, null))
+            if (left is null && right is null)
             {
                 return true;
             }
 
-            if (ReferenceEquals(left, null) || ReferenceEquals(right, null))
+            if (left is null || right is null)
             {
                 return false;
             }
 
             return left.InterfaceMethodInfo == right.InterfaceMethodInfo &&
-                left.ImplementationMethodInfo == right.ImplementationMethodInfo;
+                   left.ImplementationMethodInfo == right.ImplementationMethodInfo;
         }
 
         /// <summary>

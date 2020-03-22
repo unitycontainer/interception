@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Diagnostics;
 using Unity.Interception.ContainerIntegration.ObjectBuilder;
 using Unity.Interception.Interceptors;
 using Unity.Interception.Interceptors.InstanceInterceptors;
 using Unity.Interception.Interceptors.TypeInterceptors;
 using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception;
 using Unity.Interception.Utilities;
-using Unity.Storage;
 
 namespace Unity.Interception.ContainerIntegration
 {
@@ -16,9 +16,9 @@ namespace Unity.Interception.ContainerIntegration
     /// <seealso cref="IInterceptionBehavior"/>
     public class Interceptor : InterceptionMember
     {
-        private readonly IInterceptor _interceptor;
-        private readonly Type _type;
-        private readonly string _name;
+        private readonly IInterceptor? _interceptor;
+        private readonly Type? _type;
+        private readonly string? _name;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Interceptor"/> class with an interceptor instance.
@@ -37,7 +37,7 @@ namespace Unity.Interception.ContainerIntegration
         /// </summary>
         /// <param name="interceptorType">Type of the interceptor</param>
         /// <param name="name">name to use to resolve.</param>
-        public Interceptor(Type interceptorType, string name)
+        public Interceptor(Type interceptorType, string? name)
         {
             Guard.TypeIsAssignable(typeof(IInterceptor), interceptorType ?? 
                   throw new ArgumentNullException(nameof(interceptorType)), 
@@ -65,7 +65,7 @@ namespace Unity.Interception.ContainerIntegration
         /// <param name="mappedToType">Type to register.</param>
         /// <param name="name">Name used to resolve the type object.</param>
         /// <param name="policies">Policy list to add policies to.</param>
-        public override void AddPolicies<TContext, TPolicySet>(Type registeredType, Type mappedToType, string name, ref TPolicySet policies)
+        public override void AddPolicies<TContext, TPolicySet>(Type registeredType, Type? mappedToType, string? name, ref TPolicySet policies)
         {
             if (IsInstanceInterceptor)
             {
@@ -101,7 +101,9 @@ namespace Unity.Interception.ContainerIntegration
             {
                 return new FixedInstanceInterceptionPolicy((IInstanceInterceptor)_interceptor);
             }
-            return new ResolvedInstanceInterceptionPolicy(_type, _name);
+
+            Debug.Assert(null != _type);
+            return new ResolvedInstanceInterceptionPolicy(_type!, _name);
         }
 
         private ITypeInterceptionPolicy CreateTypeInterceptionPolicy()
@@ -110,7 +112,8 @@ namespace Unity.Interception.ContainerIntegration
             {
                 return new FixedTypeInterceptionPolicy((ITypeInterceptor)_interceptor);
             }
-            return new ResolvedTypeInterceptionPolicy(_type, _name);
+            Debug.Assert(null != _type);
+            return new ResolvedTypeInterceptionPolicy(_type!, _name);
         }
     }
 

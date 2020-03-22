@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using Unity.Interception.InterceptionBehaviors;
 using Unity.Interception.Interceptors;
@@ -16,7 +17,7 @@ namespace Unity.Interception.PolicyInjection
     /// </summary>
     public class PolicyInjectionBehavior : IInterceptionBehavior
     {
-        private readonly PipelineManager _pipelineManager;
+        private readonly PipelineManager? _pipelineManager;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PolicyInjectionBehavior"/> with a pipeline manager.
@@ -63,20 +64,17 @@ namespace Unity.Interception.PolicyInjection
         /// <param name="getNext">Delegate to execute to get the next delegate in the handler
         /// chain.</param>
         /// <returns>Return value from the target.</returns>
-        public IMethodReturn Invoke(IMethodInvocation input, GetNextInterceptionBehaviorDelegate getNext)
+        public IMethodReturn Invoke(IMethodInvocation input, GetNextInterceptionBehaviorDelegate? getNext)
         {
-            Guard.ArgumentNotNull(input, "input");
-            Guard.ArgumentNotNull(getNext, "getNext");
-
-            HandlerPipeline pipeline = GetPipeline(input.MethodBase);
+            HandlerPipeline pipeline = GetPipeline((input ?? throw new ArgumentNullException(nameof(input))).MethodBase);
 
             return pipeline.Invoke(
                     input,
-                    delegate(IMethodInvocation policyInjectionInput, GetNextHandlerDelegate policyInjectionInputGetNext)
+                    delegate(IMethodInvocation policyInjectionInput, GetNextHandlerDelegate? policyInjectionInputGetNext)
                     {
                         try
                         {
-                            return getNext()(policyInjectionInput, getNext);
+                            return (getNext ?? throw new ArgumentNullException(nameof(getNext)))()(policyInjectionInput, getNext);
                         }
                         catch (TargetInvocationException ex)
                         {
@@ -89,7 +87,8 @@ namespace Unity.Interception.PolicyInjection
 
         private HandlerPipeline GetPipeline(MethodBase method)
         {
-            return _pipelineManager.GetPipeline(method);
+            Debug.Assert(null != _pipelineManager);
+            return _pipelineManager!.GetPipeline(method);
         }
 
         /// <summary>

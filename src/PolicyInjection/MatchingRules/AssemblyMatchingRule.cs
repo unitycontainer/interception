@@ -31,12 +31,8 @@ namespace Unity.Interception.PolicyInjection.MatchingRules
         /// </summary>
         /// <param name="assembly">Assembly to match.</param>
         public AssemblyMatchingRule(Assembly assembly)
-            : this((assembly != null) ? assembly.FullName : null)
+            : this((assembly ?? throw new ArgumentNullException(nameof(assembly))).FullName)
         {
-            if (assembly == null)
-            {
-                throw new ArgumentNullException(nameof(assembly));
-            }
         }
 
         /// <summary>
@@ -66,7 +62,7 @@ namespace Unity.Interception.PolicyInjection.MatchingRules
 
         private static bool DoesAssemblyNameMatchString(string assemblyNameString, AssemblyName assemblyName)
         {
-            AssemblyName assemblyNameToMatch = null;
+            AssemblyName? assemblyNameToMatch;
             try
             {
                 assemblyNameToMatch = new AssemblyName(assemblyNameString);

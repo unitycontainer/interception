@@ -23,12 +23,12 @@ namespace Unity.Interception.PolicyInjection.Pipeline
         /// Returns value from the method call.
         /// </summary>
         /// <remarks>This value is null if the method has no return value.</remarks>
-        object ReturnValue { get; set; }
+        object? ReturnValue { get; set; }
 
         /// <summary>
         /// If the method threw an exception, the exception object is here.
         /// </summary>
-        Exception Exception { get; set; }
+        Exception? Exception { get; set; }
 
         /// <summary>
         /// Retrieves a dictionary that can be used to store arbitrary additional

@@ -49,8 +49,9 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 
             foreach (var key in BehaviorKeys)
             {
-                var behavior = (IInterceptionBehavior)container.Resolve(key.Type, key.Name, new DependencyOverride<CurrentInterceptionRequest>(interceptionRequest));
-                yield return behavior;
+                var behavior = (IInterceptionBehavior?)container.Resolve(key.Type, key.Name, new DependencyOverride<CurrentInterceptionRequest>(interceptionRequest));
+
+                if (null != behavior) yield return behavior;
             }
         }
 
@@ -67,7 +68,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         internal static InterceptionBehaviorsPolicy GetOrCreate<TPolicySet>(ref TPolicySet policies)
             where TPolicySet : IPolicySet
         {
-            IInterceptionBehaviorsPolicy policy = (IInterceptionBehaviorsPolicy)policies.Get(typeof(IInterceptionBehaviorsPolicy));
+            IInterceptionBehaviorsPolicy? policy = (IInterceptionBehaviorsPolicy?)policies.Get(typeof(IInterceptionBehaviorsPolicy));
 
             if (!(policy is InterceptionBehaviorsPolicy))
             {

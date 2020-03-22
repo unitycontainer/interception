@@ -1,6 +1,4 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -12,6 +10,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Unity.Interception.InterceptionBehaviors;
 using Unity.Interception.Interceptors;
 using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception;
+using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration;
 using Unity.Interception.PolicyInjection;
 using Unity.Interception.PolicyInjection.Pipeline;
 using Unity.Interception.Utilities;
@@ -70,8 +69,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         public void InterceptingClassOverridesBaseClassVirtualMethods()
         {
             Type baseType = typeof(ClassWithDefaultCtor);
-            VirtualMethodInterceptor interceptor = new VirtualMethodInterceptor();
-            global::Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration.InterceptingClassGenerator generator = new global::Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration.InterceptingClassGenerator(baseType);
+            _ = new VirtualMethodInterceptor();
+            InterceptingClassGenerator generator = new InterceptingClassGenerator(baseType);
             Type generatedType = generator.GenerateType();
 
             MethodInfo methodOne = generatedType.GetMethod("MethodOne");
@@ -203,10 +202,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
             PostCallCountHandler handler = new PostCallCountHandler();
             ClassWithDefaultCtor instance = WireupHelper.GetInterceptedInstance<ClassWithDefaultCtor>("OutParams", handler);
 
-            int plusOne;
-            int timesTwo;
 
-            instance.OutParams(5, out plusOne, out timesTwo);
+            instance.OutParams(5, out int plusOne, out int timesTwo);
 
             Assert.AreEqual(5 + 1, plusOne);
             Assert.AreEqual(5 * 2, timesTwo);
@@ -253,7 +250,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         [TestMethod]
         public void AttemptingToInterceptInvalidClassThrows()
         {
-            PostCallCountHandler handler = new PostCallCountHandler();
+            _ = new PostCallCountHandler();
             VirtualMethodInterceptor interceptor = new VirtualMethodInterceptor();
             try
             {
@@ -342,8 +339,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         public void CanImplementAdditionalInterfaces()
         {
             // arrange
-            global::Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration.InterceptingClassGenerator generator =
-                new global::Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration.InterceptingClassGenerator(typeof(MainType), typeof(IAdditionalInterface));
+            InterceptingClassGenerator generator =
+                new InterceptingClassGenerator(typeof(MainType), typeof(IAdditionalInterface));
             Type generatedType = generator.GenerateType();
 
             // act
@@ -358,7 +355,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         public void InvokingMethodOnAdditionalInterfaceThrowsIfNotHandledByInterceptor()
         {
             // arrange
-            global::Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration.InterceptingClassGenerator generator = new global::Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration.InterceptingClassGenerator(typeof(MainType), typeof(IAdditionalInterface));
+            InterceptingClassGenerator generator = new InterceptingClassGenerator(typeof(MainType), typeof(IAdditionalInterface));
             Type generatedType = generator.GenerateType();
             object instance = Activator.CreateInstance(generatedType);
 
@@ -382,7 +379,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         public void CanSuccessfullyInvokeAnAdditionalInterfaceMethodIfAnInterceptorDoesNotForwardTheCall()
         {
             // arrange
-            global::Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration.InterceptingClassGenerator generator = new global::Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration.InterceptingClassGenerator(typeof(MainType), typeof(IAdditionalInterface));
+            InterceptingClassGenerator generator = new InterceptingClassGenerator(typeof(MainType), typeof(IAdditionalInterface));
             Type generatedType = generator.GenerateType();
             object instance = Activator.CreateInstance(generatedType);
             bool invoked = false;
@@ -401,11 +398,11 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         [TestMethod]
         public void CanImplementINotifyPropertyChanged()
         {
-            global::Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration.InterceptingClassGenerator generator = new global::Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration.InterceptingClassGenerator(typeof(MainType), typeof(INotifyPropertyChanged));
+            InterceptingClassGenerator generator = new InterceptingClassGenerator(typeof(MainType), typeof(INotifyPropertyChanged));
             Type generatedType = generator.GenerateType();
             object instance = Activator.CreateInstance(generatedType);
             string changeProperty = null;
-            PropertyChangedEventHandler handler = (sender, args) => changeProperty = args.PropertyName;
+            void handler(object sender, PropertyChangedEventArgs args) => changeProperty = args.PropertyName;
 
             ((IInterceptingProxy)instance).AddInterceptionBehavior(new NaiveINotifyPropertyChangedInterceptionBehavior());
             ((INotifyPropertyChanged)instance).PropertyChanged += handler;
@@ -428,8 +425,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         public void CanImplementAdditionalInterfaceWithMethodsHavingSignaturesMatchingMethodsInTheBaseClass()
         {
             // arrange
-            global::Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration.InterceptingClassGenerator generator =
-                new global::Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration.InterceptingClassGenerator(typeof(MainType), typeof(IDoSomething));
+            InterceptingClassGenerator generator =
+                new InterceptingClassGenerator(typeof(MainType), typeof(IDoSomething));
             Type generatedType = generator.GenerateType();
 
             // act
@@ -443,8 +440,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         [TestMethod]
         public void CanInvokeMethodsFromDifferentTypesWithMatchingSignatures()
         {
-            global::Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration.InterceptingClassGenerator generator =
-                new global::Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration.InterceptingClassGenerator(typeof(MainType), typeof(IDoSomething), typeof(IDoSomethingToo));
+            InterceptingClassGenerator generator =
+                new InterceptingClassGenerator(typeof(MainType), typeof(IDoSomething), typeof(IDoSomethingToo));
             Type generatedType = generator.GenerateType();
 
             object instance = Activator.CreateInstance(generatedType);
@@ -461,16 +458,16 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
             ((IDoSomething)instance).DoSomething();
             ((IDoSomethingToo)instance).DoSomething();
 
-            Assert.AreSame(StaticReflection.GetMethodInfo<MainType>(i => i.DoSomething()), invokedMethods[0]);
-            Assert.AreSame(StaticReflection.GetMethodInfo<IDoSomething>(i => i.DoSomething()), invokedMethods[1]);
-            Assert.AreSame(StaticReflection.GetMethodInfo<IDoSomethingToo>(i => i.DoSomething()), invokedMethods[2]);
+            Assert.AreSame(typeof(MainType).GetMethod(nameof(MainType.DoSomething)), invokedMethods[0]);
+            Assert.AreSame(typeof(IDoSomething).GetMethod(nameof(IDoSomething.DoSomething), new Type[0]), invokedMethods[1]);
+            Assert.AreSame(typeof(IDoSomethingToo).GetMethod(nameof(IDoSomethingToo.DoSomething)), invokedMethods[2]);
         }
 
         [TestMethod]
         public void DoesNotReImplementAdditionalInterfaceAlreadyImplementedByInterceptedClass()
         {
-            global::Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration.InterceptingClassGenerator generator =
-                new global::Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration.InterceptingClassGenerator(typeof(InterfaceImplementingMainType), typeof(IDeriveFromIDoSomething));
+            InterceptingClassGenerator generator =
+                new InterceptingClassGenerator(typeof(InterfaceImplementingMainType), typeof(IDeriveFromIDoSomething));
             Type generatedType = generator.GenerateType();
 
             object instance = Activator.CreateInstance(generatedType);
@@ -491,26 +488,20 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
             ((IDeriveFromIDoSomething)instance).DoSomething(String.Empty);
             ((IDeriveFromIDoSomething)instance).DoSomethingElse();
 
+            var info = typeof(InterfaceImplementingMainType).GetMethod(nameof(InterfaceImplementingMainType.DoSomething), new Type[] { typeof(string) });
+
             Assert.AreEqual(4, interceptedMethods.Count);
             // only the virtual implicit method implementation is invoked for IDoSomething
-            Assert.AreSame(
-                StaticReflection.GetMethodInfo<InterfaceImplementingMainType>(i => i.DoSomething(null)),
-                interceptedMethods[0]);
-            Assert.AreSame(
-                StaticReflection.GetMethodInfo<InterfaceImplementingMainType>(i => i.DoSomething(null)),
-                interceptedMethods[1]);
-            Assert.AreSame(
-                StaticReflection.GetMethodInfo<InterfaceImplementingMainType>(i => i.DoSomething(null)),
-                interceptedMethods[2]);
-            Assert.AreSame(
-                StaticReflection.GetMethodInfo<IDeriveFromIDoSomething>(i => i.DoSomethingElse()),
-                interceptedMethods[3]);
+            Assert.AreSame(info, interceptedMethods[0]);
+            Assert.AreSame(info, interceptedMethods[1]);
+            Assert.AreSame(info, interceptedMethods[2]);
+            Assert.AreSame(typeof(IDeriveFromIDoSomething).GetMethod(nameof(IDeriveFromIDoSomething.DoSomethingElse)), interceptedMethods[3]);
         }
 
         [TestMethod]
         public void CanInterceptProtectedVirtualProperties()
         {
-            global::Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration.InterceptingClassGenerator generator = new global::Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration.InterceptingClassGenerator(typeof(ClassWithProtectedProperty));
+            InterceptingClassGenerator generator = new InterceptingClassGenerator(typeof(ClassWithProtectedProperty));
             Type generatedType = generator.GenerateType();
 
             ClassWithProtectedProperty instance = (ClassWithProtectedProperty)Activator.CreateInstance(generatedType);
@@ -533,8 +524,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         [TestMethod]
         public void CanInterceptProtectedInternalVirtualProperties()
         {
-            global::Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration.InterceptingClassGenerator generator =
-                new global::Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration.InterceptingClassGenerator(typeof(ClassWithProtectedInternalProperty));
+            InterceptingClassGenerator generator =
+                new InterceptingClassGenerator(typeof(ClassWithProtectedInternalProperty));
             Type generatedType = generator.GenerateType();
 
             ClassWithProtectedInternalProperty instance =
@@ -558,7 +549,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         [TestMethod]
         public void DoesNotInterceptInternalVirtualProperties()
         {
-            global::Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration.InterceptingClassGenerator generator = new global::Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration.InterceptingClassGenerator(typeof(ClassWithInternalProperty));
+            InterceptingClassGenerator generator = new InterceptingClassGenerator(typeof(ClassWithInternalProperty));
             Type generatedType = generator.GenerateType();
 
             ClassWithInternalProperty instance = (ClassWithInternalProperty)Activator.CreateInstance(generatedType);
@@ -581,8 +572,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         [TestMethod]
         public void CanInterceptProtectedAccesorOnMixedPrivateProtectedVirtualProperties()
         {
-            global::Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration.InterceptingClassGenerator generator =
-                new global::Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration.InterceptingClassGenerator(typeof(ClassWithMixedPrivateProtectedProperty));
+            InterceptingClassGenerator generator =
+                new InterceptingClassGenerator(typeof(ClassWithMixedPrivateProtectedProperty));
             Type generatedType = generator.GenerateType();
 
             ClassWithMixedPrivateProtectedProperty instance =
@@ -606,8 +597,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         [TestMethod]
         public void CanInterceptMixedPublicProtectedVirtualProperties()
         {
-            global::Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration.InterceptingClassGenerator generator =
-                new global::Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration.InterceptingClassGenerator(typeof(ClassWithMixedPublicProtectedProperty));
+            InterceptingClassGenerator generator =
+                new InterceptingClassGenerator(typeof(ClassWithMixedPublicProtectedProperty));
             Type generatedType = generator.GenerateType();
 
             ClassWithMixedPublicProtectedProperty instance =
@@ -631,8 +622,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         [TestMethod]
         public void CanInterceptClassWithReservedTypeAttributes()
         {
-            global::Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration.InterceptingClassGenerator generator =
-                new global::Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration.InterceptingClassGenerator(typeof(ClassWithPermissionAttribute));
+            InterceptingClassGenerator generator =
+                new InterceptingClassGenerator(typeof(ClassWithPermissionAttribute));
             Type generatedType = generator.GenerateType();
 
             ClassWithPermissionAttribute instance = (ClassWithPermissionAttribute)Activator.CreateInstance(generatedType);
@@ -684,7 +675,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
 
         public virtual int MethodWithRefParameters(int x, ref string y, float f)
         {
-            y = y + " hooray!";
+            y += " hooray!";
             return x + (int)f;
         }
 
@@ -705,12 +696,6 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
     public class Wrapper : ClassWithDefaultCtor, IInterceptingProxy
     {
         private readonly InterceptionBehaviorPipeline pipeline = new InterceptionBehaviorPipeline();
-
-        private static readonly MethodBase MethodOneMethod = typeof(ClassWithDefaultCtor).GetMethod("MethodOne");
-        private static readonly MethodBase CalculateAnswerMethod = typeof(ClassWithDefaultCtor).GetMethod("CalculateAnswer");
-        private static readonly MethodBase AddUpMethod = typeof(ClassWithDefaultCtor).GetMethod("AddUp");
-        private static readonly MethodBase MethodWithRefParametersMethod = typeof(ClassWithDefaultCtor).GetMethod("MethodWithRefParameters");
-        private static readonly MethodBase OutParamsMethod = typeof(ClassWithDefaultCtor).GetMethod("OutParams");
 
         private static readonly MethodBase MethodWithGenericReturnTypeMethod = typeof(ClassWithDefaultCtor).GetMethods()
             .Where(m => m.Name == "MethodWithGenericReturnType").First();
@@ -804,8 +789,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
 
     public class WrapperGeneric<T> : InterceptingGenericClass<T>, IInterceptingProxy
     {
-        private InterceptionBehaviorPipeline pipeline = new InterceptionBehaviorPipeline();
-        private MethodBase reverse = typeof(InterceptingGenericClass<T>).GetMethod("Reverse");
+        private readonly InterceptionBehaviorPipeline pipeline = new InterceptionBehaviorPipeline();
+        private readonly MethodBase reverse = typeof(InterceptingGenericClass<T>).GetMethod("Reverse");
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.ReadabilityRules", "SA1100:DoNotPrefixCallsWithBaseUnlessLocalImplementationExists", Justification = "Point of the test is to call base class and Reverse is overridden and virtual.")]
         private string BaseReverse<TITem>(TITem obj)

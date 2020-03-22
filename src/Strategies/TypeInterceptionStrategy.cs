@@ -58,7 +58,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
                             ref context, interceptor, typeToBuild, typeToBuild)
                         .Where(ib => ib.WillExecute);
 
-            IAdditionalInterfacesPolicy additionalInterfacesPolicy =
+            IAdditionalInterfacesPolicy? additionalInterfacesPolicy =
                 GetPolicyOrDefault<IAdditionalInterfacesPolicy>(ref context);
 
             IEnumerable<Type> additionalInterfaces =
@@ -84,14 +84,12 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         /// <param name="context">Context of the build operation.</param>
         public override void PostBuildUp(ref BuilderContext context)
         {
-            IInterceptingProxy proxy = context.Existing as IInterceptingProxy;
-
-            if (proxy == null)
+            if (!(context.Existing is IInterceptingProxy proxy))
             {
                 return;
             }
 
-            var effectiveInterceptionBehaviorsPolicy = (EffectiveInterceptionBehaviorsPolicy)context.Registration.Get(
+            var effectiveInterceptionBehaviorsPolicy = (EffectiveInterceptionBehaviorsPolicy?)context.Registration.Get(
                 typeof(EffectiveInterceptionBehaviorsPolicy));
 
             if (effectiveInterceptionBehaviorsPolicy == null)
@@ -105,12 +103,12 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
             }
         }
 
-        public static TPolicyInterface GetPolicyOrDefault<TPolicyInterface>(ref BuilderContext context)
+        public static TPolicyInterface? GetPolicyOrDefault<TPolicyInterface>(ref BuilderContext context) where TPolicyInterface : class
         {
-            return (TPolicyInterface)(GetNamedPolicy(ref context, context.RegistrationType, context.Name) ?? 
+            return (TPolicyInterface?)(GetNamedPolicy(ref context, context.RegistrationType, context.Name) ?? 
                                       GetNamedPolicy(ref context, context.RegistrationType, UnityContainer.All));
 
-            object GetNamedPolicy(ref BuilderContext c, Type t, string n)
+            static object? GetNamedPolicy(ref BuilderContext c, Type t, string? n)
             {
                 return (c.Get(t, n, typeof(TPolicyInterface)) ?? (
 #if NETCOREAPP1_0 || NETSTANDARD1_0

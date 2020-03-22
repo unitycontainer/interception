@@ -13,8 +13,8 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
     public class ResolvedTypeInterceptionPolicy : ITypeInterceptionPolicy
     {
         private readonly Type _type;
-        private readonly string _name;
-        private ITypeInterceptor _policy;
+        private readonly string? _name;
+        private ITypeInterceptor? _policy;
 
         /// <summary>
         /// construct a new <see cref="ResolvedTypeInterceptionPolicy"/> that
@@ -33,7 +33,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         /// </summary>
         /// <param name="type">Type of the policy</param>
         /// <param name="name">Name of the registration</param>
-        public ResolvedTypeInterceptionPolicy(Type type, string name)
+        public ResolvedTypeInterceptionPolicy(Type type, string? name)
         {
             _type = type;
             _name = name;
@@ -48,7 +48,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         public ITypeInterceptor GetInterceptor(IUnityContainer container)
         {
             if (null == _policy)
-                _policy = (ITypeInterceptor)container.Resolve(_type, _name, null);
+                _policy = (ITypeInterceptor?)container.Resolve(_type, _name)!;
 
             return _policy;
         }
@@ -56,7 +56,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         /// <summary>
         /// Cache for proxied type.
         /// </summary>
-        public Type ProxyType { get; set; }
+        public Type? ProxyType { get; set; }
 
         #endregion
     }

@@ -19,7 +19,7 @@ namespace Unity.Interception.Utilities
         /// </summary>
         /// <param name="method">MethodBase for the property's get or set method.</param>
         /// <returns>PropertyInfo for the property, or null if method is not part of a property.</returns>
-        public static PropertyInfo GetPropertyFromMethod(MethodBase method)
+        public static PropertyInfo? GetPropertyFromMethod(MethodBase method)
         {
             Guard.ArgumentNotNull(method, "method");
 
@@ -38,11 +38,11 @@ namespace Unity.Interception.Utilities
         /// </summary>
         /// <param name="method">MethodBase for the property's get or set method.</param>
         /// <returns>PropertyInfo for the property, or null if method is not part of a property.</returns>
-        public static PropertyInfo GetPropertyFromMethod(MethodInfo method)
+        public static PropertyInfo? GetPropertyFromMethod(MethodInfo method)
         {
             Guard.ArgumentNotNull(method, "method");
 
-            PropertyInfo property = null;
+            PropertyInfo? property = null;
             if (method.IsSpecialName)
             {
                 var containingType = method.DeclaringType;
@@ -53,10 +53,8 @@ namespace Unity.Interception.Utilities
                     if (isSetter || isGetter)
                     {
                         var propertyName = method.Name.Substring(4);
-                        Type propertyType;
-                        Type[] indexerTypes;
 
-                        GetPropertyTypes(method, isGetter, out propertyType, out indexerTypes);
+                        GetPropertyTypes(method, isGetter, out Type propertyType, out Type[] indexerTypes);
 
                         property =
                             containingType.GetProperty(
@@ -69,6 +67,7 @@ namespace Unity.Interception.Utilities
                     }
                 }
             }
+
             return property;
         }
 
@@ -136,10 +135,10 @@ namespace Unity.Interception.Utilities
             {
                 attributes.AddRange(GetAttributes<TAttribute>(member.DeclaringType, inherits));
 
-                MethodInfo methodInfo = member as MethodInfo;
+                MethodInfo? methodInfo = member as MethodInfo;
                 if (methodInfo != null)
                 {
-                    PropertyInfo prop = GetPropertyFromMethod(methodInfo);
+                    PropertyInfo? prop = GetPropertyFromMethod(methodInfo);
                     if (prop != null)
                     {
                         attributes.AddRange(GetAttributes<TAttribute>(prop, inherits));
@@ -158,12 +157,12 @@ namespace Unity.Interception.Utilities
         {
             Assembly mscorlib = typeof(int).Assembly;
             ExceptionDispatchInfoCaptureMethod = mscorlib
-                ?.GetType("System.Runtime.ExceptionServices.ExceptionDispatchInfo")
-                ?.GetMethod("Capture", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(Exception) }, null);
+                .GetType("System.Runtime.ExceptionServices.ExceptionDispatchInfo")
+                .GetMethod("Capture", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(Exception) }, null);
 
             ExceptionDispatchInfoThrowMethod = mscorlib
-                ?.GetType("System.Runtime.ExceptionServices.ExceptionDispatchInfo")
-                ?.GetMethod("Throw", BindingFlags.Public | BindingFlags.Instance, null, new Type[] { }, null);
+                .GetType("System.Runtime.ExceptionServices.ExceptionDispatchInfo")
+                .GetMethod("Throw", BindingFlags.Public | BindingFlags.Instance, null, new Type[] { }, null);
         }
     }
 }

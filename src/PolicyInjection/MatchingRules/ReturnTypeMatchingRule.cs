@@ -60,7 +60,7 @@ namespace Unity.Interception.PolicyInjection.MatchingRules
         /// <returns>true if return types match, false if they don't.</returns>
         public bool Matches(MethodBase member)
         {
-            MethodInfo method = member as MethodInfo;
+            MethodInfo? method = member as MethodInfo;
             if (method == null)
             {
                 return false;

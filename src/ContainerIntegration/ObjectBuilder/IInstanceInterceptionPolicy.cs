@@ -13,6 +13,6 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         /// Interceptor to use.
         /// </summary>
         /// <param name="context">Context for current build operation.</param>
-        IInstanceInterceptor GetInterceptor(ref BuilderContext context);
+        IInstanceInterceptor? GetInterceptor(ref BuilderContext context);
     }
 }

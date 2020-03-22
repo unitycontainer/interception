@@ -12,6 +12,8 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
     /// </summary>
     internal static class InterceptingProxyImplementor
     {
+        private static readonly MethodInfo AddInterceptionBehaviorMethod = typeof(IInterceptingProxy).GetMethod(nameof(IInterceptingProxy.AddInterceptionBehavior));
+
         internal static FieldBuilder ImplementIInterceptingProxy(TypeBuilder typeBuilder)
         {
             typeBuilder.AddInterfaceImplementation(typeof(IInterceptingProxy));
@@ -50,9 +52,9 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
             il.Emit(OpCodes.Ldarg_0);
             il.Emit(OpCodes.Ldfld, proxyInterceptorPipelineField);
             il.Emit(OpCodes.Ldarg_1);
-            il.EmitCall(OpCodes.Callvirt, InterceptionBehaviorPipelineMethods.Add, null);
+            il.EmitCall(OpCodes.Callvirt, InterceptionBehaviorPipeline.AddMethodInfo, null);
             il.Emit(OpCodes.Ret);
-            typeBuilder.DefineMethodOverride(methodBuilder, IInterceptingProxyMethods.AddInterceptionBehavior);
+            typeBuilder.DefineMethodOverride(methodBuilder, AddInterceptionBehaviorMethod);
         }
     }
 }

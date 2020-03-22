@@ -1,7 +1,6 @@
 ﻿
 
 using System;
-using Unity.Builder;
 using Unity.Interception.Interceptors.TypeInterceptors;
 
 namespace Unity.Interception.ContainerIntegration.ObjectBuilder
@@ -36,6 +35,6 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         /// <summary>
         /// Cache for proxied type.
         /// </summary>
-        public Type ProxyType { get; set; }
+        public Type? ProxyType { get; set; }
     }
 }

@@ -1,23 +1,26 @@
-﻿
-
-using System.Linq;
-using Microsoft.Practices.Unity.TestSupport;
+﻿using Microsoft.Practices.Unity.TestSupport;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Linq;
+using System.Reflection;
 using Unity.Interception.PolicyInjection.Pipeline;
-using Unity.Interception.Utilities;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
 {
     [TestClass]
     public class ParameterCollectionFixture
     {
+        private static readonly ParameterInfo[] TestMethodParameters = typeof(ParameterCollectionFixture)
+            .GetMethod(nameof(ParameterCollectionFixture.TestMethod))
+            .GetParameters();
+        
+
         [TestMethod]
         public void CanAccessNonFilteredParameters()
         {
             var collection =
                 new ParameterCollection(
                     new object[] { 10, 20, 30, 40, 50 },
-                    StaticReflection.GetMethodInfo(() => TestMethod(null, null, null, null, null)).GetParameters(),
+                    TestMethodParameters,
                     pi => true);
 
             Assert.AreEqual(5, collection.Count);
@@ -45,7 +48,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
             var collection =
                 new ParameterCollection(
                     new object[] { 10, 20, 30, 40, 50 },
-                    StaticReflection.GetMethodInfo(() => TestMethod(null, null, null, null, null)).GetParameters(),
+                    TestMethodParameters,
                     pi => param++ % 2 == 1);
 
             Assert.AreEqual(3, collection.Count);
@@ -69,11 +72,9 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
         [TestMethod]
         public void FilteredCollectionReturnsRightParameterByName()
         {
-            object dummy;
-            object dummy2;
             var inputsCollection =
                 new ParameterCollection(new object[] { "one", "two", "three", "four" },
-                    StaticReflection.GetMethodInfo(() => MethodWithOuts(out dummy, null, out dummy2, null)).GetParameters(),
+                    typeof(ParameterCollectionFixture).GetMethod(nameof(ParameterCollectionFixture.MethodWithOuts)).GetParameters(),
                     pi => !pi.IsOut);
 
             Assert.AreEqual(2, inputsCollection.Count);
@@ -88,7 +89,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
             var collection =
                 new ParameterCollection(
                     new object[] { null },
-                    StaticReflection.GetMethodInfo(() => TestMethod(null, null, null, null, null)).GetParameters(),
+                    TestMethodParameters,
                     p => true);
 
             var result = collection.Contains(null);
@@ -102,13 +103,14 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
             var collection =
                 new ParameterCollection(
                     new object[] { null },
-                    StaticReflection.GetMethodInfo(() => TestMethod(null, null, null, null, null)).GetParameters(),
+                    TestMethodParameters,
                     p => true);
 
             Assert.IsTrue(new[] { "param1", "param2", "param3", "param4", "param5" }.All(collection.ContainsParameter));
             Assert.IsTrue(new[] { "someOtherParam", "notThisOneEither" }.All(p => !collection.ContainsParameter(p)));
         }
 
+#pragma warning disable IDE0060 // Remove unused parameter
         public static void TestMethod(object param1, object param2, object param3, object param4, object param5)
         {
         }
@@ -118,5 +120,6 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
             param1 = null;
             param3 = null;
         }
+#pragma warning restore IDE0060 // Remove unused parameter
     }
 }

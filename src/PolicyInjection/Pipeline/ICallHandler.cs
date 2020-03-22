@@ -15,7 +15,7 @@ namespace Unity.Interception.PolicyInjection.Pipeline
         /// <param name="getNext">Delegate to execute to get the next delegate in the handler
         /// chain.</param>
         /// <returns>Return value from the target.</returns>
-        IMethodReturn Invoke(IMethodInvocation input, GetNextHandlerDelegate getNext);
+        IMethodReturn Invoke(IMethodInvocation input, GetNextHandlerDelegate? getNext);
 
         /// <summary>
         /// Order in which the handler will be executed
@@ -30,7 +30,7 @@ namespace Unity.Interception.PolicyInjection.Pipeline
     /// <param name="input">Inputs to the current method call.</param>
     /// <param name="getNext">Delegate to get the next handler in the chain.</param>
     /// <returns>Return from the next method in the chain.</returns>
-    public delegate IMethodReturn InvokeHandlerDelegate(IMethodInvocation input, GetNextHandlerDelegate getNext);
+    public delegate IMethodReturn InvokeHandlerDelegate(IMethodInvocation input, GetNextHandlerDelegate? getNext);
 
     /// <summary>
     /// This delegate type is passed to each handler's Invoke method.

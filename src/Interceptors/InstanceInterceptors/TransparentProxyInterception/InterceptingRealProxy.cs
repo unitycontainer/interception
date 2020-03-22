@@ -155,7 +155,7 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyI
             IMethodReturn result =
                 _interceptorsPipeline.Invoke(
                     invocation,
-                    delegate(IMethodInvocation input, GetNextInterceptionBehaviorDelegate getNext)
+                    delegate(IMethodInvocation input, GetNextInterceptionBehaviorDelegate? getNext)
                     {
                         if (callMessage.MethodBase.DeclaringType.IsAssignableFrom(Target.GetType()))
                         {
@@ -180,12 +180,11 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyI
 
         private IMessage HandleInterceptingProxyMethod(IMethodCallMessage callMessage)
         {
-            switch (callMessage.MethodName)
+            return callMessage.MethodName switch
             {
-                case "AddInterceptionBehavior":
-                    return ExecuteAddInterceptionBehavior(callMessage);
-            }
-            throw new InvalidOperationException();
+                "AddInterceptionBehavior" => ExecuteAddInterceptionBehavior(callMessage),
+                _ => throw new InvalidOperationException(),
+            };
         }
 
         private IMessage ExecuteAddInterceptionBehavior(IMethodCallMessage callMessage)

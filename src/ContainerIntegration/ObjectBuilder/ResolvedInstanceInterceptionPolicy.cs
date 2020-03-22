@@ -11,7 +11,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
     public class ResolvedInstanceInterceptionPolicy : IInstanceInterceptionPolicy
     {
         private readonly Type _type;
-        private readonly string _name;
+        private readonly string? _name;
 
         /// <summary>
         /// Construct a new <see cref="ResolvedInstanceInterceptionPolicy"/> that
@@ -30,7 +30,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         /// </summary>
         /// <param name="type">Type of interceptor</param>
         /// <param name="name">Name of registration</param>
-        public ResolvedInstanceInterceptionPolicy(Type type, string name)
+        public ResolvedInstanceInterceptionPolicy(Type type, string? name)
         {
             _type = type;
             _name = name;
@@ -42,9 +42,9 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         /// Interceptor to use.
         /// </summary>
         /// <param name="context">Context for current build operation.</param>
-        public IInstanceInterceptor GetInterceptor(ref BuilderContext context)
+        public IInstanceInterceptor? GetInterceptor(ref BuilderContext context)
         {
-            return (IInstanceInterceptor)context.Resolve(_type, _name);
+            return (IInstanceInterceptor?)context.Resolve(_type, _name) ;
         }
 
         #endregion

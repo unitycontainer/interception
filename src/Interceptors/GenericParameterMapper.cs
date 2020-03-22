@@ -1,10 +1,7 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Interception.Properties;
-using Unity.Interception.Utilities;
 
 namespace Unity.Interception.Interceptors
 {
@@ -26,7 +23,7 @@ namespace Unity.Interception.Interceptors
         /// <param name="parent">The parent mapper, or <see langword="null"/>.</param>
         public GenericParameterMapper(Type type, GenericParameterMapper parent)
         {
-            Guard.ArgumentNotNull(type, "type");
+            if (null == type) throw new ArgumentNullException(nameof(type));
 
             if (type.IsGenericType)
             {
@@ -71,8 +68,8 @@ namespace Unity.Interception.Interceptors
 
         private static ICollection<KeyValuePair<Type, Type>> CreateMappings(Type[] reflectedParameters, Type[] generatedParameters)
         {
-            Guard.ArgumentNotNull(reflectedParameters, "reflectedParameters");
-            Guard.ArgumentNotNull(generatedParameters, "generatedParameters");
+            if (null == reflectedParameters) throw new ArgumentNullException(nameof(reflectedParameters));
+            if (null == generatedParameters) throw new ArgumentNullException(nameof(generatedParameters));
 
             if (reflectedParameters.Length != generatedParameters.Length)
             {

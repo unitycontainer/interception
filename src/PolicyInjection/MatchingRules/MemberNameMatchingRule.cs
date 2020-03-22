@@ -1,5 +1,4 @@
-﻿
-
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Unity.Interception.Utilities;
@@ -32,8 +31,10 @@ namespace Unity.Interception.PolicyInjection.MatchingRules
         /// <param name="ignoreCase">If false, name comparisons are case sensitive. If true, name comparisons are case insensitive.</param>
         public MemberNameMatchingRule(string nameToMatch, bool ignoreCase)
         {
-            _patterns = new List<Glob>();
-            _patterns.Add(new Glob(nameToMatch, !ignoreCase));
+            _patterns = new List<Glob>
+            {
+                new Glob(nameToMatch, !ignoreCase)
+            };
         }
 
         /// <summary>
@@ -54,7 +55,7 @@ namespace Unity.Interception.PolicyInjection.MatchingRules
         /// <param name="ignoreCase">If false, name comparisons are case sensitive. If true, name comparisons are case insensitive.</param>
         public MemberNameMatchingRule(IEnumerable<string> namesToMatch, bool ignoreCase)
         {
-            Guard.ArgumentNotNull(namesToMatch, "namesToMatch");
+            if (null == namesToMatch) throw new ArgumentNullException(nameof(namesToMatch));
 
             _patterns = new List<Glob>();
             foreach (string name in namesToMatch)
@@ -71,7 +72,7 @@ namespace Unity.Interception.PolicyInjection.MatchingRules
         /// the pattern to match and case sensitivity flag.</param>
         public MemberNameMatchingRule(IEnumerable<MatchingInfo> matches)
         {
-            Guard.ArgumentNotNull(matches, "matches");
+            if (null == matches) throw new ArgumentNullException(nameof(matches));
 
             _patterns = new List<Glob>();
             foreach (MatchingInfo match in matches)

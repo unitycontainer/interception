@@ -1,10 +1,8 @@
-﻿
-
+﻿using System;
 using System.Collections.Generic;
 using Unity.Interception.Interceptors;
 using Unity.Interception.PolicyInjection.MatchingRules;
 using Unity.Interception.PolicyInjection.Pipeline;
-using Unity.Interception.Utilities;
 
 namespace Unity.Interception.PolicyInjection.Policies
 {
@@ -47,8 +45,6 @@ namespace Unity.Interception.PolicyInjection.Policies
         /// <returns>true if ruleset matches, false if it does not.</returns>
         protected override bool DoesMatch(MethodImplementationInfo member)
         {
-            Guard.ArgumentNotNull(member, "member");
-
             bool matchesInterface = member.InterfaceMethodInfo != null ? _ruleSet.Matches(member.InterfaceMethodInfo) : false;
             bool matchesImplementation = _ruleSet.Matches(member.ImplementationMethodInfo);
             return matchesInterface | matchesImplementation;

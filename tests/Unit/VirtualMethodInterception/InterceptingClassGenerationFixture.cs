@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Security.Permissions;
+using System.Text;
 using Microsoft.Practices.Unity.InterceptionExtension.Tests.ObjectsUnderTest;
 using Microsoft.Practices.Unity.TestSupport;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -783,7 +784,20 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         {
             char[] chars = obj.ToString().ToCharArray();
             Array.Reverse(chars);
-            return chars.JoinStrings(String.Empty);
+
+            var sb = new StringBuilder();
+            chars.Aggregate(sb, (builder, item) =>
+            {
+                if (builder.Length > 0)
+                {
+                    builder.Append(String.Empty);
+                }
+
+                builder.Append(item);
+                return builder;
+            });
+
+            return sb.ToString();
         }
     }
 

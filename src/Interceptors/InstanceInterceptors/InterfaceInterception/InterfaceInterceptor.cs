@@ -1,10 +1,7 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration;
-using Unity.Interception.Utilities;
 
 namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceInterception
 {
@@ -26,7 +23,8 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
         /// <returns>True if interception is possible, false if not.</returns>
         public bool CanIntercept(Type t)
         {
-            Guard.ArgumentNotNull(t, "t");
+            if (null == t) throw new ArgumentNullException(nameof(t));
+
             return t.IsInterface;
         }
 
@@ -42,8 +40,8 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
             Type interceptedType,
             Type implementationType)
         {
-            Guard.ArgumentNotNull(interceptedType, "interceptedType");
-            Guard.ArgumentNotNull(implementationType, "implementationType");
+            if (null == interceptedType) throw new ArgumentNullException(nameof(interceptedType));
+            if (null == implementationType) throw new ArgumentNullException(nameof(implementationType));
 
             return DoGetInterceptableMethods(interceptedType, implementationType);
         }
@@ -88,8 +86,8 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
         /// <returns>The proxy object.</returns>
         public IInterceptingProxy CreateProxy(Type t, object target, params Type[] additionalInterfaces)
         {
-            Guard.ArgumentNotNull(t, "t");
-            Guard.ArgumentNotNull(additionalInterfaces, "additionalInterfaces");
+            if (null == t) throw new ArgumentNullException(nameof(t));
+            if (null == additionalInterfaces) throw new ArgumentNullException(nameof(additionalInterfaces));
 
             Type interceptorType;
             Type typeToProxy = t;

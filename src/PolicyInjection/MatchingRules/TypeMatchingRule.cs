@@ -1,9 +1,6 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Unity.Interception.Utilities;
 
 namespace Unity.Interception.PolicyInjection.MatchingRules
 {
@@ -67,7 +64,7 @@ namespace Unity.Interception.PolicyInjection.MatchingRules
         /// <returns>True if match, false if not.</returns>
         public bool Matches(MethodBase member)
         {
-            Guard.ArgumentNotNull(member, "member");
+            if (null == member) throw new ArgumentNullException(nameof(member));
 
             if (member.DeclaringType == null)
             {
@@ -85,7 +82,7 @@ namespace Unity.Interception.PolicyInjection.MatchingRules
         /// <returns>True if it matches, false if it doesn't.</returns>
         public bool Matches(Type t)
         {
-            Guard.ArgumentNotNull(t, "t");
+            if (null == t) throw new ArgumentNullException(nameof(t));
 
             foreach (MatchingInfo match in _matches)
             {
@@ -108,7 +105,7 @@ namespace Unity.Interception.PolicyInjection.MatchingRules
 
         private static string SafeGetTypeName(Type type)
         {
-            Guard.ArgumentNotNull(type, "type");
+            if (null == type) throw new ArgumentNullException(nameof(type));
             return type.Name;
         }
     }

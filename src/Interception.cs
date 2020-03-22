@@ -48,8 +48,9 @@ namespace Unity.Interception
         /// <returns>This extension object.</returns>
         public Interception SetInterceptorFor(Type typeToIntercept, string? name, ITypeInterceptor interceptor)
         {
-            Guard.ArgumentNotNull(typeToIntercept, "typeToIntercept");
-            Guard.ArgumentNotNull(interceptor, "interceptor");
+            if (null == typeToIntercept) throw new ArgumentNullException(nameof(typeToIntercept));
+            if (null == interceptor) throw new ArgumentNullException(nameof(interceptor));
+
             GuardTypeInterceptable(typeToIntercept, interceptor);
 
             var key = new NamedTypeBuildKey(typeToIntercept, name);
@@ -108,8 +109,9 @@ namespace Unity.Interception
         /// <returns>This extension object.</returns>
         public Interception SetInterceptorFor(Type typeToIntercept, string? name, IInstanceInterceptor interceptor)
         {
-            Guard.ArgumentNotNull(typeToIntercept, "typeToIntercept");
-            Guard.ArgumentNotNull(interceptor, "interceptor");
+            if (null == typeToIntercept) throw new ArgumentNullException(nameof(typeToIntercept));
+            if (null == interceptor) throw new ArgumentNullException(nameof(interceptor));
+
             GuardTypeInterceptable(typeToIntercept, interceptor);
 
             var key = new NamedTypeBuildKey(typeToIntercept, name);
@@ -133,8 +135,9 @@ namespace Unity.Interception
         /// <returns>This extension object.</returns>
         public Interception SetDefaultInterceptorFor(Type typeToIntercept, ITypeInterceptor interceptor)
         {
-            Guard.ArgumentNotNull(typeToIntercept, "typeToIntercept");
-            Guard.ArgumentNotNull(interceptor, "interceptor");
+            if (null == typeToIntercept) throw new ArgumentNullException(nameof(typeToIntercept));
+            if (null == interceptor) throw new ArgumentNullException(nameof(interceptor));
+
             GuardTypeInterceptable(typeToIntercept, interceptor);
 
             Context.Policies.Set(typeToIntercept, UnityContainer.All, typeof(ITypeInterceptionPolicy), 
@@ -201,8 +204,9 @@ namespace Unity.Interception
         /// <returns>This extension object.</returns>
         public Interception SetDefaultInterceptorFor(Type typeToIntercept, IInstanceInterceptor interceptor)
         {
-            Guard.ArgumentNotNull(typeToIntercept, "typeToIntercept");
-            Guard.ArgumentNotNull(interceptor, "interceptor");
+            if (null == typeToIntercept) throw new ArgumentNullException(nameof(typeToIntercept));
+            if (null == interceptor) throw new ArgumentNullException(nameof(interceptor));
+
             GuardTypeInterceptable(typeToIntercept, interceptor);
 
             Context.Policies.Set(typeToIntercept, UnityContainer.All, typeof(IInstanceInterceptionPolicy), new FixedInstanceInterceptionPolicy(interceptor));
@@ -252,7 +256,9 @@ namespace Unity.Interception
         /// </remarks>
         public PolicyDefinition AddPolicy(string policyName)
         {
-            Guard.ArgumentNotNullOrEmpty(policyName, "policyName");
+            if (null == policyName)     throw new ArgumentNullException(nameof(policyName));
+            if (0 == policyName.Length) throw new ArgumentException(@"The provided string argument must not be empty.", policyName);
+            
             return new PolicyDefinition(policyName, this);
         }
     }

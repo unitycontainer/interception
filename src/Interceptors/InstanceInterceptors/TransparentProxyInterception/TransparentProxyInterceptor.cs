@@ -1,11 +1,8 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.Remoting.Proxies;
 using System.Security;
-using Unity.Interception.Utilities;
 
 namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyInterception
 {
@@ -22,7 +19,7 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyI
         /// <returns>True if interception is possible, false if not.</returns>
         public bool CanIntercept(Type t)
         {
-            Guard.ArgumentNotNull(t, "t");
+            if (null == t) throw new ArgumentNullException(nameof(t));
 
             return (typeof(MarshalByRefObject).IsAssignableFrom(t) || t.IsInterface);
         }
@@ -91,8 +88,8 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyI
         [SecuritySafeCritical]
         public IInterceptingProxy CreateProxy(Type t, object target, params Type[] additionalInterfaces)
         {
-            Guard.ArgumentNotNull(t, "t");
-            Guard.ArgumentNotNull(target, "target");
+            if (null == t) throw new ArgumentNullException(nameof(t));
+            if (null == target) throw new ArgumentNullException(nameof(target));
 
             RealProxy realProxy = new InterceptingRealProxy(target, t, additionalInterfaces);
             return (IInterceptingProxy)realProxy.GetTransparentProxy();

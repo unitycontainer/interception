@@ -1,10 +1,7 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Unity.Interception.PolicyInjection.Pipeline;
-using Unity.Interception.Utilities;
 
 namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception
 {
@@ -25,7 +22,7 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
         /// <param name="arguments">All arguments (including current values) passed to the method.</param>
         public VirtualMethodReturn(IMethodInvocation originalInvocation, object returnValue, object[] arguments)
         {
-            Guard.ArgumentNotNull(originalInvocation, "originalInvocation");
+            if (null == originalInvocation) throw new ArgumentNullException(nameof(originalInvocation));
 
             InvocationContext = originalInvocation.InvocationContext;
             ReturnValue = returnValue;
@@ -40,8 +37,8 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
         /// <param name="exception">Exception that was thrown.</param>
         public VirtualMethodReturn(IMethodInvocation originalInvocation, Exception exception)
         {
-            Guard.ArgumentNotNull(originalInvocation, "originalInvocation");
-            
+            if (null == originalInvocation) throw new ArgumentNullException(nameof(originalInvocation));
+
             InvocationContext = originalInvocation.InvocationContext;
             Exception = exception;
             _outputs = new ParameterCollection(new object[0], new ParameterInfo[0], delegate { return false; });

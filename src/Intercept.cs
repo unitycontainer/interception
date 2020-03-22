@@ -7,7 +7,6 @@ using Unity.Interception.Interceptors;
 using Unity.Interception.Interceptors.InstanceInterceptors;
 using Unity.Interception.Interceptors.TypeInterceptors;
 using Unity.Interception.Properties;
-using Unity.Interception.Utilities;
 
 namespace Unity.Interception
 {
@@ -89,11 +88,11 @@ namespace Unity.Interception
             IEnumerable<IInterceptionBehavior> interceptionBehaviors,
             IEnumerable<Type> additionalInterfaces)
         {
-            Guard.ArgumentNotNull(interceptedType, "interceptedType");
-            Guard.ArgumentNotNull(target, "target");
-            Guard.ArgumentNotNull(interceptor, "interceptor");
-            Guard.ArgumentNotNull(interceptionBehaviors, "interceptionBehaviors");
-            Guard.ArgumentNotNull(additionalInterfaces, "additionalInterfaces");
+            if (null == interceptedType) throw new ArgumentNullException(nameof(interceptedType));
+            if (null == target) throw new ArgumentNullException(nameof(target));
+            if (null == interceptor) throw new ArgumentNullException(nameof(interceptor));
+            if (null == interceptionBehaviors) throw new ArgumentNullException(nameof(interceptionBehaviors));
+            if (null == additionalInterfaces) throw new ArgumentNullException(nameof(additionalInterfaces));
 
             if (!interceptor.CanIntercept(interceptedType))
             {
@@ -233,10 +232,10 @@ namespace Unity.Interception
             IEnumerable<Type> additionalInterfaces,
             params object[] constructorParameters)
         {
-            Guard.ArgumentNotNull(type, "type");
-            Guard.ArgumentNotNull(interceptor, "interceptor");
-            Guard.ArgumentNotNull(interceptionBehaviors, "interceptionBehaviors");
-            Guard.ArgumentNotNull(additionalInterfaces, "additionalInterfaces");
+            if (null == type) throw new ArgumentNullException(nameof(type));
+            if (null == interceptor) throw new ArgumentNullException(nameof(interceptor));
+            if (null == interceptionBehaviors) throw new ArgumentNullException(nameof(interceptionBehaviors));
+            if (null == additionalInterfaces) throw new ArgumentNullException(nameof(additionalInterfaces));
 
             if (!interceptor.CanIntercept(type))
             {

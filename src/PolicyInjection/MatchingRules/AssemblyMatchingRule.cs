@@ -1,9 +1,6 @@
-﻿
-
-using System;
+﻿using System;
 using System.Globalization;
 using System.Reflection;
-using Unity.Interception.Utilities;
 
 namespace Unity.Interception.PolicyInjection.MatchingRules
 {
@@ -48,7 +45,7 @@ namespace Unity.Interception.PolicyInjection.MatchingRules
         /// <returns>true if <paramref name="member"/> is in a matching assembly, false if not.</returns>
         public bool Matches(MethodBase member)
         {
-            Guard.ArgumentNotNull(member, "member");
+            if (null == member) throw new ArgumentNullException(nameof(member));
 
             if (member.DeclaringType == null)
             {

@@ -1,5 +1,4 @@
-﻿
-
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Unity.Interception.Utilities;
@@ -23,7 +22,7 @@ namespace Unity.Interception.PolicyInjection.MatchingRules
         /// <param name="ignoreCase">If false, name comparisons are case sensitive. If true, name comparisons are case insensitive.</param>
         public MethodSignatureMatchingRule(string methodName, IEnumerable<string> parameterTypeNames, bool ignoreCase)
         {
-            Guard.ArgumentNotNull(parameterTypeNames, "parameterTypeNames");
+            if (null == parameterTypeNames) throw new ArgumentNullException(nameof(parameterTypeNames));
 
             _methodNamePattern = new Glob(methodName, !ignoreCase);
             _parameterRules = new List<TypeMatchingRule>();
@@ -75,7 +74,7 @@ namespace Unity.Interception.PolicyInjection.MatchingRules
         /// <returns>True if match, false if not.</returns>
         public bool Matches(MethodBase member)
         {
-            Guard.ArgumentNotNull(member, "member");
+            if (null == member) throw new ArgumentNullException(nameof(member));
 
             if (!_methodNamePattern.IsMatch(member.Name))
             {

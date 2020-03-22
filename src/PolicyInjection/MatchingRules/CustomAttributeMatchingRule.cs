@@ -1,9 +1,6 @@
-﻿
-
-using System;
+﻿using System;
 using System.Reflection;
 using Unity.Interception.Properties;
-using Unity.Interception.Utilities;
 
 namespace Unity.Interception.PolicyInjection.MatchingRules
 {
@@ -23,7 +20,8 @@ namespace Unity.Interception.PolicyInjection.MatchingRules
         /// <param name="inherited">If true, checks the base class for attributes as well.</param>
         public CustomAttributeMatchingRule(Type attributeType, bool inherited)
         {
-            Guard.ArgumentNotNull(attributeType, "attributeType");
+            if (null == attributeType) throw new ArgumentNullException(nameof(attributeType));
+            
             if (!attributeType.IsSubclassOf(typeof(Attribute)))
             {
                 throw new ArgumentException(Resources.ExceptionAttributeNoSubclassOfAttribute, nameof(attributeType));
@@ -40,7 +38,7 @@ namespace Unity.Interception.PolicyInjection.MatchingRules
         /// <returns>true if it matches, false if not.</returns>
         public bool Matches(MethodBase member)
         {
-            Guard.ArgumentNotNull(member, "member");
+            if (null == member) throw new ArgumentNullException(nameof(member));
 
             object[] attribues = member.GetCustomAttributes(_attributeType, _inherited);
 

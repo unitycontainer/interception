@@ -1,10 +1,8 @@
-﻿
-
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using Unity.Interception.Interceptors;
-using Unity.Interception.Utilities;
 
 namespace Unity.Interception.PolicyInjection.Pipeline
 {
@@ -59,8 +57,6 @@ namespace Unity.Interception.PolicyInjection.Pipeline
         /// <returns>True if the pipeline has any handlers in it, false if not.</returns>
         public bool InitializePipeline(MethodImplementationInfo method, IEnumerable<ICallHandler> handlers)
         {
-            Guard.ArgumentNotNull(method, "method");
-
             var pipeline = CreatePipeline(method.ImplementationMethodInfo, handlers);
             if (method.InterfaceMethodInfo != null)
             {

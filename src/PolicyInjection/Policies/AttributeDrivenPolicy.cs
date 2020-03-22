@@ -1,5 +1,4 @@
-﻿
-
+﻿using System;
 using System.Collections.Generic;
 using Unity.Interception.Interceptors;
 using Unity.Interception.PolicyInjection.MatchingRules;
@@ -33,8 +32,6 @@ namespace Unity.Interception.PolicyInjection.Policies
         /// <returns>true if policy applies to this member, false if not.</returns>
         protected override bool DoesMatch(MethodImplementationInfo member)
         {
-            Guard.ArgumentNotNull(member, "member");
-
             bool matchesInterface = member.InterfaceMethodInfo != null ? _attributeMatchRule.Matches(member.InterfaceMethodInfo) : false;
             bool matchesImplementation = _attributeMatchRule.Matches(member.ImplementationMethodInfo);
 

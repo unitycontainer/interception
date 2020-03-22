@@ -1,6 +1,4 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
@@ -8,7 +6,6 @@ using Unity.Interception.InterceptionBehaviors;
 using Unity.Interception.Interceptors;
 using Unity.Interception.PolicyInjection.Pipeline;
 using Unity.Interception.PolicyInjection.Policies;
-using Unity.Interception.Utilities;
 
 namespace Unity.Interception.PolicyInjection
 {
@@ -39,7 +36,7 @@ namespace Unity.Interception.PolicyInjection
         public PolicyInjectionBehavior(CurrentInterceptionRequest interceptionRequest, InjectionPolicy[] policies,
             IUnityContainer container)
         {
-            Guard.ArgumentNotNull(interceptionRequest, "interceptionRequest");
+            if (null == interceptionRequest) throw new ArgumentNullException(nameof(interceptionRequest));
 
             var allPolicies = new PolicySet(policies);
             bool hasHandlers = false;

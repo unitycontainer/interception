@@ -19,7 +19,7 @@ namespace Unity.Interception.Utilities
         /// <returns>PropertyInfo for the property, or null if method is not part of a property.</returns>
         public static PropertyInfo? GetPropertyFromMethod(MethodInfo method)
         {
-            Guard.ArgumentNotNull(method, "method");
+            if (null == method) throw new ArgumentNullException(nameof(method));
 
             PropertyInfo? property = null;
             if (method.IsSpecialName)
@@ -81,7 +81,7 @@ namespace Unity.Interception.Utilities
         /// <returns>Array of found attributes.</returns>
         public static TAttribute[] GetAttributes<TAttribute>(MemberInfo member, bool inherits) where TAttribute : Attribute
         {
-            Guard.ArgumentNotNull(member, "member");
+            if (null == member) throw new ArgumentNullException(nameof(member));
 
             object[] attributesAsObjects = member.GetCustomAttributes(typeof(TAttribute), inherits);
             TAttribute[] attributes = new TAttribute[attributesAsObjects.Length];
@@ -106,7 +106,7 @@ namespace Unity.Interception.Utilities
         public static TAttribute[] GetAllAttributes<TAttribute>(MemberInfo member, bool inherits)
             where TAttribute : Attribute
         {
-            Guard.ArgumentNotNull(member, "member");
+            if (null == member) throw new ArgumentNullException(nameof(member));
 
             List<TAttribute> attributes = new List<TAttribute>();
 

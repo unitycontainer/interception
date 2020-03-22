@@ -1,6 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
-
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Runtime.Remoting;
@@ -11,7 +9,6 @@ using System.Security.Permissions;
 using Unity.Interception.InterceptionBehaviors;
 using Unity.Interception.PolicyInjection.Pipeline;
 using Unity.Interception.Properties;
-using Unity.Interception.Utilities;
 
 namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyInterception
 {
@@ -40,8 +37,7 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyI
             params Type[] additionalInterfaces)
             : base(classToProxy)
         {
-            Guard.ArgumentNotNull(target, "target");
-            Target = target;
+            Target = target ?? throw new ArgumentNullException(nameof(target));
             _additionalInterfaces = CheckAdditionalInterfaces(additionalInterfaces);
             TypeName = target.GetType().FullName;
         }
@@ -66,7 +62,7 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyI
         [SecuritySafeCritical]
         public void AddInterceptionBehavior(IInterceptionBehavior interceptor)
         {
-            Guard.ArgumentNotNull(interceptor, "interceptor");
+            if (null == interceptor) throw new ArgumentNullException(nameof(interceptor));
 
             _interceptorsPipeline.Add(interceptor);
         }
@@ -87,8 +83,8 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyI
         [SecurityCritical]
         public bool CanCastTo(Type fromType, object o)
         {
-            Guard.ArgumentNotNull(fromType, "fromType");
-            Guard.ArgumentNotNull(o, "o");
+            if (null == fromType) throw new ArgumentNullException(nameof(fromType));
+            if (null == o) throw new ArgumentNullException(nameof(o));
 
             if (fromType == typeof(IInterceptingProxy))
             {
@@ -142,7 +138,7 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyI
         [SecurityCritical]
         public override IMessage Invoke(IMessage msg)
         {
-            Guard.ArgumentNotNull(msg, "msg");
+            if (null == msg) throw new ArgumentNullException(nameof(msg));
 
             IMethodCallMessage callMessage = (IMethodCallMessage)msg;
 

@@ -1,11 +1,8 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Unity.Interception.Utilities;
 
 namespace Unity.Interception.PolicyInjection.Pipeline
 {
@@ -53,10 +50,9 @@ namespace Unity.Interception.PolicyInjection.Pipeline
         /// parameters, for example.</param>
         public ParameterCollection(object[] arguments, ParameterInfo[] argumentInfo, Predicate<ParameterInfo> isArgumentPartOfCollection)
         {
-            Guard.ArgumentNotNull(arguments, "arguments");
-            Guard.ArgumentNotNull(isArgumentPartOfCollection, "isArgumentPartOfCollection");
+            if (null == isArgumentPartOfCollection) throw new ArgumentNullException(nameof(isArgumentPartOfCollection));
 
-            _arguments = arguments;
+            _arguments = arguments ?? throw new ArgumentNullException(nameof(arguments));
             _argumentInfo = new List<ArgumentInfo>();
             for (int argumentNumber = 0; argumentNumber < argumentInfo.Length; ++argumentNumber)
             {

@@ -1,8 +1,6 @@
-﻿
-
+﻿using System;
 using System.Reflection;
 using Unity.Interception.PolicyInjection.Policies;
-using Unity.Interception.Utilities;
 
 namespace Unity.Interception.PolicyInjection.MatchingRules
 {
@@ -21,7 +19,7 @@ namespace Unity.Interception.PolicyInjection.MatchingRules
         /// <returns>True if the rule matches, false if it doesn't.</returns>
         public bool Matches(MethodBase member)
         {
-            Guard.ArgumentNotNull(member, "member");
+            if (null == member) throw new ArgumentNullException(nameof(member));
 
             bool hasNoPoliciesAttribute =
                 (member.GetCustomAttributes(typeof(ApplyNoPoliciesAttribute), false).Length != 0);

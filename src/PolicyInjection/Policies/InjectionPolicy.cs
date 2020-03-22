@@ -1,12 +1,9 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Unity.Interception.Interceptors;
 using Unity.Interception.PolicyInjection.MatchingRules;
 using Unity.Interception.PolicyInjection.Pipeline;
-using Unity.Interception.Utilities;
 
 namespace Unity.Interception.PolicyInjection.Policies
 {
@@ -100,7 +97,7 @@ namespace Unity.Interception.PolicyInjection.Policies
         /// <returns>The set of methods</returns>
         protected static IEnumerable<MethodBase> GetMethodSet(MethodBase member)
         {
-            Guard.ArgumentNotNull(member, "member");
+            if (null == member) throw new ArgumentNullException(nameof(member));
 
             List<MethodBase> methodSet = new List<MethodBase>(new[] { member });
             if (member.DeclaringType != null && !member.DeclaringType.IsInterface)

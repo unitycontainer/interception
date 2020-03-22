@@ -1,5 +1,4 @@
-﻿
-
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Unity.Interception.Utilities;
@@ -55,7 +54,7 @@ namespace Unity.Interception.PolicyInjection.MatchingRules
         /// properties to match.</param>
         public PropertyMatchingRule(IEnumerable<PropertyMatchingInfo> matches)
         {
-            Guard.ArgumentNotNull(matches, "matches");
+            if (null == matches) throw new ArgumentNullException(nameof(matches));
 
             foreach (PropertyMatchingInfo match in matches)
             {
@@ -78,7 +77,7 @@ namespace Unity.Interception.PolicyInjection.MatchingRules
         /// <returns>True if it matches, false if it does not.</returns>
         public bool Matches(MethodBase member)
         {
-            Guard.ArgumentNotNull(member, "member");
+            if (null == member) throw new ArgumentNullException(nameof(member));
 
             return
                 member.IsSpecialName &&

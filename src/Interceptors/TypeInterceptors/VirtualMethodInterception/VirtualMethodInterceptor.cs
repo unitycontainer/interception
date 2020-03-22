@@ -1,12 +1,9 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration;
 using Unity.Interception.Properties;
-using Unity.Interception.Utilities;
 
 namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception
 {
@@ -26,7 +23,8 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
         /// <returns>True if interception is possible, false if not.</returns>
         public bool CanIntercept(Type t)
         {
-            Guard.ArgumentNotNull(t, "t");
+            if (null == t) throw new ArgumentNullException(nameof(t));
+
             return t.IsClass &&
                 (t.IsPublic || t.IsNestedPublic) &&
                 t.IsVisible &&
@@ -42,7 +40,7 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
         /// <returns>Sequence of <see cref="MethodInfo"/> objects.</returns>
         public IEnumerable<MethodImplementationInfo> GetInterceptableMethods(Type interceptedType, Type implementationType)
         {
-            Guard.ArgumentNotNull(implementationType, "implementationType");
+            if (null == implementationType) throw new ArgumentNullException(nameof(implementationType));
 
             return DoGetInterceptableMethods(implementationType);
         }
@@ -87,8 +85,8 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
         /// original type t, and supports interception.</returns>
         public Type CreateProxyType(Type t, params Type[] additionalInterfaces)
         {
-            Guard.ArgumentNotNull(t, "t");
-            Guard.ArgumentNotNull(additionalInterfaces, "additionalInterfaces");
+            if (null == t) throw new ArgumentNullException(nameof(t));
+            if (null == additionalInterfaces) throw new ArgumentNullException(nameof(additionalInterfaces));
 
             if (!CanIntercept(t))
             {

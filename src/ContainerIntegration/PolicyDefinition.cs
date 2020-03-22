@@ -4,7 +4,6 @@ using Unity.Injection;
 using Unity.Interception.PolicyInjection.MatchingRules;
 using Unity.Interception.PolicyInjection.Pipeline;
 using Unity.Interception.PolicyInjection.Policies;
-using Unity.Interception.Utilities;
 using Unity.Lifetime;
 
 namespace Unity.Interception.ContainerIntegration
@@ -504,9 +503,7 @@ namespace Unity.Interception.ContainerIntegration
 
         private PolicyDefinition AddElement<T>(string name, UpdateElements update)
         {
-            Guard.ArgumentNotNull(name, "name");
-
-            return update(name);
+            return update(name ?? throw new ArgumentNullException(nameof(name)));
         }
 
         private PolicyDefinition AddElement<T>(T instance, UpdateElements update)
@@ -517,18 +514,8 @@ namespace Unity.Interception.ContainerIntegration
             return update(newName);
         }
 
-        private PolicyDefinition AddElement<T>(
-            Type type,
-            string name,
-            LifetimeManager? lifetimeManager,
-            InjectionMember[] injectionMembers,
-            UpdateElements update)
+        private PolicyDefinition AddElement<T>( Type type, string name, LifetimeManager? lifetimeManager, InjectionMember[] injectionMembers, UpdateElements update)
         {
-            Guard.ArgumentNotNullOrEmpty(name, "name");
-            Guard.ArgumentNotNull(type, "type");
-            Guard.TypeIsAssignable(typeof(T), type, "type");
-            Guard.ArgumentNotNull(injectionMembers, "injectionMembers");
-
             Container.RegisterType(typeof(T), type, name, (ITypeLifetimeManager?)lifetimeManager, injectionMembers);
 
             return update(name);

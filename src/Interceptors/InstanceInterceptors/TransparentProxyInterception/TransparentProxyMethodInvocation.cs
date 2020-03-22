@@ -1,13 +1,10 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.Remoting.Messaging;
 using System.Security;
 using System.Security.Permissions;
 using Unity.Interception.PolicyInjection.Pipeline;
-using Unity.Interception.Utilities;
 
 namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyInterception
 {
@@ -36,9 +33,7 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyI
         /// <param name="target">Ultimate target of the method call.</param>
         public TransparentProxyMethodInvocation(IMethodCallMessage callMessage, object target)
         {
-            Guard.ArgumentNotNull(callMessage, "callMessage");
-
-            _callMessage = callMessage;
+            _callMessage = callMessage ?? throw new ArgumentNullException(nameof(callMessage));
             _invocationContext = new Dictionary<string, object>();
             _target = target;
             _arguments = callMessage.Args;

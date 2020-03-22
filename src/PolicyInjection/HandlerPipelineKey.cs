@@ -1,8 +1,5 @@
-﻿
-
-using System;
+﻿using System;
 using System.Reflection;
-using Unity.Interception.Utilities;
 
 namespace Unity.Interception.PolicyInjection
 {
@@ -21,7 +18,7 @@ namespace Unity.Interception.PolicyInjection
         /// <returns>The new key.</returns>
         public static HandlerPipelineKey ForMethod(MethodBase methodBase)
         {
-            Guard.ArgumentNotNull(methodBase, "methodBase");
+            if (null == methodBase) throw new ArgumentNullException(nameof(methodBase));
 
             return new HandlerPipelineKey(methodBase.DeclaringType.Module, methodBase.MetadataToken);
         }

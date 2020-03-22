@@ -1,9 +1,6 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Unity.Interception.Utilities;
 
 namespace Unity.Interception.PolicyInjection.MatchingRules
 {
@@ -44,7 +41,7 @@ namespace Unity.Interception.PolicyInjection.MatchingRules
         /// <param name="matches">Collection of namespace names to match.</param>
         public NamespaceMatchingRule(IEnumerable<MatchingInfo> matches)
         {
-            Guard.ArgumentNotNull(matches, "matches");
+            if (null == matches) throw new ArgumentNullException(nameof(matches));
 
             _matches = new List<NamespaceMatchingInfo>();
             foreach (MatchingInfo match in matches)
@@ -72,7 +69,7 @@ namespace Unity.Interception.PolicyInjection.MatchingRules
         /// </summary>
         private class NamespaceMatchingInfo : MatchingInfo
         {
-            private bool wildCard;
+            private readonly bool wildCard;
             private const string WildCardString = ".*";
 
             /// <summary>

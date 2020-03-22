@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -9,7 +8,6 @@ using System.Runtime.CompilerServices;
 using Unity.Interception.InterceptionBehaviors;
 using Unity.Interception.PolicyInjection.Pipeline;
 using Unity.Interception.Properties;
-using Unity.Interception.Utilities;
 
 namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration
 {
@@ -40,6 +38,14 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
             typeof(MethodBase).GetMethod(nameof(MethodBase.GetMethodFromHandle), new Type[] { typeof(RuntimeMethodHandle), typeof(RuntimeTypeHandle) });
         private static readonly MethodInfo GetItemMethod =
             typeof(System.Collections.IList).GetProperty("Item").GetGetMethod();
+        private static readonly MethodInfo ExceptionDispatchInfoCaptureMethod =
+            typeof(System.Runtime.ExceptionServices.ExceptionDispatchInfo)
+                .GetMethod(nameof(System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture), new Type[] { typeof(Exception) });
+        private static readonly MethodInfo ExceptionDispatchInfoThrowMethod =
+            typeof(System.Runtime.ExceptionServices.ExceptionDispatchInfo)
+                .GetMethod(nameof(System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw), new Type[0]);
+        private static readonly ConstructorInfo InvokeInterceptionBehaviorDelegateCtor = typeof(InvokeInterceptionBehaviorDelegate)
+            .GetConstructor(new Type[] { typeof(object), typeof(IntPtr) });
 
 
         private readonly TypeBuilder _typeBuilder;
@@ -164,6 +170,8 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
             }
         }
 
+// TODO: enable warning 
+#pragma warning disable CS8604 // Possible null reference argument.
         private MethodBuilder CreateDelegateImplementation(MethodInfo callBaseMethod)
         {
             string methodName = CreateMethodName("DelegateImplementation");
@@ -322,9 +330,8 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
 
             return methodBuilder;
         }
+#pragma warning restore CS8604 // Possible null reference argument.
 
-        [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling",
-            Justification = "Possibly agree with this, but requires more deliberate refactoring")]
         private MethodBuilder CreateMethodOverride(MethodBuilder delegateMethod)
         {
             MethodAttributes attrs =
@@ -419,7 +426,7 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
             }
 
             il.Emit(OpCodes.Ldftn, invokeTarget);
-            il.Emit(OpCodes.Newobj, InvokeInterceptionBehaviorDelegateMethods.InvokeInterceptionBehaviorDelegate);
+            il.Emit(OpCodes.Newobj, InvokeInterceptionBehaviorDelegateCtor);
 
             // And call the pipeline
             il.Emit(OpCodes.Call, InterceptionBehaviorPipeline.InvokeMethodInfo);
@@ -437,11 +444,11 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
             il.Emit(OpCodes.Brtrue_S, noException);
             il.Emit(OpCodes.Ldloc, ex);
 
-            if (ReflectionHelper.ExceptionDispatchInfoCaptureMethod != null 
-                && ReflectionHelper.ExceptionDispatchInfoThrowMethod != null)
+            if (ExceptionDispatchInfoCaptureMethod != null 
+                && ExceptionDispatchInfoThrowMethod != null)
             {
-                il.EmitCall(OpCodes.Call, ReflectionHelper.ExceptionDispatchInfoCaptureMethod, null);
-                il.EmitCall(OpCodes.Callvirt, ReflectionHelper.ExceptionDispatchInfoThrowMethod, null);
+                il.EmitCall(OpCodes.Call, ExceptionDispatchInfoCaptureMethod, null);
+                il.EmitCall(OpCodes.Callvirt, ExceptionDispatchInfoThrowMethod, null);
             }
             else
             {

@@ -300,7 +300,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
 
             PipelineManager pm = new PipelineManager();
             MethodBase reverse = typeof(InterceptingGenericClass<DateTime>).GetMethod("Reverse");
-            pm.SetPipeline(reverse, new HandlerPipeline(Sequence.Collect<ICallHandler>(handler)));
+            pm.SetPipeline(reverse, new HandlerPipeline(new ICallHandler[] { handler }));
             ((IInterceptingProxy)instance).AddInterceptionBehavior(new PolicyInjectionBehavior(pm));
 
             string result = instance.Reverse(137);
@@ -792,7 +792,6 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         private readonly InterceptionBehaviorPipeline pipeline = new InterceptionBehaviorPipeline();
         private readonly MethodBase reverse = typeof(InterceptingGenericClass<T>).GetMethod("Reverse");
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.ReadabilityRules", "SA1100:DoNotPrefixCallsWithBaseUnlessLocalImplementationExists", Justification = "Point of the test is to call base class and Reverse is overridden and virtual.")]
         private string BaseReverse<TITem>(TITem obj)
         {
             return base.Reverse(obj);

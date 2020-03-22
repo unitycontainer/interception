@@ -10,7 +10,6 @@ using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception
 using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration;
 using Unity.Interception.PolicyInjection.Pipeline;
 using Unity.Interception.Properties;
-using Unity.Interception.Utilities;
 
 namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceInterception
 {
@@ -41,7 +40,15 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
             typeof(MethodBase).GetMethod(nameof(MethodBase.GetMethodFromHandle), new Type[] { typeof(RuntimeMethodHandle), typeof(RuntimeTypeHandle) });
         private static readonly MethodInfo GetItemMethod =
             typeof(System.Collections.IList).GetProperty("Item").GetGetMethod();
-        
+        private static readonly MethodInfo ExceptionDispatchInfoCaptureMethod =
+            typeof(System.Runtime.ExceptionServices.ExceptionDispatchInfo)
+                .GetMethod(nameof(System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture), new Type[] { typeof(Exception) });
+        private static readonly MethodInfo ExceptionDispatchInfoThrowMethod =
+            typeof(System.Runtime.ExceptionServices.ExceptionDispatchInfo)
+                .GetMethod(nameof(System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw), new Type[0]);
+        private static readonly ConstructorInfo InvokeInterceptionBehaviorDelegateCtor = typeof(InvokeInterceptionBehaviorDelegate)
+            .GetConstructor(new Type[] { typeof(object), typeof(IntPtr) });
+
 
         private const MethodAttributes ImplicitImplementationAttributes =
             MethodAttributes.Public | MethodAttributes.Virtual | MethodAttributes.Final
@@ -157,6 +164,8 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
             }
         }
 
+// TODO: Enable warning
+#pragma warning disable CS8604 // Possible null reference argument.
         private MethodBuilder CreateDelegateImplementation()
         {
             string methodName = CreateMethodName("DelegateImplementation");
@@ -310,6 +319,7 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
             }
             return methodBuilder;
         }
+#pragma warning restore CS8604 // Possible null reference argument.
 
         private MethodBuilder CreateMethodOverride(MethodBuilder delegateMethod)
         {
@@ -417,7 +427,7 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
 
             il.Emit(OpCodes.Ldftn, callTarget);
 
-            il.Emit(OpCodes.Newobj, InvokeInterceptionBehaviorDelegateMethods.InvokeInterceptionBehaviorDelegate);
+            il.Emit(OpCodes.Newobj, InvokeInterceptionBehaviorDelegateCtor);
 
             // And call the pipeline
             il.Emit(OpCodes.Call, InterceptionBehaviorPipeline.InvokeMethodInfo);
@@ -435,11 +445,11 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
             il.Emit(OpCodes.Brtrue_S, noException);
             il.Emit(OpCodes.Ldloc, ex);
 
-            if (ReflectionHelper.ExceptionDispatchInfoCaptureMethod != null
-                && ReflectionHelper.ExceptionDispatchInfoThrowMethod != null)
+            if (ExceptionDispatchInfoCaptureMethod != null
+                && ExceptionDispatchInfoThrowMethod != null)
             {
-                il.EmitCall(OpCodes.Call, ReflectionHelper.ExceptionDispatchInfoCaptureMethod, null);
-                il.EmitCall(OpCodes.Callvirt, ReflectionHelper.ExceptionDispatchInfoThrowMethod, null);
+                il.EmitCall(OpCodes.Call, ExceptionDispatchInfoCaptureMethod, null);
+                il.EmitCall(OpCodes.Callvirt, ExceptionDispatchInfoThrowMethod, null);
             }
             else
             {

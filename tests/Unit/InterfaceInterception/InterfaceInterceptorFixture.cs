@@ -18,7 +18,6 @@ using Unity.Interception.PolicyInjection;
 using Unity.Interception.PolicyInjection.MatchingRules;
 using Unity.Interception.PolicyInjection.Pipeline;
 using Unity.Interception.PolicyInjection.Policies;
-using Unity.Interception.Utilities;
 using Unity.Lifetime;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterception
@@ -46,9 +45,9 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
             List<MethodImplementationInfo> methods =
                 new InterfaceInterceptor().GetInterceptableMethods(typeof(IInterfaceOne), typeof(ImplementationOne)).ToList();
 
-            List<MethodImplementationInfo> expected = Sequence.Collect(
+            List<MethodImplementationInfo> expected = new MethodImplementationInfo[] {
                 new MethodImplementationInfo(typeof(IInterfaceOne).GetMethod("TargetMethod"),
-                    typeof(ImplementationOne).GetMethod("TargetMethod"))).ToList();
+                    typeof(ImplementationOne).GetMethod("TargetMethod")) }.ToList();
 
             CollectionAssertExtensions.AreEquivalent(expected, methods);
         }
@@ -60,11 +59,11 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
                 new InterfaceInterceptor().GetInterceptableMethods(typeof(Interface),
                     typeof(Interface)).ToList();
 
-            List<MethodImplementationInfo> expected = Sequence.Collect(
+            List<MethodImplementationInfo> expected = new MethodImplementationInfo[] {
                 new MethodImplementationInfo(typeof(Interface).GetMethod("Method"),
                     typeof(Interface).GetMethod("Method")),
                     new MethodImplementationInfo(typeof(InterfaceBase).GetMethod("Method3"),
-                        typeof(InterfaceBase).GetMethod("Method3")))
+                        typeof(InterfaceBase).GetMethod("Method3")) }
                 .ToList();
 
             CollectionAssertExtensions.AreEquivalent(expected, methods);
@@ -77,11 +76,11 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
                 new InterfaceInterceptor().GetInterceptableMethods(typeof(Interface),
                     typeof(WrappableThroughInterface)).ToList();
 
-            List<MethodImplementationInfo> expected = Sequence.Collect(
+            List<MethodImplementationInfo> expected = new MethodImplementationInfo[] {
                 new MethodImplementationInfo(typeof(Interface).GetMethod("Method"),
                     typeof(WrappableThroughInterface).GetMethod("Method")),
                     new MethodImplementationInfo(typeof(InterfaceBase).GetMethod("Method3"),
-                        typeof(WrappableThroughInterface).GetMethod("Method3")))
+                        typeof(WrappableThroughInterface).GetMethod("Method3")) }
                 .ToList();
 
             CollectionAssertExtensions.AreEquivalent(expected, methods);
@@ -195,10 +194,9 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
             proxy.AddInterceptionBehavior(interceptionBehavior);
 
             IHaveSomeRefsAndOuts intercepted = (IHaveSomeRefsAndOuts)proxy;
-
-            int a;
             string s = "something";
-            intercepted.DoSomething(out a, ref s);
+
+            intercepted.DoSomething(out int a, ref s);
 
             Assert.AreEqual(37, a);
             Assert.AreEqual("+++something***", s);
@@ -552,7 +550,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
             HasSomeProperties target = new HasSomeProperties();
             object proxy = interceptor.CreateProxy(typeof(IHaveSomeProperties), target, typeof(INotifyPropertyChanged));
             string changeProperty = null;
-            PropertyChangedEventHandler handler = (sender, args) => changeProperty = args.PropertyName;
+            void handler(object sender, PropertyChangedEventArgs args) => changeProperty = args.PropertyName;
 
             ((IInterceptingProxy)proxy).AddInterceptionBehavior(new NaiveINotifyPropertyChangedInterceptionBehavior());
             ((INotifyPropertyChanged)proxy).PropertyChanged += handler;
@@ -1415,12 +1413,12 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
 
             public T GenericMethod<T>(IEnumerable param1, T param2)
             {
-                return default(T);
+                return default;
             }
 
             public T GenericMethodWithConstraints<T>(IEnumerable param1, T param2) where T : class
             {
-                return default(T);
+                return default;
             }
         }
 
@@ -1433,19 +1431,21 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
 
             public T GenericMethod<T>(T1 param1, T param2)
             {
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
                 var handle = MethodBase.GetCurrentMethod().MethodHandle;
+#pragma warning restore IDE0059 // Unnecessary assignment of a value
 
-                return default(T);
+                return default;
             }
 
             public T GenericMethodWithConstraints<T>(T1 param1, T param2) where T : class
             {
-                return default(T);
+                return default;
             }
 
             public T GenericMethodWithConstraintsOnTheInterfaceParameter<T>(T1 param1, T param2) where T : T1
             {
-                return default(T);
+                return default;
             }
 
             public T1 GenericMethodDifferentReturnType<T>(T1 param1, T param2)
@@ -1464,17 +1464,17 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
 
             public T GenericMethod<T>(T1 param1, T param2)
             {
-                return default(T);
+                return default;
             }
 
             public T GenericMethodWithConstraints<T>(T1 param1, T param2) where T : class
             {
-                return default(T);
+                return default;
             }
 
             public T GenericMethodWithConstraintsOnTheInterfaceParameter<T>(T1 param1, T param2) where T : T1
             {
-                return default(T);
+                return default;
             }
         }
 
@@ -1513,7 +1513,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
         {
             public virtual TDerivedType Test<TDerivedType>() where TDerivedType : TBaseType
             {
-                return default(TDerivedType);
+                return default;
             }
         }
 
@@ -1581,7 +1581,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
                 where Za : Y
                 where Zb : BaseType
             {
-                return default(Za);
+                return default;
             }
         }
 
@@ -1655,7 +1655,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
                 where M1 : ISet<TC2>
                 where M2 : IEnumerable<Guid>
             {
-                return default(KeyValuePair<M1, IEnumerable<ISet<TC2>>[]>);
+                return default;
             }
 
             public int CompareTo(object obj)

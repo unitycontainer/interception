@@ -1,6 +1,4 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -13,25 +11,6 @@ namespace Unity.Interception.Utilities
     /// </summary>
     public static class ReflectionHelper
     {
-        /// <summary>
-        /// Given a MethodBase for a property's get or set method,
-        /// return the corresponding property info.
-        /// </summary>
-        /// <param name="method">MethodBase for the property's get or set method.</param>
-        /// <returns>PropertyInfo for the property, or null if method is not part of a property.</returns>
-        public static PropertyInfo? GetPropertyFromMethod(MethodBase method)
-        {
-            Guard.ArgumentNotNull(method, "method");
-
-            var methodInfo = method as MethodInfo;
-            if (methodInfo != null)
-            {
-                return GetPropertyFromMethod(methodInfo);
-            }
-
-            return null;
-        }
-
         /// <summary>
         /// Given a MethodInfo for a property's get or set method,
         /// return the corresponding property info.
@@ -147,22 +126,6 @@ namespace Unity.Interception.Utilities
             }
             attributes.AddRange(GetAttributes<TAttribute>(member, inherits));
             return attributes.ToArray();
-        }
-
-        public static readonly MethodInfo ExceptionDispatchInfoCaptureMethod;
-
-        public static readonly MethodInfo ExceptionDispatchInfoThrowMethod;
-
-        static ReflectionHelper()
-        {
-            Assembly mscorlib = typeof(int).Assembly;
-            ExceptionDispatchInfoCaptureMethod = mscorlib
-                .GetType("System.Runtime.ExceptionServices.ExceptionDispatchInfo")
-                .GetMethod("Capture", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(Exception) }, null);
-
-            ExceptionDispatchInfoThrowMethod = mscorlib
-                .GetType("System.Runtime.ExceptionServices.ExceptionDispatchInfo")
-                .GetMethod("Throw", BindingFlags.Public | BindingFlags.Instance, null, new Type[] { }, null);
         }
     }
 }

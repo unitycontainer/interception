@@ -1,11 +1,8 @@
-﻿
-
-using System;
+﻿using System;
 using System.Reflection;
 using Unity.Interception.Interceptors;
 using Unity.Interception.PolicyInjection;
 using Unity.Interception.PolicyInjection.Pipeline;
-using Unity.Interception.Utilities;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInterception
 {
@@ -37,7 +34,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
             T instance = GetInterceptingInstance<T>();
 
             PipelineManager manager = new PipelineManager();
-            manager.SetPipeline(method, new HandlerPipeline(Sequence.Collect(handler)));
+            manager.SetPipeline(method, new HandlerPipeline(new ICallHandler[] { handler }));
 
             IInterceptingProxy pm = (IInterceptingProxy)instance;
             pm.AddInterceptionBehavior(new PolicyInjectionBehavior(manager));

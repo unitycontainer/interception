@@ -154,7 +154,7 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
 
         private void AddConstructor()
         {
-            Type[] paramTypes = Sequence.Collect(_typeToIntercept, typeof(Type)).ToArray();
+            var paramTypes = new Type[] { _typeToIntercept, typeof(Type) };
 
             ConstructorBuilder ctorBuilder = _typeBuilder.DefineConstructor(
                 MethodAttributes.Public,

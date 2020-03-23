@@ -1,6 +1,4 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Unity.Interception.PolicyInjection.Pipeline;
 

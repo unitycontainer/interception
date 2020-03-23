@@ -10,7 +10,6 @@ using Unity.Interception.Interceptors.TypeInterceptors;
 using Unity.Interception.PolicyInjection;
 using Unity.Interception.PolicyInjection.Policies;
 using Unity.Interception.Properties;
-using Unity.Interception.Utilities;
 
 namespace Unity.Interception
 {

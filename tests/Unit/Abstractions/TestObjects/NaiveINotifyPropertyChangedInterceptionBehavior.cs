@@ -1,19 +1,16 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
-using Microsoft.Practices.Unity.InterceptionExtension;
 using Unity.Interception.InterceptionBehaviors;
 using Unity.Interception.PolicyInjection.Pipeline;
 
-namespace Microsoft.Practices.Unity.TestSupport
+namespace Unity.Interception.Tests
 {
     public class NaiveINotifyPropertyChangedInterceptionBehavior : IInterceptionBehavior
     {
-        private readonly object handlerLock = new object();
-        private PropertyChangedEventHandler handler;
+        private readonly object _handlerLock = new object();
+        private PropertyChangedEventHandler _handler;
 
         public IMethodReturn Invoke(IMethodInvocation input, GetNextInterceptionBehaviorDelegate getNext)
         {
@@ -32,7 +29,7 @@ namespace Microsoft.Practices.Unity.TestSupport
 
                 if (property != null)
                 {
-                    var currentHandler = this.handler;
+                    var currentHandler = _handler;
                     if (currentHandler != null)
                     {
                         try
@@ -57,16 +54,16 @@ namespace Microsoft.Practices.Unity.TestSupport
                 switch (input.MethodBase.Name)
                 {
                     case "add_PropertyChanged":
-                        lock (handlerLock)
+                        lock (_handlerLock)
                         {
-                            handler = (PropertyChangedEventHandler)Delegate.Combine(handler, (Delegate)input.Arguments[0]);
+                            _handler = (PropertyChangedEventHandler)Delegate.Combine(_handler, (Delegate)input.Arguments[0]);
                         }
                         break;
 
                     case "remove_PropertyChanged":
-                        lock (handlerLock)
+                        lock (_handlerLock)
                         {
-                            handler = (PropertyChangedEventHandler)Delegate.Remove(handler, (Delegate)input.Arguments[0]);
+                            _handler = (PropertyChangedEventHandler)Delegate.Remove(_handler, (Delegate)input.Arguments[0]);
                         }
                         break;
 

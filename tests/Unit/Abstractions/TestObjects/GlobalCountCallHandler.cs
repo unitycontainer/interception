@@ -1,15 +1,13 @@
 ﻿using System.Collections.Generic;
-using Unity;
 using Unity.Interception.PolicyInjection.Pipeline;
 using Unity.Interception.PolicyInjection.Policies;
 
-namespace Microsoft.Practices.Unity.TestSupport
+namespace Unity.Interception.Tests
 {
     public class GlobalCountCallHandler : ICallHandler
     {
         public static Dictionary<string, int> Calls = new Dictionary<string, int>();
-        private string callHandlerName;
-        private int order = 0;
+        private string _callHandlerName;
 
         [InjectionConstructor]
         public GlobalCountCallHandler()
@@ -19,7 +17,7 @@ namespace Microsoft.Practices.Unity.TestSupport
 
         public GlobalCountCallHandler(string callHandlerName)
         {
-            this.callHandlerName = callHandlerName;
+            this._callHandlerName = callHandlerName;
         }
 
         #region ICallHandler Members
@@ -27,25 +25,15 @@ namespace Microsoft.Practices.Unity.TestSupport
         /// <summary>
         /// Gets or sets the order in which the handler will be executed
         /// </summary>
-        public int Order
-        {
-            get
-            {
-                return order;
-            }
-            set
-            {
-                order = value;
-            }
-        }
+        public int Order { get; set; } = 0;
 
         public IMethodReturn Invoke(IMethodInvocation input, GetNextHandlerDelegate getNext)
         {
-            if (!Calls.ContainsKey(callHandlerName))
+            if (!Calls.ContainsKey(_callHandlerName))
             {
-                Calls.Add(callHandlerName, 0);
+                Calls.Add(_callHandlerName, 0);
             }
-            Calls[callHandlerName]++;
+            Calls[_callHandlerName]++;
 
             return getNext().Invoke(input, getNext);
         }
@@ -55,17 +43,11 @@ namespace Microsoft.Practices.Unity.TestSupport
 
     public class GlobalCountCallHandlerAttribute : HandlerAttribute
     {
-        public override ICallHandler CreateHandler(IUnityContainer ignored)
+        public override ICallHandler CreateHandler(IUnityContainer _)
         {
-            return new GlobalCountCallHandler(this.handlerName);
+            return new GlobalCountCallHandler(HandlerName);
         }
 
-        private string handlerName;
-
-        public string HandlerName
-        {
-            get { return this.handlerName; }
-            set { this.handlerName = value; }
-        }
+        public string HandlerName { get; set; }
     }
 }

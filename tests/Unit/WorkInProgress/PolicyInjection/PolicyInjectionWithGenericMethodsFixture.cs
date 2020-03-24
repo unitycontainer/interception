@@ -7,6 +7,7 @@ using Unity.Interception.Interceptors;
 using Unity.Interception.Interceptors.InstanceInterceptors.InterfaceInterception;
 using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception;
 using Unity.Interception.PolicyInjection;
+using Unity.Interception.Tests;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.PolicyInjection
 {

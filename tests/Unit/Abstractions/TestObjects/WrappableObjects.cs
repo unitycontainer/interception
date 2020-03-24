@@ -1,8 +1,4 @@
-﻿
-
-using System;
-
-namespace Microsoft.Practices.Unity.TestSupport
+﻿namespace Unity.Interception.Tests
 {
     public class WrappableThroughInterface : Interface, InterfaceA
     {

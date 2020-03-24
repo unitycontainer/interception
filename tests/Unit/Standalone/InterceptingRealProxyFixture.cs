@@ -1,13 +1,11 @@
-﻿
-
-using System;
+﻿using System;
 using System.ComponentModel;
-using Microsoft.Practices.Unity.TestSupport;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Unity.Interception.Interceptors;
 using Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyInterception;
+using Unity.Interception.Tests;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension.TransparaentProxyInterception.Tests
+namespace Standalone.Tests
 {
     [TestClass]
     public class InterceptingRealProxyFixture
@@ -97,19 +95,19 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.TransparaentProxyInter
         {
             MBROWithOneMethod original = new MBROWithOneMethod();
             MBROWithOneMethod proxy =
-                new InterceptingRealProxy(original, typeof(MBROWithOneMethod), typeof(InterfaceOne))
+                new InterceptingRealProxy(original, typeof(MBROWithOneMethod), typeof(IInterfaceOne))
                 .GetTransparentProxy() as MBROWithOneMethod;
 
-            Assert.IsTrue(proxy is InterfaceOne);
+            Assert.IsTrue(proxy is IInterfaceOne);
         }
 
         [TestMethod]
         public void InvokingMethodOnAdditionalInterfaceThrowsIfNotHandledByInterceptor()
         {
             MBROWithOneMethod original = new MBROWithOneMethod();
-            InterfaceOne proxy =
-                new InterceptingRealProxy(original, typeof(MBROWithOneMethod), typeof(InterfaceOne))
-                .GetTransparentProxy() as InterfaceOne;
+            IInterfaceOne proxy =
+                new InterceptingRealProxy(original, typeof(MBROWithOneMethod), typeof(IInterfaceOne))
+                .GetTransparentProxy() as IInterfaceOne;
 
             try
             {
@@ -126,9 +124,9 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.TransparaentProxyInter
         public void CanSuccessfullyInvokeAnAdditionalInterfaceMethodIfAnInterceptorDoesNotForwardTheCall()
         {
             MBROWithOneMethod original = new MBROWithOneMethod();
-            InterfaceOne proxy =
-                new InterceptingRealProxy(original, typeof(MBROWithOneMethod), typeof(InterfaceOne))
-                .GetTransparentProxy() as InterfaceOne;
+            IInterfaceOne proxy =
+                new InterceptingRealProxy(original, typeof(MBROWithOneMethod), typeof(IInterfaceOne))
+                .GetTransparentProxy() as IInterfaceOne;
             bool invoked = false;
             ((IInterceptingProxy)proxy).AddInterceptionBehavior(
                 new DelegateInterceptionBehavior(
@@ -149,7 +147,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.TransparaentProxyInter
             ((IInterceptingProxy)proxy).AddInterceptionBehavior(new NaiveINotifyPropertyChangedInterceptionBehavior());
 
             string changeProperty;
-            PropertyChangedEventHandler handler = (sender, args) => changeProperty = args.PropertyName;
+            void handler(object sender, PropertyChangedEventArgs args) => changeProperty = args.PropertyName;
 
             changeProperty = null;
             ((INotifyPropertyChanged)proxy).PropertyChanged += handler;
@@ -178,7 +176,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.TransparaentProxyInter
             ((IInterceptingProxy)proxy).AddInterceptionBehavior(new NaiveINotifyPropertyChangedInterceptionBehavior());
 
             string changeProperty;
-            PropertyChangedEventHandler handler = (sender, args) => changeProperty = args.PropertyName;
+            void handler(object sender, PropertyChangedEventArgs args) => changeProperty = args.PropertyName;
 
             changeProperty = null;
             ((INotifyPropertyChanged)proxy).PropertyChanged += handler;
@@ -207,7 +205,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.TransparaentProxyInter
             ((IInterceptingProxy)proxy).AddInterceptionBehavior(new NaiveINotifyPropertyChangedInterceptionBehavior());
 
             string changeProperty;
-            PropertyChangedEventHandler handler = (sender, args) => changeProperty = args.PropertyName;
+            void handler(object sender, PropertyChangedEventArgs args) => changeProperty = args.PropertyName;
 
             changeProperty = null;
             ((INotifyPropertyChanged)proxy).PropertyChanged += handler;
@@ -244,6 +242,9 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.TransparaentProxyInter
             Assert.AreEqual(1, interceptor.CallCount);
         }
 
+
+        #region Test Data
+
         internal class MBROWithOneMethod : MarshalByRefObject
         {
             public int DoSomething(int i)
@@ -252,12 +253,12 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.TransparaentProxyInter
             }
         }
 
-        internal interface InterfaceOne
+        internal interface IInterfaceOne
         {
             void Something();
         }
 
-        internal class MBROWithInterface : MarshalByRefObject, InterfaceOne
+        internal class MBROWithInterface : MarshalByRefObject, IInterfaceOne
         {
             public void Something()
             {
@@ -310,5 +311,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.TransparaentProxyInter
 
             #endregion
         }
+
+        #endregion
     }
 }

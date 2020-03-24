@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.Practices.Unity.TestSupport;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using System.Runtime.Remoting.Proxies;
-using System.Text;
-using Microsoft.Practices.Unity.TestSupport;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Unity.Interception.Interceptors;
 using Unity.Interception.Interceptors.InstanceInterceptors;
 using Unity.Interception.Interceptors.InstanceInterceptors.InterfaceInterception;
+using Unity.Interception.Tests;
 
 namespace Unit.Tests
 {
@@ -49,7 +48,7 @@ namespace Unit.Tests
         private class MyProxy : RealProxy
         {
             private readonly Type t;
-            private object impl;
+            private readonly object impl;
 
             public MyProxy(Type t, object impl)
                 : base(t)
@@ -60,8 +59,7 @@ namespace Unit.Tests
 
             public override IMessage Invoke(IMessage msg)
             {
-                IMethodCallMessage method = msg as IMethodCallMessage;
-                if (method != null)
+                if (msg is IMethodCallMessage method)
                 {
                     if (method.MethodName == "GetType")
                     {

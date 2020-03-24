@@ -1,5 +1,4 @@
-﻿using Microsoft.Practices.Unity.TestSupport;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Unity;
 using Unity.Interception;
 using Unity.Interception.ContainerIntegration;
@@ -11,23 +10,21 @@ using Unity.Interception.PolicyInjection.Pipeline;
 using Unity.Interception.Tests;
 using Unity.Lifetime;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
+namespace Extension.Tests
 {
     [TestClass]
-    public partial class InterceptionFixture
+    public partial class InterceptionFixture : TestFixtureBase
     {
         [TestMethod]
         public void AttributeDrivenPolicyIsAddedByDefault()
         {
             GlobalCountCallHandler.Calls.Clear();
 
-            IUnityContainer container = new UnityContainer();
-            container.AddNewExtension<Interception>();
-            container.RegisterType<Interface, WrappableThroughInterfaceWithAttributes>(
+            Container.RegisterType<Interface, WrappableThroughInterfaceWithAttributes>(
                 new Interceptor<InterfaceInterceptor>(),
                 new InterceptionBehavior<PolicyInjectionBehavior>());
 
-            Interface wrappedOverInterface = container.Resolve<Interface>();
+            Interface wrappedOverInterface = Container.Resolve<Interface>();
             wrappedOverInterface.Method();
 
             Assert.AreEqual(1, GlobalCountCallHandler.Calls["WrappableThroughInterfaceWithAttributes-Method"]);
@@ -190,23 +187,15 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
 
         private IUnityContainer CreateContainer(string globalCallHandlerName)
         {
-            IUnityContainer container = new UnityContainer();
+            Container.RegisterInstance<IMatchingRule>("alwaystrue", new AlwaysMatchingRule());
+            Container.RegisterInstance<ICallHandler>("globalCountHandler", new GlobalCountCallHandler(globalCallHandlerName));
 
-            container.AddNewExtension<Interception>();
-
-            container.RegisterInstance<IMatchingRule>(
-                "alwaystrue",
-                new AlwaysMatchingRule());
-            container.RegisterInstance<ICallHandler>(
-                "globalCountHandler",
-                new GlobalCountCallHandler(globalCallHandlerName));
-
-            container.Configure<Interception>()
+            Container.Configure<Interception>()
                 .AddPolicy("policy")
                     .AddMatchingRule("alwaystrue")
                     .AddCallHandler("globalCountHandler");
 
-            return container;
+            return Container;
         }
 
         [TestMethod]

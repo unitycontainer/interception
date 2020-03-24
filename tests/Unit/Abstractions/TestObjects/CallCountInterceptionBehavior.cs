@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using Unity;
 using Unity.Interception.InterceptionBehaviors;
 using Unity.Interception.PolicyInjection.Pipeline;
 
-namespace Microsoft.Practices.Unity.TestSupport
+namespace Unity.Interception.Tests
 {
     public class CallCountInterceptionBehavior : IInterceptionBehavior
     {
-        private int callCount;
+        private int _callCount;
 
         [InjectionConstructor]
         public CallCountInterceptionBehavior()
@@ -17,13 +16,13 @@ namespace Microsoft.Practices.Unity.TestSupport
 
         public IMethodReturn Invoke(IMethodInvocation input, GetNextInterceptionBehaviorDelegate getNext)
         {
-            ++callCount;
+            ++_callCount;
             return getNext()(input, getNext);
         }
 
         public int CallCount
         {
-            get { return callCount; }
+            get { return _callCount; }
         }
 
         public IEnumerable<Type> GetRequiredInterfaces()

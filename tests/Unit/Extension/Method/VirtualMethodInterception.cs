@@ -1,5 +1,4 @@
-﻿using Microsoft.Practices.Unity.TestSupport;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.ComponentModel;
 using Unity;
@@ -17,10 +16,6 @@ using Unity.Lifetime;
 
 namespace Extension.Tests
 {
-    /// <summary>
-    /// Tests for the virtual method interception mechanism as invoked
-    /// through the container.
-    /// </summary>
     [TestClass]
     public class VirtualMethodInterception : TestFixtureBase
     {

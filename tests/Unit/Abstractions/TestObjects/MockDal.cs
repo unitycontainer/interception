@@ -31,6 +31,7 @@ namespace Unity.Interception.Tests
             set { balance = value; }
         }
 
+#pragma warning disable IDE0060 // Remove unused parameter
         public int DoSomething(string x)
         {
             if (throwException)
@@ -39,6 +40,7 @@ namespace Unity.Interception.Tests
             }
             return 42;
         }
+#pragma warning restore IDE0060 // Remove unused parameter
 
         #region IDal Members
 

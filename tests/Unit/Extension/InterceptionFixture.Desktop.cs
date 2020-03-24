@@ -1,5 +1,4 @@
-﻿using Microsoft.Practices.Unity.TestSupport;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Runtime.Remoting;
 using Unity;
@@ -11,9 +10,10 @@ using Unity.Interception.PolicyInjection;
 using Unity.Interception.PolicyInjection.MatchingRules;
 using Unity.Interception.PolicyInjection.Pipeline;
 using Unity.Interception.PolicyInjection.Policies;
+using Unity.Interception.Tests;
 using Unity.Lifetime;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
+namespace Extension.Tests
 {
     public partial class InterceptionFixture
     {

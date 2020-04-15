@@ -68,7 +68,7 @@ namespace Unity.Interception.PolicyInjection.Pipeline
 
         private HandlerPipeline CreatePipeline(MethodInfo method, IEnumerable<ICallHandler> handlers)
         {
-            HandlerPipelineKey key = HandlerPipelineKey.ForMethod(method);
+            var key = HandlerPipelineKey.ForMethod(method);
             if (_pipelines.ContainsKey(key))
             {
                 return _pipelines[key];

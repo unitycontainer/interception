@@ -22,6 +22,9 @@ x64/
 # Visual Studio 2015 cache/options directory
 .vs/
 
+# JetBrain Rider settings directory
+.idea/
+
 # DNX
 project.lock.json
 artifacts/

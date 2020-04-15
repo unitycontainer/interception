@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using Unity.Interception.Interceptors;
@@ -17,9 +16,6 @@ namespace Unity.Interception.PolicyInjection.Pipeline
             new Dictionary<HandlerPipelineKey, HandlerPipeline>();
 
         private static readonly HandlerPipeline EmptyPipeline = new HandlerPipeline();
-
-        private static readonly ConcurrentDictionary<HandlerPipelineKey, MethodInfo> BaseMethodDefinitions =
-            new ConcurrentDictionary<HandlerPipelineKey, MethodInfo>();
 
         /// <summary>
         /// Retrieve the pipeline associated with the requested <paramref name="method"/>.
@@ -74,15 +70,13 @@ namespace Unity.Interception.PolicyInjection.Pipeline
                 return _pipelines[key];
             }
 
-            var baseMethodDefinition = BaseMethodDefinitions.GetOrAdd(key, k => method.GetBaseDefinition());
-
-            if (baseMethodDefinition == method)
+            if (method.GetBaseDefinition() == method)
             {
                 _pipelines[key] = new HandlerPipeline(handlers);
                 return _pipelines[key];
             }
 
-            var basePipeline = CreatePipeline(baseMethodDefinition, handlers);
+            var basePipeline = CreatePipeline(method.GetBaseDefinition(), handlers);
             _pipelines[key] = basePipeline;
             return basePipeline;
         }

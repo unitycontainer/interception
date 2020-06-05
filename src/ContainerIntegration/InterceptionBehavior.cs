@@ -11,6 +11,8 @@ namespace Unity.Interception.ContainerIntegration
     /// <seealso cref="IInterceptionBehavior"/>
     public class InterceptionBehavior : InterceptionBehaviorBase
     {
+        public override bool BuildRequired => false;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="InterceptionBehavior"/> with a 
         /// <see cref="IInterceptionBehavior"/>.
@@ -50,6 +52,11 @@ namespace Unity.Interception.ContainerIntegration
         protected override InterceptionBehaviorsPolicy GetBehaviorsPolicy<TPolicySet>(ref TPolicySet policies)
         {
             return InterceptionBehaviorsPolicy.GetOrCreate(ref policies);
+        }
+
+        protected override string ToString(bool debug = false)
+        {
+            throw new NotImplementedException();
         }
     }
 

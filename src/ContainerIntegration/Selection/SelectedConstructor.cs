@@ -44,6 +44,16 @@ namespace Unity.Interception.ContainerIntegration.Selection
 #endif
         }
 
+        protected override ConstructorInfo SelectMember(Type type, InjectionMember member)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override string ToString(bool debug = false)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
     }
 }

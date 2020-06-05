@@ -37,6 +37,8 @@ namespace Unity.Interception.ContainerIntegration
             _additionalInterface = additionalInterface;
         }
 
+        public override bool BuildRequired => false;
+
         /// <summary>
         /// Add policies to the <paramref name="policies"/> to configure the container to use the represented 
         /// <see cref="Type"/> as an additional interface for the supplied parameters.
@@ -49,6 +51,11 @@ namespace Unity.Interception.ContainerIntegration
         {
             AdditionalInterfacesPolicy policy = AdditionalInterfacesPolicy.GetOrCreate(ref policies);
             policy.AddAdditionalInterface(_additionalInterface);
+        }
+
+        protected override string ToString(bool debug = false)
+        {
+            throw new NotImplementedException();
         }
     }
 

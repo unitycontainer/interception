@@ -112,6 +112,11 @@ namespace Unity.Interception.ContainerIntegration
             }
             return new ResolvedTypeInterceptionPolicy(_type, _name);
         }
+
+        protected override string ToString(bool debug = false)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     /// <summary>

@@ -53,6 +53,11 @@ namespace Unity.Interception.ContainerIntegration
             policy.AddAdditionalInterface(_additionalInterface);
         }
 
+        public override void Validate(Type type)
+        {
+            throw new NotImplementedException();
+        }
+
         protected override string ToString(bool debug = false)
         {
             throw new NotImplementedException();

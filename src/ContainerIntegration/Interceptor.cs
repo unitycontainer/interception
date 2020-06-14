@@ -117,6 +117,11 @@ namespace Unity.Interception.ContainerIntegration
         {
             throw new NotImplementedException();
         }
+
+        public override void Validate(Type type)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     /// <summary>

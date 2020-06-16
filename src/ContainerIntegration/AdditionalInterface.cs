@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Globalization;
+using Unity.Injection;
 using Unity.Interception.ContainerIntegration.ObjectBuilder;
 using Unity.Interception.Properties;
+using Unity.Policy;
 
 namespace Unity.Interception.ContainerIntegration
 {
@@ -39,15 +41,7 @@ namespace Unity.Interception.ContainerIntegration
 
         public override bool BuildRequired => false;
 
-        /// <summary>
-        /// Add policies to the <paramref name="policies"/> to configure the container to use the represented 
-        /// <see cref="Type"/> as an additional interface for the supplied parameters.
-        /// </summary>
-        /// <param name="registeredType">Interface being registered.</param>
-        /// <param name="mappedToType">Type to register.</param>
-        /// <param name="name">Name used to resolve the type object.</param>
-        /// <param name="policies">Policy list to add policies to.</param>
-        public override void AddPolicies<TContext, TPolicySet>(Type registeredType, Type mappedToType, string name, ref TPolicySet policies)
+        public override void AddPolicies<TPolicySet>(Type type, string name, ref TPolicySet policies) 
         {
             AdditionalInterfacesPolicy policy = AdditionalInterfacesPolicy.GetOrCreate(ref policies);
             policy.AddAdditionalInterface(_additionalInterface);

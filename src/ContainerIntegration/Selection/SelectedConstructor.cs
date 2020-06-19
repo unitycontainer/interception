@@ -29,7 +29,7 @@ namespace Unity.Interception.ContainerIntegration.Selection
         /// <summary>
         /// The constructor this object wraps.
         /// </summary>
-        public ConstructorInfo Constructor => Selection;
+        public ConstructorInfo Constructor => MemberInfo();
 
 
         #region Overrides
@@ -42,16 +42,6 @@ namespace Unity.Interception.ContainerIntegration.Selection
 #else
             return type.GetConstructors(BindingFlags.Public | BindingFlags.Instance);
 #endif
-        }
-
-        protected override ConstructorInfo SelectMember(Type type, InjectionMember member)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override string ToString(bool debug = false)
-        {
-            throw new NotImplementedException();
         }
 
         #endregion

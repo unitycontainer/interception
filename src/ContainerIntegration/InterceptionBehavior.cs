@@ -53,16 +53,6 @@ namespace Unity.Interception.ContainerIntegration
         {
             return InterceptionBehaviorsPolicy.GetOrCreate(ref policies);
         }
-
-        protected override string ToString(bool debug = false)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Validate(Type type)
-        {
-            throw new NotImplementedException();
-        }
     }
 
     /// <summary>

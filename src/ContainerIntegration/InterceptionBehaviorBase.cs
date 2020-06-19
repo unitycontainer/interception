@@ -71,11 +71,6 @@ namespace Unity.Interception.ContainerIntegration
         protected abstract InterceptionBehaviorsPolicy GetBehaviorsPolicy<TPolicySet>(ref TPolicySet policies)
             where TPolicySet : IPolicySet;
 
-        protected override string ToString(bool debug = false)
-        {
-            return GetType().Name;
-        }
-
         public override bool BuildRequired => false;
     }
 }

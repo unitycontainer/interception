@@ -104,16 +104,6 @@ namespace Unity.Interception.ContainerIntegration
             }
             return new ResolvedTypeInterceptionPolicy(_type, _name);
         }
-
-        protected override string ToString(bool debug = false)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Validate(Type type)
-        {
-            throw new NotImplementedException();
-        }
     }
 
     /// <summary>

@@ -173,7 +173,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
                     case SelectedConstructor selectedConstructor:
                         return new []{ FromSelectedConstructor(selectedConstructor, InterceptingType) };
 
-                    case MethodBase<ConstructorInfo> methodBaseMember:
+                    case InjectionMethodBase<ConstructorInfo> methodBaseMember:
                         return new []{ FromMethodBaseMember(methodBaseMember, InterceptingType) };
                 }
 
@@ -181,34 +181,22 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
             }
 
 
-            private static SelectedConstructor FromMethodBaseMember(MethodBase<ConstructorInfo> methodBaseMember, Type type)
+            private static SelectedConstructor FromMethodBaseMember(InjectionMethodBase<ConstructorInfo> methodBaseMember, Type interceptingType)
             {
-                var cInfo = methodBaseMember.MemberInfo(type);
-                var args  = methodBaseMember.Data;
-
-                var newConstructorInfo = type.GetConstructor(cInfo.GetParameters().Select(pi => pi.ParameterType).ToArray());
-
-                return new SelectedConstructor(newConstructorInfo, args);
+                return new SelectedConstructor(methodBaseMember.MemberInfo(interceptingType), methodBaseMember.Data);
             }
 
             private static SelectedConstructor FromSelectedConstructor(SelectedConstructor selectedConstructor, Type interceptingType)
             {
-                var originalParams = selectedConstructor.Constructor.GetParameters();
-
-                var newConstructorInfo =
-                    interceptingType.GetConstructor(originalParams.Select(pi => pi.ParameterType).ToArray());
-
-                var newConstructor = new SelectedConstructor(newConstructorInfo, originalParams);
+                var newConstructorInfo = interceptingType.GetConstructor(selectedConstructor.Info.GetParameters().Select(pi => pi.ParameterType).ToArray()); 
+                var newConstructor = new SelectedConstructor(newConstructorInfo, selectedConstructor.Data);
 
                 return newConstructor;
             }
 
             private static SelectedConstructor FromConstructorInfo(ConstructorInfo info, Type interceptingType)
             {
-                var originalParams = info.GetParameters();
-
-                var newConstructorInfo = interceptingType.GetConstructor(originalParams.Select(pi => pi.ParameterType).ToArray());
-
+                var newConstructorInfo = interceptingType.GetConstructor(info.GetParameters().Select(pi => pi.ParameterType).ToArray());
                 return new SelectedConstructor(newConstructorInfo);
             }
 

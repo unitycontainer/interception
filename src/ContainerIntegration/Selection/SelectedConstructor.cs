@@ -11,25 +11,26 @@ namespace Unity.Interception.ContainerIntegration.Selection
     /// </summary>
     public class SelectedConstructor : InjectionMethodBase<ConstructorInfo>
     {
+        public ConstructorInfo Info;
+
         /// <summary>
         /// Create a new <see cref="SelectedConstructor"/> instance which
         /// contains the given constructor.
         /// </summary>
         /// <param name="constructor">The constructor to wrap.</param>
         public SelectedConstructor(ConstructorInfo constructor)
-            : base(constructor)
+            : base(".ctor")
         {
+            Info = constructor;
         }
 
         public SelectedConstructor(ConstructorInfo info, object[] parameters)
-            : base(info, parameters)
+            : base(".ctor", parameters)
         {
+            Info = info;
         }
 
-        /// <summary>
-        /// The constructor this object wraps.
-        /// </summary>
-        public ConstructorInfo Constructor => throw new NotImplementedException();
+        public override ConstructorInfo MemberInfo(Type type) => Info;
 
 
         #region Overrides

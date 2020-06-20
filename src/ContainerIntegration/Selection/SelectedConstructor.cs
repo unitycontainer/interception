@@ -9,7 +9,7 @@ namespace Unity.Interception.ContainerIntegration.Selection
     /// Objects of this type encapsulate <see cref="ConstructorInfo"/> and resolve
     /// parameters.
     /// </summary>
-    public class SelectedConstructor : MethodBase<ConstructorInfo>
+    public class SelectedConstructor : InjectionMethodBase<ConstructorInfo>
     {
         /// <summary>
         /// Create a new <see cref="SelectedConstructor"/> instance which
@@ -29,7 +29,7 @@ namespace Unity.Interception.ContainerIntegration.Selection
         /// <summary>
         /// The constructor this object wraps.
         /// </summary>
-        public ConstructorInfo Constructor => MemberInfo();
+        public ConstructorInfo Constructor => throw new NotImplementedException();
 
 
         #region Overrides

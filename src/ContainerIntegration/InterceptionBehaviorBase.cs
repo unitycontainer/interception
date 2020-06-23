@@ -1,8 +1,8 @@
 ﻿using System;
 using Unity.Builder;
+using Unity.Injection;
 using Unity.Interception.ContainerIntegration.ObjectBuilder;
 using Unity.Interception.InterceptionBehaviors;
-using Unity.Interception.Utilities;
 using Unity.Policy;
 
 namespace Unity.Interception.ContainerIntegration
@@ -24,6 +24,7 @@ namespace Unity.Interception.ContainerIntegration
         protected InterceptionBehaviorBase(IInterceptionBehavior interceptionBehavior)
         {
             _explicitBehavior = interceptionBehavior ?? throw new ArgumentNullException(nameof(interceptionBehavior));
+            _behaviorKey = new NamedTypeBuildKey(interceptionBehavior.GetType(), null);
         }
 
         /// <summary>
@@ -34,9 +35,9 @@ namespace Unity.Interception.ContainerIntegration
         /// <param name="name"></param>
         protected InterceptionBehaviorBase(Type behaviorType, string name)
         {
-            Guard.ArgumentNotNull(behaviorType, "behaviorType");
-            Guard.TypeIsAssignable(typeof(IInterceptionBehavior), behaviorType, "behaviorType");
-            _behaviorKey = new NamedTypeBuildKey(behaviorType, name);
+            _behaviorKey = new NamedTypeBuildKey(
+                behaviorType ?? throw new ArgumentNullException(nameof(behaviorType)),
+                name         ?? throw new ArgumentNullException(nameof(name)));
         }
 
         /// <summary>
@@ -62,6 +63,15 @@ namespace Unity.Interception.ContainerIntegration
                 var behaviorsPolicy = GetBehaviorsPolicy(ref policies);
                 behaviorsPolicy.AddBehaviorKey(_behaviorKey);
             }
+        }
+
+        public override MatchRank MatchTo(Type other)
+        {
+            if (_behaviorKey.Type.Equals(other)) return MatchRank.ExactMatch;
+
+            if (other.IsAssignableFrom(_behaviorKey.Type)) return MatchRank.Compatible;
+
+            return MatchRank.NoMatch;
         }
 
         /// <summary>

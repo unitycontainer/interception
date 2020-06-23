@@ -61,6 +61,9 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
                 return;
             }
 
+            var behavior = typeof(IInterceptionBehavior).FindInjectedMember<InterceptionBehavior>(ref context);
+                                                        
+
             var interceptionBehaviorsPolicy = GetPolicyOrDefault<IInterceptionBehaviorsPolicy>(ref context);
 
             IEnumerable<IInterceptionBehavior> interceptionBehaviors =

@@ -11,7 +11,7 @@ namespace Unity.Interception.ContainerIntegration
     /// Base class for injection members that allow you to add
     /// interception behaviors.
     /// </summary>
-    public abstract class InterceptionBehaviorBase : InterceptionMember
+    public abstract class InterceptionBehaviorBase : InterceptionMember, Injection.IAddPolicies
     {
         private readonly NamedTypeBuildKey _behaviorKey;
         private readonly IInterceptionBehavior _explicitBehavior;
@@ -49,7 +49,8 @@ namespace Unity.Interception.ContainerIntegration
         {
         }
 
-        public override void AddPolicies<TPolicySet>(Type type, string name, ref TPolicySet policies)
+        public void AddPolicies<TPolicySet>(Type type, string name, ref TPolicySet policies)
+            where TPolicySet : IPolicySet
         {
             if (_explicitBehavior != null)
             {

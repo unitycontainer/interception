@@ -5,8 +5,10 @@ using System.Reflection;
 using Unity.Builder;
 using Unity.Injection;
 using Unity.Interception.ContainerIntegration.Selection;
+using Unity.Interception.Extensions;
 using Unity.Interception.InterceptionBehaviors;
 using Unity.Interception.Interceptors;
+using Unity.Interception.Interceptors.TypeInterceptors;
 using Unity.Policy;
 using Unity.Strategies;
 
@@ -39,13 +41,21 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 
             Type typeToBuild = context.Type;
 
-            var interceptionPolicy = GetPolicyOrDefault<ITypeInterceptionPolicy>(ref context);
-            if (interceptionPolicy == null)
-            {
-                return;
+
+            ITypeInterceptor interceptor =
+                typeof(ITypeInterceptor).FindInjectedMember<Interceptor>(ref context)?
+                                            .GetInterceptor<ITypeInterceptor>(ref context);
+            if (null == interceptor)
+            { 
+                var interceptionPolicy = GetPolicyOrDefault<ITypeInterceptionPolicy>(ref context);
+                if (interceptionPolicy == null)
+                {
+                    return;
+                }
+
+                interceptor = interceptionPolicy.GetInterceptor(ref context);
             }
 
-            var interceptor = interceptionPolicy.GetInterceptor(ref context);
             if (!interceptor.CanIntercept(typeToBuild))
             {
                 return;

@@ -1,11 +1,13 @@
 ﻿using System;
+using Unity.Builder;
+using Unity.Injection;
 using Unity.Interception.ContainerIntegration.ObjectBuilder;
 using Unity.Interception.Interceptors;
 using Unity.Interception.Interceptors.InstanceInterceptors;
 using Unity.Interception.Interceptors.TypeInterceptors;
 using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception;
 using Unity.Interception.Utilities;
-using Unity.Storage;
+using Unity.Policy;
 
 namespace Unity.Interception.ContainerIntegration
 {
@@ -29,6 +31,7 @@ namespace Unity.Interception.ContainerIntegration
         public Interceptor(IInterceptor interceptor)
         {
             _interceptor = interceptor ?? throw new ArgumentNullException(nameof(interceptor));
+            _type = interceptor.GetType();
         }
 
         /// <summary>
@@ -57,21 +60,17 @@ namespace Unity.Interception.ContainerIntegration
         {
         }
 
-        public override void AddPolicies<TPolicySet>(Type type, string name, ref TPolicySet policies)
+        /// <summary>
+        /// Interceptor to use.
+        /// </summary>
+        /// <param name="context">Context for current build operation.</param>
+        public T GetInterceptor<T>(ref BuilderContext context)
         {
-            if (IsInstanceInterceptor)
-            {
-                var policy = CreateInstanceInterceptionPolicy();
-                policies.Set(typeof(IInstanceInterceptionPolicy), policy);
-                policies.Clear(typeof(ITypeInterceptionPolicy));
-            }
-            else
-            {
-                var policy = CreateTypeInterceptionPolicy();
-                policies.Set(typeof(ITypeInterceptionPolicy), policy);
-                policies.Clear(typeof(IInstanceInterceptionPolicy));
-            }
+            if (null != _interceptor) return (T)_interceptor;
+
+            return (T)context.Resolve(_type, _name);
         }
+
 
         public override bool BuildRequired => _type == typeof(VirtualMethodInterceptor);
 
@@ -87,22 +86,13 @@ namespace Unity.Interception.ContainerIntegration
             }
         }
 
-        private IInstanceInterceptionPolicy CreateInstanceInterceptionPolicy()
+        public override MatchRank MatchTo(Type other)
         {
-            if (_interceptor != null)
-            {
-                return new FixedInstanceInterceptionPolicy((IInstanceInterceptor)_interceptor);
-            }
-            return new ResolvedInstanceInterceptionPolicy(_type, _name);
-        }
+            if (_type.Equals(other)) return MatchRank.ExactMatch;
 
-        private ITypeInterceptionPolicy CreateTypeInterceptionPolicy()
-        {
-            if (_interceptor != null)
-            {
-                return new FixedTypeInterceptionPolicy((ITypeInterceptor)_interceptor);
-            }
-            return new ResolvedTypeInterceptionPolicy(_type, _name);
+            if (other.IsAssignableFrom(_type)) return MatchRank.Compatible;
+
+            return MatchRank.NoMatch;
         }
     }
 

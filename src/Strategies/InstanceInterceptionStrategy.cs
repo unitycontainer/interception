@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Builder;
+using Unity.Interception.Extensions;
 using Unity.Interception.InterceptionBehaviors;
 using Unity.Interception.Interceptors;
+using Unity.Interception.Interceptors.InstanceInterceptors;
 using Unity.Strategies;
 
 namespace Unity.Interception.ContainerIntegration.ObjectBuilder
@@ -28,14 +30,20 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
                 return;
             }
 
-            IInstanceInterceptionPolicy interceptionPolicy =
-                FindInterceptionPolicy<IInstanceInterceptionPolicy>(ref context, true);
-            if (interceptionPolicy == null)
-            {
-                return;
-            }
+            IInstanceInterceptor interceptor =
+                typeof(IInstanceInterceptor).FindInjectedMember<Interceptor>(ref context)?
+                                            .GetInterceptor<IInstanceInterceptor>(ref context);
+            if (null == interceptor)
+            { 
+                IInstanceInterceptionPolicy interceptionPolicy =
+                    FindInterceptionPolicy<IInstanceInterceptionPolicy>(ref context, true);
+                if (interceptionPolicy == null)
+                {
+                    return;
+                }
 
-            var interceptor = interceptionPolicy.GetInterceptor(ref context);
+                interceptor = interceptionPolicy.GetInterceptor(ref context);
+            }
 
             IInterceptionBehaviorsPolicy interceptionBehaviorsPolicy =
                 FindInterceptionPolicy<IInterceptionBehaviorsPolicy>(ref context, true);

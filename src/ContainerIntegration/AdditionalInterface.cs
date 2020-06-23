@@ -11,7 +11,7 @@ namespace Unity.Interception.ContainerIntegration
     /// Stores information about a single <see cref="Type"/> to be an additional interface for an intercepted object and
     /// configures a container accordingly.
     /// </summary>
-    public class AdditionalInterface : InterceptionMember
+    public class AdditionalInterface : InterceptionMember, IAddPolicies
     {
         private readonly Type _additionalInterface;
 
@@ -41,7 +41,8 @@ namespace Unity.Interception.ContainerIntegration
 
         public override bool BuildRequired => false;
 
-        public override void AddPolicies<TPolicySet>(Type type, string name, ref TPolicySet policies) 
+        public void AddPolicies<TPolicySet>(Type type, string name, ref TPolicySet policies) 
+            where TPolicySet : IPolicySet
         {
             AdditionalInterfacesPolicy policy = AdditionalInterfacesPolicy.GetOrCreate(ref policies);
             policy.AddAdditionalInterface(_additionalInterface);

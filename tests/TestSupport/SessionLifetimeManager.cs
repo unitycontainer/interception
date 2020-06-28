@@ -23,13 +23,13 @@ namespace Microsoft.Practices.Unity.TestSupport
             get { return this.sessionKey; }
         }
 
-        public override object GetValue(ILifetimeContainer container = null)
+        public override object GetValue(ICollection<IDisposable> container = null)
         {
             LastUsedSessionKey = this.sessionKey;
             return null;
         }
 
-        public override void SetValue(object newValue, ILifetimeContainer container = null)
+        public override void SetValue(object newValue, ICollection<IDisposable> container = null)
         {
         }
 

@@ -11,7 +11,7 @@ namespace Unity.Interception.ContainerIntegration
     /// Stores information about a single <see cref="Type"/> to be an additional interface for an intercepted object and
     /// configures a container accordingly.
     /// </summary>
-    public class AdditionalInterface : InterceptionMember, IAddPolicies
+    public class AdditionalInterface : InterceptionMember// TODO: IAddPolicies
     {
         private readonly Type _additionalInterface;
 

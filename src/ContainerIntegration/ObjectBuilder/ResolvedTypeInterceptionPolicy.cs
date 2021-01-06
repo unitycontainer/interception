@@ -1,7 +1,4 @@
-﻿
-
-using System;
-using Unity.Builder;
+﻿using System;
 using Unity.Interception.Interceptors.TypeInterceptors;
 
 namespace Unity.Interception.ContainerIntegration.ObjectBuilder
@@ -21,7 +18,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         /// will resolve the interceptor with the given <paramref name="buildKey"/>.
         /// </summary>
         /// <param name="buildKey">The build key to use to resolve.</param>
-        public ResolvedTypeInterceptionPolicy(NamedTypeBuildKey buildKey)
+        public ResolvedTypeInterceptionPolicy(Contract buildKey)
         {
             _type = buildKey.Type;
             _name = buildKey.Name;

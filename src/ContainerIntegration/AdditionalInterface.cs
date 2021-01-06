@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Globalization;
-using Unity.Injection;
+using Unity.Extension;
 using Unity.Interception.ContainerIntegration.ObjectBuilder;
 using Unity.Interception.Properties;
-using Unity.Policy;
 
 namespace Unity.Interception.ContainerIntegration
 {

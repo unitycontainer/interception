@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
+﻿using System.Reflection;
 using Unity.Injection;
 
 namespace Unity.Interception.ContainerIntegration.Selection
@@ -29,22 +27,5 @@ namespace Unity.Interception.ContainerIntegration.Selection
         {
             Info = info;
         }
-
-        public override ConstructorInfo MemberInfo(Type type) => Info;
-
-
-        #region Overrides
-
-        public override IEnumerable<ConstructorInfo> DeclaredMembers(Type type)
-        {
-#if NETCOREAPP1_0 || NETSTANDARD1_0
-            return type.GetTypeInfo().DeclaredConstructors
-                       .Where(c => c.IsStatic == false && c.IsPublic);
-#else
-            return type.GetConstructors(BindingFlags.Public | BindingFlags.Instance);
-#endif
-        }
-
-        #endregion
     }
 }

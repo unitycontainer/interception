@@ -1,9 +1,7 @@
 ﻿using System;
-using Unity.Builder;
-using Unity.Injection;
+using Unity.Extension;
 using Unity.Interception.ContainerIntegration.ObjectBuilder;
 using Unity.Interception.InterceptionBehaviors;
-using Unity.Policy;
 
 namespace Unity.Interception.ContainerIntegration
 {
@@ -13,7 +11,7 @@ namespace Unity.Interception.ContainerIntegration
     /// </summary>
     public abstract class InterceptionBehaviorBase : InterceptionMember // TODO: IAddPolicies
     {
-        private readonly NamedTypeBuildKey _behaviorKey;
+        private readonly Contract _behaviorKey;
         private readonly IInterceptionBehavior _explicitBehavior;
 
         /// <summary>
@@ -24,7 +22,7 @@ namespace Unity.Interception.ContainerIntegration
         protected InterceptionBehaviorBase(IInterceptionBehavior interceptionBehavior)
         {
             _explicitBehavior = interceptionBehavior ?? throw new ArgumentNullException(nameof(interceptionBehavior));
-            _behaviorKey = new NamedTypeBuildKey(interceptionBehavior.GetType(), null);
+            _behaviorKey = new Contract(interceptionBehavior.GetType(), null);
         }
 
         /// <summary>
@@ -35,7 +33,7 @@ namespace Unity.Interception.ContainerIntegration
         /// <param name="name"></param>
         protected InterceptionBehaviorBase(Type behaviorType, string name)
         {
-            _behaviorKey = new NamedTypeBuildKey(
+            _behaviorKey = new Contract(
                 behaviorType ?? throw new ArgumentNullException(nameof(behaviorType)),
                 name         ?? throw new ArgumentNullException(nameof(name)));
         }
@@ -65,7 +63,7 @@ namespace Unity.Interception.ContainerIntegration
             }
         }
 
-        public override MatchRank MatchTo(Type other)
+        public override MatchRank Match(Type other)
         {
             if (_behaviorKey.Type.Equals(other)) return MatchRank.ExactMatch;
 

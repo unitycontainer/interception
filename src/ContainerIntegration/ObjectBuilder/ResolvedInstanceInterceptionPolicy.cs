@@ -1,5 +1,5 @@
 ﻿using System;
-using Unity.Builder;
+using Unity.Extension;
 using Unity.Interception.Interceptors.InstanceInterceptors;
 
 namespace Unity.Interception.ContainerIntegration.ObjectBuilder
@@ -18,7 +18,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         /// will resolve the interceptor using the given build key.
         /// </summary>
         /// <param name="buildKey">build key to resolve.</param>
-        public ResolvedInstanceInterceptionPolicy(NamedTypeBuildKey buildKey)
+        public ResolvedInstanceInterceptionPolicy(Contract buildKey)
         {
             _type = buildKey.Type;
             _name = buildKey.Name;
@@ -42,7 +42,8 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         /// Interceptor to use.
         /// </summary>
         /// <param name="context">Context for current build operation.</param>
-        public IInstanceInterceptor GetInterceptor(ref BuilderContext context)
+        public IInstanceInterceptor GetInterceptor<TContext>(ref TContext context) 
+            where TContext : IBuilderContext
         {
             return (IInstanceInterceptor)context.Resolve(_type, _name);
         }

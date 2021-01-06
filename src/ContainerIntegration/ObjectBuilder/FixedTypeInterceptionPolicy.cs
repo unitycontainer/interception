@@ -1,7 +1,4 @@
-﻿
-
-using System;
-using Unity.Builder;
+﻿using System;
 using Unity.Interception.Interceptors.TypeInterceptors;
 
 namespace Unity.Interception.ContainerIntegration.ObjectBuilder

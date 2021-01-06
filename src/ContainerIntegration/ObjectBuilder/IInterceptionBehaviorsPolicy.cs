@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Unity.Builder;
+using Unity.Container;
+using Unity.Extension;
 using Unity.Interception.InterceptionBehaviors;
 using Unity.Interception.Interceptors;
 
@@ -16,7 +17,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         /// GetOrDefault the set of <see cref="NamedTypeBuildKey"/> that can be used to resolve the
         /// behaviors.
         /// </summary>
-        IEnumerable<NamedTypeBuildKey> BehaviorKeys { get; }
+        IEnumerable<Contract> BehaviorKeys { get; }
 
         /// <summary>
         /// GetOrDefault the set of <see cref="IInterceptionBehavior"/> object to be used for the given type and
@@ -51,9 +52,10 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         /// <param name="typeToIntercept">Type that interception was requested on.</param>
         /// <param name="implementationType">Type that implements the interception.</param>
         /// <returns></returns>
-        public static IEnumerable<IInterceptionBehavior> GetEffectiveBehaviors(this IInterceptionBehaviorsPolicy policy, 
-                                                                      ref BuilderContext context, IInterceptor interceptor,
+        public static IEnumerable<IInterceptionBehavior> GetEffectiveBehaviors<TContext>(this IInterceptionBehaviorsPolicy policy, 
+                                                                      ref TContext context, IInterceptor interceptor,
                                                                           Type typeToIntercept, Type implementationType)
+            where TContext : IBuilderContext
         {
             return policy.GetEffectiveBehaviors(context.Container, interceptor, typeToIntercept, implementationType);
         }

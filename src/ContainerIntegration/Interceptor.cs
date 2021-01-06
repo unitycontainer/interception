@@ -1,13 +1,9 @@
 ﻿using System;
-using Unity.Builder;
-using Unity.Injection;
-using Unity.Interception.ContainerIntegration.ObjectBuilder;
+using Unity.Extension;
 using Unity.Interception.Interceptors;
 using Unity.Interception.Interceptors.InstanceInterceptors;
-using Unity.Interception.Interceptors.TypeInterceptors;
 using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception;
 using Unity.Interception.Utilities;
-using Unity.Policy;
 
 namespace Unity.Interception.ContainerIntegration
 {
@@ -64,10 +60,12 @@ namespace Unity.Interception.ContainerIntegration
         /// Interceptor to use.
         /// </summary>
         /// <param name="context">Context for current build operation.</param>
-        public T GetInterceptor<T>(ref BuilderContext context)
+        public T GetInterceptor<TContext, T>(ref TContext context)
+            where TContext : IBuilderContext
         {
             if (null != _interceptor) return (T)_interceptor;
 
+            // TODO: Must be policy
             return (T)context.Resolve(_type, _name);
         }
 
@@ -86,7 +84,7 @@ namespace Unity.Interception.ContainerIntegration
             }
         }
 
-        public override MatchRank MatchTo(Type other)
+        public override MatchRank Match(Type other)
         {
             if (_type.Equals(other)) return MatchRank.ExactMatch;
 

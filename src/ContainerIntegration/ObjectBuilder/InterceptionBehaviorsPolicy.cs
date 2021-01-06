@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Unity.Builder;
+using Unity.Extension;
 using Unity.Interception.InterceptionBehaviors;
 using Unity.Interception.Interceptors;
-using Unity.Policy;
 using Unity.Resolution;
 
 namespace Unity.Interception.ContainerIntegration.ObjectBuilder
@@ -14,13 +13,13 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
     /// </summary>
     public class InterceptionBehaviorsPolicy : IInterceptionBehaviorsPolicy
     {
-        private readonly List<NamedTypeBuildKey> _behaviorKeys = new List<NamedTypeBuildKey>();
+        private readonly List<Contract> _behaviorKeys = new List<Contract>();
 
         /// <summary>
         /// GetOrDefault the set of <see cref="NamedTypeBuildKey"/> that can be used to resolve the
         /// behaviors.
         /// </summary>
-        public IEnumerable<NamedTypeBuildKey> BehaviorKeys => _behaviorKeys;
+        public IEnumerable<Contract> BehaviorKeys => _behaviorKeys;
 
         private readonly List<IInterceptionBehavior> _explicitBehaviors = new List<IInterceptionBehavior>();
 
@@ -54,7 +53,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
             }
         }
 
-        internal void AddBehaviorKey(NamedTypeBuildKey key)
+        internal void AddBehaviorKey(in Contract key)
         {
             _behaviorKeys.Add(key);
         }

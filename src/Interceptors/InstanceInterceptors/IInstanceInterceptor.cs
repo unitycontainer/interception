@@ -1,8 +1,6 @@
-﻿
+﻿using System;
 
-using System;
-
-namespace Unity.Interception.Interceptors.InstanceInterceptors
+namespace Unity.Interception.Interceptors
 {
     /// <summary>
     /// Interface for interceptors that generate separate proxy

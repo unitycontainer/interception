@@ -18,6 +18,7 @@ using Unity.Interception.PolicyInjection;
 using Unity.Interception.PolicyInjection.MatchingRules;
 using Unity.Interception.PolicyInjection.Pipeline;
 using Unity.Interception.PolicyInjection.Policies;
+using Unity.Interception.TestSupport;
 using Unity.Interception.Utilities;
 using Unity.Lifetime;
 
@@ -535,7 +536,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
             object proxy = interceptor.CreateProxy(typeof(IHaveSomeProperties), target, typeof(IInterfaceOne));
             bool invoked = false;
             ((IInterceptingProxy)proxy).AddInterceptionBehavior(
-                new DelegateInterceptionBehavior(
+                new TestDelegateBehavior(
                     (input, getNext) => { invoked = true; return input.CreateMethodReturn(null); }));
 
             // act
@@ -611,7 +612,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
             object[] returnValues = new object[] { this, "return value" };
             int returnValue = 0;
             ((IInterceptingProxy)proxy).AddInterceptionBehavior(
-                new DelegateInterceptionBehavior(
+                new TestDelegateBehavior(
                     (mi, getNext) =>
                     {
                         return mi.CreateMethodReturn(returnValues[returnValue++]);
@@ -875,7 +876,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
         {
             object suppliedTarget = null;
 
-            var behavior = new DelegateInterceptionBehavior((inputs, getNext) =>
+            var behavior = new TestDelegateBehavior((inputs, getNext) =>
                 {
                     suppliedTarget = inputs.Target;
                     return getNext()(inputs, getNext);
@@ -899,7 +900,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
             var target = new ClassWithGenericMethod();
 
             bool behaviorWasCalled = false;
-            var behavior = new DelegateInterceptionBehavior((inputs, getNext) =>
+            var behavior = new TestDelegateBehavior((inputs, getNext) =>
             {
                 behaviorWasCalled = true;
                 return getNext()(inputs, getNext);
@@ -1020,7 +1021,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
 
             bool behaviorWasCalled = false;
 
-            var behavior = new DelegateInterceptionBehavior((inputs, getNext) =>
+            var behavior = new TestDelegateBehavior((inputs, getNext) =>
             {
                 behaviorWasCalled = true;
                 return getNext()(inputs, getNext);
@@ -1042,7 +1043,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
 
             IMethodInvocation invocation = null;
 
-            var behavior = new DelegateInterceptionBehavior((inputs, getNext) =>
+            var behavior = new TestDelegateBehavior((inputs, getNext) =>
             {
                 invocation = inputs;
                 return getNext()(inputs, getNext);
@@ -1070,7 +1071,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
 
             IMethodInvocation invocation = null;
 
-            var behavior = new DelegateInterceptionBehavior((inputs, getNext) =>
+            var behavior = new TestDelegateBehavior((inputs, getNext) =>
             {
                 invocation = inputs;
                 return getNext()(inputs, getNext);
@@ -1098,7 +1099,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
 
             IMethodInvocation invocation = null;
 
-            var behavior = new DelegateInterceptionBehavior((inputs, getNext) =>
+            var behavior = new TestDelegateBehavior((inputs, getNext) =>
             {
                 invocation = inputs;
                 return getNext()(inputs, getNext);
@@ -1126,7 +1127,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
 
             IMethodInvocation invocation = null;
 
-            var behavior = new DelegateInterceptionBehavior((inputs, getNext) =>
+            var behavior = new TestDelegateBehavior((inputs, getNext) =>
             {
                 invocation = inputs;
                 return getNext()(inputs, getNext);
@@ -1154,7 +1155,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
 
             IMethodInvocation invocation = null;
 
-            var behavior = new DelegateInterceptionBehavior((inputs, getNext) =>
+            var behavior = new TestDelegateBehavior((inputs, getNext) =>
             {
                 invocation = inputs;
                 return getNext()(inputs, getNext);
@@ -1182,7 +1183,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
 
             IMethodInvocation invocation = null;
 
-            var behavior = new DelegateInterceptionBehavior((inputs, getNext) =>
+            var behavior = new TestDelegateBehavior((inputs, getNext) =>
             {
                 invocation = inputs;
                 return getNext()(inputs, getNext);
@@ -1211,7 +1212,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
 
             IMethodInvocation invocation = null;
 
-            var behavior = new DelegateInterceptionBehavior((inputs, getNext) =>
+            var behavior = new TestDelegateBehavior((inputs, getNext) =>
             {
                 invocation = inputs;
                 return getNext()(inputs, getNext);
@@ -1239,7 +1240,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
 
             IMethodInvocation invocation = null;
 
-            var behavior = new DelegateInterceptionBehavior((inputs, getNext) =>
+            var behavior = new TestDelegateBehavior((inputs, getNext) =>
             {
                 invocation = inputs;
                 return getNext()(inputs, getNext);
@@ -1267,7 +1268,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
 
             IMethodInvocation invocation = null;
 
-            var behavior = new DelegateInterceptionBehavior((inputs, getNext) =>
+            var behavior = new TestDelegateBehavior((inputs, getNext) =>
             {
                 invocation = inputs;
                 return getNext()(inputs, getNext);
@@ -1295,7 +1296,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
 
             IMethodInvocation invocation = null;
 
-            var behavior = new DelegateInterceptionBehavior((inputs, getNext) =>
+            var behavior = new TestDelegateBehavior((inputs, getNext) =>
             {
                 invocation = inputs;
                 return getNext()(inputs, getNext);
@@ -1323,7 +1324,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
 
             IMethodInvocation invocation = null;
 
-            var behavior = new DelegateInterceptionBehavior((inputs, getNext) =>
+            var behavior = new TestDelegateBehavior((inputs, getNext) =>
             {
                 invocation = inputs;
                 return getNext()(inputs, getNext);
@@ -1351,7 +1352,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
 
             IMethodInvocation invocation = null;
 
-            var behavior = new DelegateInterceptionBehavior((inputs, getNext) =>
+            var behavior = new TestDelegateBehavior((inputs, getNext) =>
             {
                 invocation = inputs;
                 return getNext()(inputs, getNext);
@@ -1485,7 +1486,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
 
             IMethodInvocation invocation = null;
 
-            var behavior = new DelegateInterceptionBehavior((inputs, getNext) =>
+            var behavior = new TestDelegateBehavior((inputs, getNext) =>
             {
                 invocation = inputs;
                 return getNext()(inputs, getNext);
@@ -1532,7 +1533,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
 
             IMethodInvocation invocation = null;
 
-            var behavior = new DelegateInterceptionBehavior((inputs, getNext) =>
+            var behavior = new TestDelegateBehavior((inputs, getNext) =>
             {
                 invocation = inputs;
                 return getNext()(inputs, getNext);
@@ -1596,7 +1597,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
 
             IMethodInvocation invocation;
 
-            var behavior = new DelegateInterceptionBehavior((inputs, getNext) =>
+            var behavior = new TestDelegateBehavior((inputs, getNext) =>
             {
                 invocation = inputs;
                 return getNext()(inputs, getNext);

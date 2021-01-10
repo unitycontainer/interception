@@ -1,25 +1,22 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using Microsoft.Practices.Unity.InterceptionExtension;
 using Unity.Interception.InterceptionBehaviors;
 using Unity.Interception.PolicyInjection.Pipeline;
 
-namespace Microsoft.Practices.Unity.TestSupport
+namespace Unity.Interception.TestSupport
 {
-    public class DelegateInterceptionBehavior : IInterceptionBehavior
+    public class TestDelegateBehavior : IInterceptionBehavior
     {
         public static readonly Func<IEnumerable<Type>> NoRequiredInterfaces = () => Type.EmptyTypes;
 
         private readonly Func<IMethodInvocation, GetNextInterceptionBehaviorDelegate, IMethodReturn> invoke;
         private readonly Func<IEnumerable<Type>> requiredInterfaces;
 
-        public DelegateInterceptionBehavior(Func<IMethodInvocation, GetNextInterceptionBehaviorDelegate, IMethodReturn> invoke)
+        public TestDelegateBehavior(Func<IMethodInvocation, GetNextInterceptionBehaviorDelegate, IMethodReturn> invoke)
             : this(invoke, NoRequiredInterfaces)
         { }
 
-        public DelegateInterceptionBehavior(
+        public TestDelegateBehavior(
             Func<IMethodInvocation, GetNextInterceptionBehaviorDelegate, IMethodReturn> invoke,
             Func<IEnumerable<Type>> requiredInterfaces)
         {
@@ -29,12 +26,12 @@ namespace Microsoft.Practices.Unity.TestSupport
 
         public IMethodReturn Invoke(IMethodInvocation input, GetNextInterceptionBehaviorDelegate getNext)
         {
-            return this.invoke(input, getNext);
+            return invoke(input, getNext);
         }
 
         public IEnumerable<Type> GetRequiredInterfaces()
         {
-            return this.requiredInterfaces();
+            return requiredInterfaces();
         }
 
         /// <summary>

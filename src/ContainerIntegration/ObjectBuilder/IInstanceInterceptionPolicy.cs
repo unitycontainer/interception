@@ -1,5 +1,5 @@
 ﻿using Unity.Extension;
-using Unity.Interception.Interceptors.InstanceInterceptors;
+using Unity.Interception.Interceptors;
 
 namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 {

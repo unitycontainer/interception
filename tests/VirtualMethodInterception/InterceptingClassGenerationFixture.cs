@@ -14,6 +14,7 @@ using Unity.Interception.Interceptors;
 using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception;
 using Unity.Interception.PolicyInjection;
 using Unity.Interception.PolicyInjection.Pipeline;
+using Unity.Interception.TestSupport;
 using Unity.Interception.Utilities;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInterception
@@ -387,7 +388,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
             object instance = Activator.CreateInstance(generatedType);
             bool invoked = false;
             ((IInterceptingProxy)instance).AddInterceptionBehavior(
-                new DelegateInterceptionBehavior(
+                new TestDelegateBehavior(
                     (input, getNext) => { invoked = true; return input.CreateMethodReturn(100); }));
 
             // act
@@ -451,7 +452,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
             List<MethodBase> invokedMethods = new List<MethodBase>();
             ((IInterceptingProxy)instance)
                 .AddInterceptionBehavior(
-                    new DelegateInterceptionBehavior((mi, n) =>
+                    new TestDelegateBehavior((mi, n) =>
                     {
                         invokedMethods.Add(mi.MethodBase);
                         return mi.CreateMethodReturn(1);
@@ -477,7 +478,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
             List<MethodBase> interceptedMethods = new List<MethodBase>();
             ((IInterceptingProxy)instance)
                 .AddInterceptionBehavior(
-                    new DelegateInterceptionBehavior((mi, n) =>
+                    new TestDelegateBehavior((mi, n) =>
                     {
                         interceptedMethods.Add(mi.MethodBase);
                         return mi.CreateMethodReturn(1);
@@ -517,7 +518,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
             int intercepts = 0;
             ((IInterceptingProxy)instance)
                 .AddInterceptionBehavior(
-                    new DelegateInterceptionBehavior((mi, gn) =>
+                    new TestDelegateBehavior((mi, gn) =>
                     {
                         intercepts++;
                         return gn()(mi, gn);
@@ -542,7 +543,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
             int intercepts = 0;
             ((IInterceptingProxy)instance)
                 .AddInterceptionBehavior(
-                    new DelegateInterceptionBehavior((mi, gn) =>
+                    new TestDelegateBehavior((mi, gn) =>
                     {
                         intercepts++;
                         return gn()(mi, gn);
@@ -565,7 +566,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
             int intercepts = 0;
             ((IInterceptingProxy)instance)
                 .AddInterceptionBehavior(
-                    new DelegateInterceptionBehavior((mi, gn) =>
+                    new TestDelegateBehavior((mi, gn) =>
                     {
                         intercepts++;
                         return gn()(mi, gn);
@@ -590,7 +591,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
             int intercepts = 0;
             ((IInterceptingProxy)instance)
                 .AddInterceptionBehavior(
-                    new DelegateInterceptionBehavior((mi, gn) =>
+                    new TestDelegateBehavior((mi, gn) =>
                     {
                         intercepts++;
                         return gn()(mi, gn);
@@ -615,7 +616,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
             int intercepts = 0;
             ((IInterceptingProxy)instance)
                 .AddInterceptionBehavior(
-                    new DelegateInterceptionBehavior((mi, gn) =>
+                    new TestDelegateBehavior((mi, gn) =>
                     {
                         intercepts++;
                         return gn()(mi, gn);
@@ -639,7 +640,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
             int intercepts = 0;
             ((IInterceptingProxy)instance)
                 .AddInterceptionBehavior(
-                    new DelegateInterceptionBehavior((mi, gn) => { intercepts++; return gn()(mi, gn); }));
+                    new TestDelegateBehavior((mi, gn) => { intercepts++; return gn()(mi, gn); }));
 
             instance.Method();
 

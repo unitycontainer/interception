@@ -4,9 +4,10 @@ using System;
 using Unity;
 using Unity.Interception;
 using Unity.Interception.ContainerIntegration;
-using Unity.Interception.Interceptors.InstanceInterceptors.InterfaceInterception;
+using Unity.Interception.Interceptors;
 using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception;
 using Unity.Interception.PolicyInjection;
+using Unity.Interception.TestSupport;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
 {
@@ -69,7 +70,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
                                                           new Interceptor<InterfaceInterceptor>(),
                                                           new AdditionalInterface(typeof(IOtherInterface)),
                                                           new InterceptionBehavior(
-                                                              new DelegateInterceptionBehavior(
+                                                              new TestDelegateBehavior(
                                                                   (mi, gn) => { invokeCount++; return mi.CreateMethodReturn(0); })));
 
             IInterface instance = container.Resolve<IInterface>("test");
@@ -92,7 +93,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
                 new Interceptor<VirtualMethodInterceptor>(),
                 new AdditionalInterface(typeof(IOtherInterface)),
                 new InterceptionBehavior(
-                    new DelegateInterceptionBehavior(
+                    new TestDelegateBehavior(
                         (mi, gn) => { invokeCount++; return mi.CreateMethodReturn(0); })));
 
             IInterface instance = container.Resolve<IInterface>("test");
@@ -115,7 +116,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
                 new Interceptor<VirtualMethodInterceptor>(),
                 new AdditionalInterface<IOtherInterface>(),
                 new InterceptionBehavior(
-                    new DelegateInterceptionBehavior(
+                    new TestDelegateBehavior(
                         (mi, gn) => { invokeCount++; return mi.CreateMethodReturn(0); })));
 
             IInterface instance = container.Resolve<IInterface>("test");

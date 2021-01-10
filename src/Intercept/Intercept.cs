@@ -66,51 +66,43 @@ namespace Unity.Interception
         }
 
         /// <summary>
-        /// Returns a <see cref="IInterceptingProxy"/> for type <paramref name="interceptedType"/> which wraps 
+        /// Returns a <see cref="IInterceptingProxy"/> for type <paramref name="type"/> which wraps 
         /// the supplied <paramref name="target"/>.
         /// </summary>
-        /// <param name="interceptedType">The type to intercept.</param>
+        /// <param name="type">The type to intercept.</param>
         /// <param name="target">The instance to intercept.</param>
         /// <param name="interceptor">The <see cref="IInstanceInterceptor"/> to use when creating the proxy.</param>
         /// <param name="interceptionBehaviors">The interception behaviors for the new proxy.</param>
         /// <param name="additionalInterfaces">Any additional interfaces the proxy must implement.</param>
-        /// <returns>A proxy for <paramref name="target"/> compatible with <paramref name="interceptedType"/>.</returns>
-        /// <exception cref="ArgumentNullException">when <paramref name="interceptedType"/> is <see langword="null"/>.</exception>
-        /// <exception cref="ArgumentNullException">when <paramref name="target"/> is <see langword="null"/>.</exception>
-        /// <exception cref="ArgumentNullException">when <paramref name="interceptor"/> is <see langword="null"/>.</exception>
-        /// <exception cref="ArgumentNullException">when <paramref name="interceptionBehaviors"/> is <see langword="null"/>.</exception>
-        /// <exception cref="ArgumentNullException">when <paramref name="additionalInterfaces"/> is <see langword="null"/>.</exception>
+        /// <returns>A proxy for <paramref name="target"/> compatible with <paramref name="type"/>.</returns>
         /// <exception cref="ArgumentException">when <paramref name="interceptor"/> cannot intercept 
-        /// <paramref name="interceptedType"/>.</exception>
+        /// <paramref name="type"/>.</exception>
         public static object ThroughProxyWithAdditionalInterfaces(
-            Type interceptedType,
+            Type type,
             object target,
             IInstanceInterceptor interceptor,
             IEnumerable<IInterceptionBehavior> interceptionBehaviors,
             IEnumerable<Type> additionalInterfaces)
         {
-            Guard.ArgumentNotNull(interceptedType, "interceptedType");
-            Guard.ArgumentNotNull(target, "target");
-            Guard.ArgumentNotNull(interceptor, "interceptor");
-            Guard.ArgumentNotNull(interceptionBehaviors, "interceptionBehaviors");
-            Guard.ArgumentNotNull(additionalInterfaces, "additionalInterfaces");
-
-            if (!interceptor.CanIntercept(interceptedType))
+            // TODO: Validation
+            if (!interceptor.CanIntercept(type))
             {
                 throw new ArgumentException(
                     string.Format(
                         CultureInfo.CurrentCulture,
                         Resources.InterceptionNotSupported,
-                        interceptedType.FullName),
-                    "interceptedType");
+                        type.FullName),
+                    nameof(type));
             }
 
             var behaviors = interceptionBehaviors.ToList();
+
+            // TODO: Validation
             if (behaviors.Where(ib => ib == null).Count() > 0)
             {
                 throw new ArgumentException(
                     string.Format(CultureInfo.CurrentCulture, Resources.NullBehavior),
-                    "interceptionBehaviors");
+                    nameof(interceptionBehaviors));
             }
 
             var activeBehaviors = behaviors.Where(ib => ib.WillExecute).ToList();
@@ -125,7 +117,7 @@ namespace Unity.Interception
             }
 
             IInterceptingProxy proxy =
-                interceptor.CreateProxy(interceptedType, target, allAdditionalInterfaces.ToArray());
+                interceptor.CreateProxy(type, target, allAdditionalInterfaces.ToArray());
 
             foreach (IInterceptionBehavior interceptionBehavior in activeBehaviors)
             {

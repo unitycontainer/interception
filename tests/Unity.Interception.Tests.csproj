@@ -28,10 +28,6 @@
   <ItemGroup>
     <ProjectReference Include="..\src\Unity.Interception.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Extension\" />
-  </ItemGroup>
   
 
   <PropertyGroup>

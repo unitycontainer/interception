@@ -1,12 +1,11 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using Unity.Interception.Interceptors.InstanceInterceptors.InterfaceInterception;
 using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration;
-using Unity.Interception.Utilities;
 
-namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceInterception
+namespace Unity.Interception.Interceptors
 {
     /// <summary>
     /// An instance interceptor that works by generating a
@@ -22,13 +21,11 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
         /// <summary>
         /// Can this interceptor generate a proxy for the given type?
         /// </summary>
-        /// <param name="t">Type to check.</param>
+        /// <param name="type">Type to check.</param>
         /// <returns>True if interception is possible, false if not.</returns>
-        public bool CanIntercept(Type t)
-        {
-            Guard.ArgumentNotNull(t, "t");
-            return t.IsInterface;
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool CanIntercept(Type type) => type.IsInterface;
+
 
         /// <summary>
         /// Returns a sequence of methods on the given type that can be
@@ -38,19 +35,7 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
         /// was created (typically an interface).</param>
         /// <param name="implementationType">The concrete type of the implementing object.</param>
         /// <returns>Sequence of <see cref="MethodInfo"/> objects.</returns>
-        public IEnumerable<MethodImplementationInfo> GetInterceptableMethods(
-            Type interceptedType,
-            Type implementationType)
-        {
-            Guard.ArgumentNotNull(interceptedType, "interceptedType");
-            Guard.ArgumentNotNull(implementationType, "implementationType");
-
-            return DoGetInterceptableMethods(interceptedType, implementationType);
-        }
-
-        private IEnumerable<MethodImplementationInfo> DoGetInterceptableMethods(
-            Type interceptedType,
-            Type implementationType)
+        public IEnumerable<MethodImplementationInfo> GetInterceptableMethods(Type interceptedType, Type implementationType)
         {
             if (interceptedType.IsInterface && implementationType.IsInterface
                 && interceptedType.IsAssignableFrom(implementationType))
@@ -72,42 +57,40 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
 
             foreach (var type in interceptedType.GetInterfaces())
             {
-                foreach (var info in DoGetInterceptableMethods(type, implementationType))
+                foreach (var info in GetInterceptableMethods(type, implementationType))
                 {
                     yield return info;
                 }
             }
         }
 
+
         /// <summary>
         /// Create a proxy object that provides interception for <paramref name="target"/>.
         /// </summary>
-        /// <param name="t">Type to generate the proxy of.</param>
+        /// <param name="type">Type to generate the proxy of.</param>
         /// <param name="target">Object to create the proxy for.</param>
-        /// <param name="additionalInterfaces">Additional interfaces the proxy must implement.</param>
+        /// <param name="interfaces">Additional interfaces the proxy must implement.</param>
         /// <returns>The proxy object.</returns>
-        public IInterceptingProxy CreateProxy(Type t, object target, params Type[] additionalInterfaces)
+        public IInterceptingProxy CreateProxy(Type type, object target, params Type[] interfaces)
         {
-            Guard.ArgumentNotNull(t, "t");
-            Guard.ArgumentNotNull(additionalInterfaces, "additionalInterfaces");
-
             Type interceptorType;
-            Type typeToProxy = t;
+            Type typeToProxy = type;
             bool genericType = false;
 
-            if (t.IsGenericType)
+            if (type.IsGenericType)
             {
-                typeToProxy = t.GetGenericTypeDefinition();
+                typeToProxy = type.GetGenericTypeDefinition();
                 genericType = true;
             }
 
-            GeneratedTypeKey key = new GeneratedTypeKey(typeToProxy, additionalInterfaces);
+            GeneratedTypeKey key = new GeneratedTypeKey(typeToProxy, interfaces);
             lock (InterceptorClasses)
             {
                 if (!InterceptorClasses.TryGetValue(key, out interceptorType))
                 {
                     InterfaceInterceptorClassGenerator generator =
-                        new InterfaceInterceptorClassGenerator(typeToProxy, additionalInterfaces);
+                        new InterfaceInterceptorClassGenerator(typeToProxy, interfaces);
                     interceptorType = generator.CreateProxyType();
                     InterceptorClasses[key] = interceptorType;
                 }
@@ -115,9 +98,9 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
 
             if (genericType)
             {
-                interceptorType = interceptorType.MakeGenericType(t.GetGenericArguments());
+                interceptorType = interceptorType.MakeGenericType(type.GetGenericArguments());
             }
-            return (IInterceptingProxy)interceptorType.GetConstructors()[0].Invoke(new[] { target, t });
+            return (IInterceptingProxy)interceptorType.GetConstructors()[0].Invoke(new[] { target, type });
         }
 
         #endregion

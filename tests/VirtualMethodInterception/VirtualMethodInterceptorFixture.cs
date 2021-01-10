@@ -12,6 +12,7 @@ using Unity.Interception.Interceptors;
 using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception;
 using Unity.Interception.PolicyInjection;
 using Unity.Interception.PolicyInjection.Pipeline;
+using Unity.Interception.TestSupport;
 using Unity.Lifetime;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInterceptorTests
@@ -200,7 +201,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
                 (AbstractClassWithPublicConstructor)Activator.CreateInstance(proxyType);
             bool invoked = false;
             ((IInterceptingProxy)instance).AddInterceptionBehavior(
-                new DelegateInterceptionBehavior((mi, gn) => { invoked = true; return gn()(mi, gn); }));
+                new TestDelegateBehavior((mi, gn) => { invoked = true; return gn()(mi, gn); }));
 
             int value = instance.VirtualMethod();
 
@@ -246,7 +247,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
                 (AbstractClassWithProtectedConstructor)Activator.CreateInstance(proxyType, 200);
             bool invoked = false;
             ((IInterceptingProxy)instance).AddInterceptionBehavior(
-                new DelegateInterceptionBehavior((mi, gn) => { invoked = true; return gn()(mi, gn); }));
+                new TestDelegateBehavior((mi, gn) => { invoked = true; return gn()(mi, gn); }));
 
             int value = instance.VirtualMethod();
 
@@ -264,7 +265,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
                 (DerivedFromAbstractClassWithPublicConstructor)Activator.CreateInstance(proxyType);
             bool invoked = false;
             ((IInterceptingProxy)instance).AddInterceptionBehavior(
-                new DelegateInterceptionBehavior((mi, gn) => { invoked = true; return gn()(mi, gn); }));
+                new TestDelegateBehavior((mi, gn) => { invoked = true; return gn()(mi, gn); }));
 
             int value = instance.AbstractMethod();
 
@@ -282,7 +283,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
                 (AbstractDerivedFromAbstractClassWithPublicConstructor)Activator.CreateInstance(proxyType);
             bool invoked = false;
             ((IInterceptingProxy)instance).AddInterceptionBehavior(
-                new DelegateInterceptionBehavior((mi, gn) => { invoked = true; return gn()(mi, gn); }));
+                new TestDelegateBehavior((mi, gn) => { invoked = true; return gn()(mi, gn); }));
 
             int value = instance.AbstractMethod();
 
@@ -338,7 +339,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         {
             IMethodInvocation invocation = null;
 
-            var behavior = new DelegateInterceptionBehavior((inputs, getNext) =>
+            var behavior = new TestDelegateBehavior((inputs, getNext) =>
             {
                 invocation = inputs;
                 return getNext()(inputs, getNext);
@@ -363,7 +364,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         {
             IMethodInvocation invocation = null;
 
-            var behavior = new DelegateInterceptionBehavior((inputs, getNext) =>
+            var behavior = new TestDelegateBehavior((inputs, getNext) =>
             {
                 invocation = inputs;
                 return getNext()(inputs, getNext);
@@ -388,7 +389,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         {
             IMethodInvocation invocation = null;
 
-            var behavior = new DelegateInterceptionBehavior((inputs, getNext) =>
+            var behavior = new TestDelegateBehavior((inputs, getNext) =>
             {
                 invocation = inputs;
                 return getNext()(inputs, getNext);
@@ -413,7 +414,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         {
             IMethodInvocation invocation = null;
 
-            var behavior = new DelegateInterceptionBehavior((inputs, getNext) =>
+            var behavior = new TestDelegateBehavior((inputs, getNext) =>
             {
                 invocation = inputs;
                 return getNext()(inputs, getNext);
@@ -438,7 +439,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         {
             IMethodInvocation invocation = null;
 
-            var behavior = new DelegateInterceptionBehavior((inputs, getNext) =>
+            var behavior = new TestDelegateBehavior((inputs, getNext) =>
             {
                 invocation = inputs;
                 return getNext()(inputs, getNext);
@@ -463,7 +464,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         {
             IMethodInvocation invocation = null;
 
-            var behavior = new DelegateInterceptionBehavior((inputs, getNext) =>
+            var behavior = new TestDelegateBehavior((inputs, getNext) =>
             {
                 invocation = inputs;
                 return getNext()(inputs, getNext);
@@ -488,7 +489,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         {
             IMethodInvocation invocation = null;
 
-            var behavior = new DelegateInterceptionBehavior((inputs, getNext) =>
+            var behavior = new TestDelegateBehavior((inputs, getNext) =>
             {
                 invocation = inputs;
                 return getNext()(inputs, getNext);
@@ -513,7 +514,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         {
             IMethodInvocation invocation = null;
 
-            var behavior = new DelegateInterceptionBehavior((inputs, getNext) =>
+            var behavior = new TestDelegateBehavior((inputs, getNext) =>
             {
                 invocation = inputs;
                 return getNext()(inputs, getNext);
@@ -538,7 +539,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         {
             IMethodInvocation invocation = null;
 
-            var behavior = new DelegateInterceptionBehavior((inputs, getNext) =>
+            var behavior = new TestDelegateBehavior((inputs, getNext) =>
             {
                 invocation = inputs;
                 return getNext()(inputs, getNext);
@@ -563,7 +564,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         {
             IMethodInvocation invocation = null;
 
-            var behavior = new DelegateInterceptionBehavior((inputs, getNext) =>
+            var behavior = new TestDelegateBehavior((inputs, getNext) =>
             {
                 invocation = inputs;
                 return getNext()(inputs, getNext);
@@ -588,7 +589,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         {
             IMethodInvocation invocation = null;
 
-            var behavior = new DelegateInterceptionBehavior((inputs, getNext) =>
+            var behavior = new TestDelegateBehavior((inputs, getNext) =>
             {
                 invocation = inputs;
                 return getNext()(inputs, getNext);
@@ -680,7 +681,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         {
             IMethodInvocation invocation = null;
 
-            var behavior = new DelegateInterceptionBehavior((inputs, getNext) =>
+            var behavior = new TestDelegateBehavior((inputs, getNext) =>
             {
                 invocation = inputs;
                 return getNext()(inputs, getNext);
@@ -715,7 +716,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         {
             IMethodInvocation invocation = null;
 
-            var behavior = new DelegateInterceptionBehavior((inputs, getNext) =>
+            var behavior = new TestDelegateBehavior((inputs, getNext) =>
             {
                 invocation = inputs;
                 return getNext()(inputs, getNext);
@@ -768,7 +769,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         {
             IMethodInvocation invocation;
 
-            var behavior = new DelegateInterceptionBehavior((inputs, getNext) =>
+            var behavior = new TestDelegateBehavior((inputs, getNext) =>
             {
                 invocation = inputs;
                 return getNext()(inputs, getNext);
@@ -837,7 +838,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         {
             IMethodInvocation invocation;
 
-            var behavior = new DelegateInterceptionBehavior((inputs, getNext) =>
+            var behavior = new TestDelegateBehavior((inputs, getNext) =>
             {
                 invocation = inputs;
                 return getNext()(inputs, getNext);

@@ -1,6 +1,4 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Microsoft.Practices.Unity.TestSupport;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -11,187 +9,28 @@ using Unity.Interception.Interceptors.InstanceInterceptors;
 using Unity.Interception.Interceptors.InstanceInterceptors.InterfaceInterception;
 using Unity.Interception.Interceptors.TypeInterceptors;
 using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception;
+using Unity.Interception.TestSupport;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
+namespace Standalone
 {
     [TestClass]
-    public class InterceptFixture
+    public partial class StaticInterception
     {
-        [TestMethod]
-        public void CanInterceptTargetWithInstanceInterceptor()
-        {
-            bool invoked = false;
-            IInterceptionBehavior interceptionBehavior =
-                new DelegateInterceptionBehavior((mi, next) => { invoked = true; return mi.CreateMethodReturn(100); });
+        #region Constants
 
-            IInterface proxy = (IInterface)
-                Intercept.ThroughProxyWithAdditionalInterfaces(
-                    typeof(IInterface),
-                    new BaseClass(10),
-                    new InterfaceInterceptor(),
-                    new[] { interceptionBehavior },
-                    Type.EmptyTypes);
+        const string PROPERTY = "Test";
+        const string INSTANCE = "Instance";
+        const string TYPE     = "Type";
 
-            int value = proxy.DoSomething();
+        #endregion
 
-            Assert.AreEqual(100, value);
-            Assert.IsTrue(invoked);
-        }
-
-        [TestMethod]
-        public void GeneratedProxyImplementsUserProvidedAdditionalInterfaces()
-        {
-            bool invoked = false;
-            IInterceptionBehavior interceptionBehavior =
-                new DelegateInterceptionBehavior((mi, next) => { invoked = true; return mi.CreateMethodReturn(100); });
-
-            IInterface proxy = (IInterface)
-                Intercept.ThroughProxyWithAdditionalInterfaces(
-                    typeof(IInterface),
-                    new BaseClass(10),
-                    new InterfaceInterceptor(),
-                    new[] { interceptionBehavior },
-                    new[] { typeof(ISomeInterface) });
-
-            int value = ((ISomeInterface)proxy).DoSomethingElse();
-
-            Assert.AreEqual(100, value);
-            Assert.IsTrue(invoked);
-        }
-
-        [TestMethod]
-        public void GeneratedProxyImplementsInterceptionBehaviorProvidedAdditionalInterfaces()
-        {
-            bool invoked = false;
-            IInterceptionBehavior interceptionBehavior =
-                new DelegateInterceptionBehavior(
-                    (mi, next) => { invoked = true; return mi.CreateMethodReturn(100); },
-                    () => new[] { typeof(ISomeInterface) });
-
-            IInterface proxy = (IInterface)
-                Intercept.ThroughProxyWithAdditionalInterfaces(
-                    typeof(IInterface),
-                    new BaseClass(10),
-                    new InterfaceInterceptor(),
-                    new[] { interceptionBehavior },
-                    Type.EmptyTypes);
-
-            int value = ((ISomeInterface)proxy).DoSomethingElse();
-
-            Assert.AreEqual(100, value);
-            Assert.IsTrue(invoked);
-        }
-
-        [TestMethod]
-        public void CanInterceptTargetWithInstanceInterceptorUsingGenericVersion()
-        {
-            bool invoked = false;
-            IInterceptionBehavior interceptionBehavior =
-                new DelegateInterceptionBehavior((mi, next) => { invoked = true; return mi.CreateMethodReturn(100); });
-
-            IInterface proxy =
-                Intercept.ThroughProxyWithAdditionalInterfaces<IInterface>(
-                    new BaseClass(10),
-                    new InterfaceInterceptor(),
-                    new[] { interceptionBehavior },
-                    Type.EmptyTypes);
-
-            int value = proxy.DoSomething();
-
-            Assert.AreEqual(100, value);
-            Assert.IsTrue(invoked);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void InterceptingANullTypeThrows()
-        {
-            Intercept.ThroughProxyWithAdditionalInterfaces(
-                null,
-                new BaseClass(),
-                new InterfaceInterceptor(),
-                new IInterceptionBehavior[0],
-                Type.EmptyTypes);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void InterceptingANullTargetThrows()
-        {
-            Intercept.ThroughProxyWithAdditionalInterfaces(
-                typeof(IInterface),
-                null,
-                new InterfaceInterceptor(),
-                new IInterceptionBehavior[0],
-                Type.EmptyTypes);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void InterceptingWithANullInterceptorThrows()
-        {
-            Intercept.ThroughProxyWithAdditionalInterfaces(
-                typeof(IInterface),
-                new BaseClass(),
-                null,
-                new IInterceptionBehavior[0],
-                Type.EmptyTypes);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void InterceptingTypesNotCompatibleWithTheInterceptorThrows()
-        {
-            Intercept.ThroughProxyWithAdditionalInterfaces(
-                typeof(IInterface),
-                new BaseClass(),
-                new RejectingInterceptor(),
-                new IInterceptionBehavior[0],
-                Type.EmptyTypes);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void InterceptingWithANullSetOfInterceptionBehaviorsThrows()
-        {
-            Intercept.ThroughProxyWithAdditionalInterfaces(
-                typeof(IInterface),
-                new BaseClass(),
-                new InterfaceInterceptor(),
-                null,
-                Type.EmptyTypes);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void InterceptingWithANullSetOfAdditionalInterfacesThrows()
-        {
-            Intercept.ThroughProxyWithAdditionalInterfaces(
-                typeof(IInterface),
-                new BaseClass(),
-                new InterfaceInterceptor(),
-                new IInterceptionBehavior[0],
-                null);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void InterceptingWithASetOfAdditionalInterfacesIncludingNonInterfaceTypeThrows()
-        {
-            Intercept.ThroughProxyWithAdditionalInterfaces(
-                typeof(IInterface),
-                new BaseClass(),
-                new InterfaceInterceptor(),
-                new IInterceptionBehavior[0],
-                new[] { typeof(object) });
-        }
 
         [TestMethod]
         public void CanInterceptNewInstanceWithTypeInterceptor()
         {
             bool invoked = false;
             IInterceptionBehavior interceptionBehavior =
-                new DelegateInterceptionBehavior((mi, next) => { invoked = true; return mi.CreateMethodReturn(100); });
+                new TestDelegateBehavior((mi, next) => { invoked = true; return mi.CreateMethodReturn(100); });
 
             BaseClass instance = (BaseClass)
                 Intercept.NewInstanceWithAdditionalInterfaces(
@@ -212,7 +51,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
         {
             bool invoked = false;
             IInterceptionBehavior interceptionBehavior =
-                new DelegateInterceptionBehavior((mi, next) => { invoked = true; return mi.CreateMethodReturn(100); });
+                new TestDelegateBehavior((mi, next) => { invoked = true; return mi.CreateMethodReturn(100); });
 
             BaseClass instance =
                 Intercept.NewInstanceWithAdditionalInterfaces<BaseClass>(
@@ -330,7 +169,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
                 new VirtualMethodInterceptor(),
                 new IInterceptionBehavior[] 
                 {
-                    new DelegateInterceptionBehavior(null, () => null)
+                    new TestDelegateBehavior(null, () => null)
                 });
         }
 
@@ -343,7 +182,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
                 new VirtualMethodInterceptor(),
                 new IInterceptionBehavior[] 
                 {
-                    new DelegateInterceptionBehavior(null, () => new Type[] { null })
+                    new TestDelegateBehavior(null, () => new Type[] { null })
                 });
         }
 
@@ -356,7 +195,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
                 new VirtualMethodInterceptor(),
                 new IInterceptionBehavior[] 
                 {
-                    new DelegateInterceptionBehavior(null, () => new Type[] { typeof(object) })
+                    new TestDelegateBehavior(null, () => new Type[] { typeof(object) })
                 });
         }
 
@@ -369,7 +208,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
                 new VirtualMethodInterceptor(),
                 new IInterceptionBehavior[] 
                 {
-                    new DelegateInterceptionBehavior(null, () => new Type[] { typeof(IEnumerable<>) })
+                    new TestDelegateBehavior(null, () => new Type[] { typeof(IEnumerable<>) })
                 });
         }
 
@@ -378,7 +217,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
         {
             bool invoked = false;
             IInterceptionBehavior interceptionBehavior =
-                new DelegateInterceptionBehavior((mi, next) => { invoked = true; return mi.CreateMethodReturn(100); });
+                new TestDelegateBehavior((mi, next) => { invoked = true; return mi.CreateMethodReturn(100); });
 
             AbstractClass instance =
                 Intercept.NewInstance<AbstractClass>(
@@ -390,6 +229,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
             Assert.AreEqual(100, value);
             Assert.IsTrue(invoked);
         }
+
+        #region Test Data
 
         public class BaseClass : IInterface
         {
@@ -447,5 +288,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
         {
             public abstract int DoSomething();
         }
+
+        #endregion
     }
 }

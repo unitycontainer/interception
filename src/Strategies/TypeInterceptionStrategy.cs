@@ -29,12 +29,13 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         {
             if (context.Existing != null) return;
 
-            var member = context.OfType<Interceptor>()
-                                .FirstOrDefault(o => o.IsTypeInterceptor);
+            var interceptor = context.OfType<Interceptor>()
+                                     .FirstOrDefault(o => o.IsTypeInterceptor)?
+                                     .GetInterceptor(ref context) as ITypeInterceptor ??
+                              GetPolicyOrDefault<TContext, ITypeInterceptor>(ref context);
 
-            if (member is null) return;
+            if (interceptor is null) return;
 
-            var interceptor = (ITypeInterceptor)member.GetInterceptor(ref context);
 
 
             Type typeToBuild = context.Type;
@@ -63,8 +64,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 
             var enumerable = interceptionBehaviors as IInterceptionBehavior[] ?? interceptionBehaviors.ToArray();
             
-            context.Registration!.Set(typeof(EffectiveInterceptionBehaviorsPolicy),
-                new EffectiveInterceptionBehaviorsPolicy { Behaviors = enumerable });
+            context.Set(typeof(EffectiveInterceptionBehaviorsPolicy), new EffectiveInterceptionBehaviorsPolicy { Behaviors = enumerable });
 
             Type[] allAdditionalInterfaces =
                 Intercept.GetAllAdditionalInterfaces(enumerable, additionalInterfaces);
@@ -106,21 +106,14 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
             }
         }
 
-        public static TPolicyInterface GetPolicyOrDefault<TContext, TPolicyInterface>(ref TContext context)
+        public static TPolicy? GetPolicyOrDefault<TContext, TPolicy>(ref TContext context)
             where TContext : IBuilderContext
+            where TPolicy : class
         {
-            return default;
-            //throw new NotImplementedException();
-            //return (TPolicyInterface)(GetNamedPolicy(ref context, context.Type, context.Name) ??
-            //                          GetNamedPolicy(ref context, context.Type, UnityContainer.All));
-
-            //object GetNamedPolicy(ref BuilderContext c, Type t, string n)
-            //{
-            //    return (c.Get(t, n, typeof(TPolicyInterface)) ?? (
-            //                t.IsGenericType
-            //                    ? c.Get(t.GetGenericTypeDefinition(), n, typeof(TPolicyInterface)) ?? c.Get(null, null, typeof(TPolicyInterface))
-            //                    : c.Get(null, null, typeof(TPolicyInterface))));
-            //}
+            return context.Contract.Type.IsGenericType
+                ? context.Policies.Get<TPolicy>(context.Contract.Type) ??
+                  context.Policies.Get<TPolicy>(context.Generic ??= context.Contract.Type.GetGenericTypeDefinition())
+                : context.Policies.Get<TPolicy>(context.Contract.Type);
         }
 
         #endregion

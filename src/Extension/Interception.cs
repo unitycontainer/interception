@@ -152,12 +152,12 @@ namespace Unity.Interception
         /// <returns>This extension object.</returns>
         public Interception SetDefaultInterceptorFor(Type typeToIntercept, ITypeInterceptor interceptor)
         {
-            Guard.ArgumentNotNull(typeToIntercept, "typeToIntercept");
-            Guard.ArgumentNotNull(interceptor, "interceptor");
-            GuardTypeInterceptable(typeToIntercept, interceptor);
+            // TODO: Validation
+            //Guard.ArgumentNotNull(typeToIntercept, "typeToIntercept");
+            //Guard.ArgumentNotNull(interceptor, "interceptor");
+            //GuardTypeInterceptable(typeToIntercept, interceptor);
 
-            //Context.Policies.Set(typeToIntercept, UnityContainer.All, typeof(ITypeInterceptionPolicy), 
-            //                     new FixedTypeInterceptionPolicy(interceptor));
+            Context!.Policies.Set<ITypeInterceptor>(typeToIntercept, interceptor);
 
             //// add policy injection behavior if using this configuration API to set the interceptor
             //var interceptionBehaviorsPolicy = new InterceptionBehaviorsPolicy();
@@ -220,13 +220,14 @@ namespace Unity.Interception
         /// <returns>This extension object.</returns>
         public Interception SetDefaultInterceptorFor(Type typeToIntercept, IInstanceInterceptor interceptor)
         {
+            // TODO: Validation
             //Guard.ArgumentNotNull(typeToIntercept, "typeToIntercept");
             //Guard.ArgumentNotNull(interceptor, "interceptor");
             //GuardTypeInterceptable(typeToIntercept, interceptor);
 
-            //Context.Policies.Set(typeToIntercept, UnityContainer.All, typeof(IInstanceInterceptionPolicy), new FixedInstanceInterceptionPolicy(interceptor));
+            Context!.Policies.Set<IInstanceInterceptor>(typeToIntercept, interceptor);
 
-            //// add policy injection behavior if using this configuration API to set the interceptor
+            // add policy injection behavior if using this configuration API to set the interceptor
             //var interceptionBehaviorsPolicy = new InterceptionBehaviorsPolicy();
             //interceptionBehaviorsPolicy.AddBehaviorKey(NamedTypeBuildKey.Make<PolicyInjectionBehavior>());
             //Context.Policies.Set(typeToIntercept, UnityContainer.All, typeof(IInterceptionBehaviorsPolicy), interceptionBehaviorsPolicy);

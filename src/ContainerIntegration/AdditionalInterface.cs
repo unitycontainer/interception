@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using Unity.Extension;
-using Unity.Interception.ContainerIntegration.ObjectBuilder;
 using Unity.Interception.Properties;
 
 namespace Unity.Interception.ContainerIntegration
@@ -10,10 +8,8 @@ namespace Unity.Interception.ContainerIntegration
     /// Stores information about a single <see cref="Type"/> to be an additional interface for an intercepted object and
     /// configures a container accordingly.
     /// </summary>
-    public class AdditionalInterface : InterceptionMember// TODO: IAddPolicies
+    public class AdditionalInterface : InterceptionMember
     {
-        private readonly Type _additionalInterface;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="AdditionalInterface"/> with a 
         /// <see cref="Type"/>.
@@ -35,17 +31,10 @@ namespace Unity.Interception.ContainerIntegration
                     nameof(additionalInterface));
             }
 
-            _additionalInterface = additionalInterface;
+            InterfaceType = additionalInterface;
         }
 
-        public override bool BuildRequired => false;
-
-        public void AddPolicies<TPolicySet>(Type type, string name, ref TPolicySet policies) 
-            where TPolicySet : IPolicySet
-        {
-            AdditionalInterfacesPolicy policy = AdditionalInterfacesPolicy.GetOrCreate(ref policies);
-            policy.AddAdditionalInterface(_additionalInterface);
-        }
+        public Type InterfaceType { get; }
     }
 
     /// <summary>

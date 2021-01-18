@@ -4,9 +4,6 @@ using Unity.Extension;
 using Unity.Interception.ContainerIntegration;
 using Unity.Interception.ContainerIntegration.ObjectBuilder;
 using Unity.Interception.Interceptors;
-using Unity.Interception.Interceptors.InstanceInterceptors;
-using Unity.Interception.Interceptors.TypeInterceptors;
-using Unity.Interception.PolicyInjection;
 using Unity.Interception.PolicyInjection.Policies;
 using Unity.Interception.Properties;
 using Unity.Interception.Utilities;
@@ -31,18 +28,30 @@ namespace Unity.Interception
         /// </summary>
         protected override void Initialize()
         {
+            if (Context is null) throw new ArgumentNullException(nameof(Context));
+
             // Type pipeline
             Context.TypePipelineChain.Add(new (UnityBuildStage, BuilderStrategy)[] 
             { 
-                (UnityBuildStage.TypeMapping,          new TypeInterceptionStrategy()),
-                (UnityBuildStage.InstanceInterception, new InstanceInterceptionStrategy())
+                (UnityBuildStage.InterceptType,     new TypeInterceptionStrategy()),
+                (UnityBuildStage.InterceptInstance, new InstanceInterceptionStrategy())
             });
 
             // Factory
-            Context.FactoryPipelineChain.Add(UnityBuildStage.InstanceInterception, new InstanceInterceptionStrategy());
+            Context.FactoryPipelineChain.Add(new (UnityBuildStage, BuilderStrategy)[]
+            {
+                (UnityBuildStage.InterceptType,     new TypeInterceptionStrategy()),
+                (UnityBuildStage.InterceptInstance, new InstanceInterceptionStrategy())
+            });
 
             // Instance pipeline
-            Context.InstancePipelineChain.Add(UnityBuildStage.InstanceInterception, new InstanceInterceptionStrategy());
+            Context.InstancePipelineChain.Add(UnityBuildStage.InterceptInstance, new InstanceInterceptionStrategy());
+
+            Context.MappingPipelineChain.Add(new (UnityBuildStage, BuilderStrategy)[]
+            {
+                (UnityBuildStage.InterceptType,     new TypeInterceptionStrategy()),
+                (UnityBuildStage.InterceptInstance, new InstanceInterceptionStrategy())
+            });
 
             // Try to register default policy
             Context.Policies.CompareExchange<InjectionPolicy>(new AttributeDrivenPolicy(), null);

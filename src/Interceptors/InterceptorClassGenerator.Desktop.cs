@@ -15,7 +15,7 @@ namespace Unity.Interception.Interceptors
             {
                 string moduleName = Guid.NewGuid().ToString("N");
 #if DEBUG_SAVE_GENERATED_ASSEMBLY
-            return AssemblyBuilder.DefineDynamicModule(moduleName, moduleName + ".dll", true);
+                return AssemblyBuilder.DefineDynamicModule(moduleName, moduleName + ".dll", true);
 #else
                 return assembly.DefineDynamicModule(moduleName);
 #endif

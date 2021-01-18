@@ -4,8 +4,6 @@ using System.Globalization;
 using System.Linq;
 using Unity.Interception.InterceptionBehaviors;
 using Unity.Interception.Interceptors;
-using Unity.Interception.Interceptors.InstanceInterceptors;
-using Unity.Interception.Interceptors.TypeInterceptors;
 using Unity.Interception.Properties;
 using Unity.Interception.Utilities;
 

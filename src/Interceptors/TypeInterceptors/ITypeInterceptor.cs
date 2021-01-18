@@ -1,8 +1,6 @@
-﻿
+﻿using System;
 
-using System;
-
-namespace Unity.Interception.Interceptors.TypeInterceptors
+namespace Unity.Interception.Interceptors
 {
     /// <summary>
     /// Interface for interceptor objects that generate

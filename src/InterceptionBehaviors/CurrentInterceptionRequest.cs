@@ -1,6 +1,4 @@
-﻿
-
-using System;
+﻿using System;
 using Unity.Interception.Interceptors;
 
 namespace Unity.Interception.InterceptionBehaviors

@@ -1,15 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using Unity.Container;
 using Unity.Extension;
-using Unity.Injection;
-using Unity.Interception.Extensions;
-using Unity.Interception.ContainerIntegration.Selection;
 using Unity.Interception.InterceptionBehaviors;
 using Unity.Interception.Interceptors;
-using Unity.Interception.Interceptors.TypeInterceptors;
 
 namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 {
@@ -33,31 +27,24 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         /// <param name="context">Context of the build operation.</param>
         public override void PreBuildUp<TContext>(ref TContext context)
         {
-            if (context.Target != null) return;
+            if (context.Existing != null) return;
+
+            var member = context.OfType<Interceptor>()
+                                .FirstOrDefault(o => o.IsTypeInterceptor);
+
+            if (member is null) return;
+
+            var interceptor = (ITypeInterceptor)member.GetInterceptor(ref context);
+
 
             Type typeToBuild = context.Type;
-
-            ITypeInterceptor interceptor =
-                typeof(ITypeInterceptor).FindInjectedMember<TContext, Interceptor>(ref context)?
-                                        .GetInterceptor<TContext, ITypeInterceptor>(ref context);
-            if (null == interceptor)
-            { 
-                var interceptionPolicy = GetPolicyOrDefault<TContext, ITypeInterceptionPolicy>(ref context);
-                if (interceptionPolicy == null)
-                {
-                    return;
-                }
-
-                interceptor = interceptionPolicy.GetInterceptor(ref context);
-            }
 
             if (!interceptor.CanIntercept(typeToBuild))
             {
                 return;
             }
 
-            var behavior = typeof(IInterceptionBehavior).FindInjectedMember<TContext, InterceptionBehavior>(ref context);
-                                                        
+            var behavior = (InterceptionBehavior?)context.Registration?.Get(typeof(InterceptionBehavior));
 
             var interceptionBehaviorsPolicy = GetPolicyOrDefault<TContext, IInterceptionBehaviorsPolicy>(ref context);
 
@@ -70,21 +57,20 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
                             ref context, interceptor, typeToBuild, typeToBuild)
                         .Where(ib => ib.WillExecute);
 
-            IAdditionalInterfacesPolicy additionalInterfacesPolicy =
-                GetPolicyOrDefault<TContext, IAdditionalInterfacesPolicy>(ref context);
 
-            IEnumerable<Type> additionalInterfaces =
-                additionalInterfacesPolicy != null ? additionalInterfacesPolicy.AdditionalInterfaces : Type.EmptyTypes;
+            IEnumerable<Type> additionalInterfaces = context.OfType<AdditionalInterface>()
+                                                            .Select(a => a.InterfaceType);
 
             var enumerable = interceptionBehaviors as IInterceptionBehavior[] ?? interceptionBehaviors.ToArray();
-            //context.Registration.Set(typeof(EffectiveInterceptionBehaviorsPolicy), 
-            //    new EffectiveInterceptionBehaviorsPolicy { Behaviors = enumerable });
+            
+            context.Registration!.Set(typeof(EffectiveInterceptionBehaviorsPolicy),
+                new EffectiveInterceptionBehaviorsPolicy { Behaviors = enumerable });
 
-            //Type[] allAdditionalInterfaces =
-            //    Intercept.GetAllAdditionalInterfaces(enumerable, additionalInterfaces);
+            Type[] allAdditionalInterfaces =
+                Intercept.GetAllAdditionalInterfaces(enumerable, additionalInterfaces);
 
-            //Type interceptingType =
-            //    interceptor.CreateProxyType(typeToBuild, allAdditionalInterfaces);
+            Type interceptingType =
+                interceptor.CreateProxyType(typeToBuild, allAdditionalInterfaces);
 
             //DerivedTypeConstructorSelectorPolicy.SetPolicyForInterceptingType(ref context, interceptingType);
         }
@@ -99,45 +85,42 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         /// <param name="context">Context of the build operation.</param>
         public override void PostBuildUp<TContext>(ref TContext context)
         {
-            IInterceptingProxy proxy = context.Target as IInterceptingProxy;
+            IInterceptingProxy proxy = context.Existing as IInterceptingProxy;
 
-            //if (proxy == null)
-            //{
-            //    return;
-            //}
+            if (proxy == null)
+            {
+                return;
+            }
 
-            //var effectiveInterceptionBehaviorsPolicy = (EffectiveInterceptionBehaviorsPolicy)context.Registration.Get(
-            //    typeof(EffectiveInterceptionBehaviorsPolicy));
+            var effectiveInterceptionBehaviorsPolicy = (EffectiveInterceptionBehaviorsPolicy)context.Registration.Get(
+                typeof(EffectiveInterceptionBehaviorsPolicy));
 
-            //if (effectiveInterceptionBehaviorsPolicy == null)
-            //{
-            //    return;
-            //}
+            if (effectiveInterceptionBehaviorsPolicy == null)
+            {
+                return;
+            }
 
-            //foreach (var interceptionBehavior in effectiveInterceptionBehaviorsPolicy.Behaviors)
-            //{
-            //    proxy.AddInterceptionBehavior(interceptionBehavior);
-            //}
+            foreach (var interceptionBehavior in effectiveInterceptionBehaviorsPolicy.Behaviors)
+            {
+                proxy.AddInterceptionBehavior(interceptionBehavior);
+            }
         }
 
         public static TPolicyInterface GetPolicyOrDefault<TContext, TPolicyInterface>(ref TContext context)
             where TContext : IBuilderContext
         {
-            throw new NotImplementedException();
-//            return (TPolicyInterface)(GetNamedPolicy(ref context, context.RegistrationType, context.Name) ?? 
-//                                      GetNamedPolicy(ref context, context.RegistrationType, UnityContainer.All));
+            return default;
+            //throw new NotImplementedException();
+            //return (TPolicyInterface)(GetNamedPolicy(ref context, context.Type, context.Name) ??
+            //                          GetNamedPolicy(ref context, context.Type, UnityContainer.All));
 
-//            object GetNamedPolicy(ref BuilderContext c, Type t, string n)
-//            {
-//                return (c.Get(t, n, typeof(TPolicyInterface)) ?? (
-//#if NETCOREAPP1_0 || NETSTANDARD1_0
-//                    t.GetTypeInfo().IsGenericType
-//#else
-//                            t.IsGenericType
-//#endif
-//                                ? c.Get(t.GetGenericTypeDefinition(), n, typeof(TPolicyInterface)) ?? c.Get(null, null, typeof(TPolicyInterface))
-//                                : c.Get(null, null, typeof(TPolicyInterface))));
-//            }
+            //object GetNamedPolicy(ref BuilderContext c, Type t, string n)
+            //{
+            //    return (c.Get(t, n, typeof(TPolicyInterface)) ?? (
+            //                t.IsGenericType
+            //                    ? c.Get(t.GetGenericTypeDefinition(), n, typeof(TPolicyInterface)) ?? c.Get(null, null, typeof(TPolicyInterface))
+            //                    : c.Get(null, null, typeof(TPolicyInterface))));
+            //}
         }
 
         #endregion

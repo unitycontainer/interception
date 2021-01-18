@@ -1,9 +1,7 @@
 ﻿using System;
 using Unity.Extension;
 using Unity.Interception.Interceptors;
-using Unity.Interception.Interceptors.InstanceInterceptors;
-using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception;
-using Unity.Interception.Utilities;
+using Unity.Interception.Interceptors;
 
 namespace Unity.Interception.ContainerIntegration
 {
@@ -14,9 +12,9 @@ namespace Unity.Interception.ContainerIntegration
     /// <seealso cref="IInterceptionBehavior"/>
     public class Interceptor : InterceptionMember
     {
-        private readonly IInterceptor _interceptor;
+        private IInterceptor? _interceptor;
         private readonly Type _type;
-        private readonly string _name;
+        private readonly string? _name;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Interceptor"/> class with an interceptor instance.
@@ -36,12 +34,12 @@ namespace Unity.Interception.ContainerIntegration
         /// </summary>
         /// <param name="interceptorType">Type of the interceptor</param>
         /// <param name="name">name to use to resolve.</param>
-        public Interceptor(Type interceptorType, string name)
+        public Interceptor(Type interceptorType, string? name)
         {
-            Guard.TypeIsAssignable(typeof(IInterceptor), interceptorType ?? 
-                  throw new ArgumentNullException(nameof(interceptorType)), 
-                                                  nameof(interceptorType));
-
+            // TODO: Validation
+            //Guard.TypeIsAssignable(typeof(IInterceptor), interceptorType ?? 
+            //      throw new ArgumentNullException(nameof(interceptorType)), 
+            //                                      nameof(interceptorType));
             _type = interceptorType;
             _name = name;
         }
@@ -60,29 +58,22 @@ namespace Unity.Interception.ContainerIntegration
         /// Interceptor to use.
         /// </summary>
         /// <param name="context">Context for current build operation.</param>
-        public T GetInterceptor<TContext, T>(ref TContext context)
-            where TContext : IBuilderContext
-        {
-            if (null != _interceptor) return (T)_interceptor;
-
-            // TODO: Must be policy
-            return (T)context.Resolve(_type, _name);
-        }
+        public IInterceptor GetInterceptor<TContext>(ref TContext context)
+            where TContext : IBuilderContext 
+            => _interceptor ??= (IInterceptor)context.Resolve(_type, _name)!;
 
 
-        public override bool BuildRequired => _type == typeof(VirtualMethodInterceptor);
 
-        private bool IsInstanceInterceptor
-        {
-            get
-            {
-                if (_interceptor != null)
-                {
-                    return _interceptor is IInstanceInterceptor;
-                }
-                return typeof(IInstanceInterceptor).IsAssignableFrom(_type);
-            }
-        }
+        public bool IsInstanceInterceptor 
+            => _interceptor is null
+            ? typeof(IInstanceInterceptor).IsAssignableFrom(_type)
+            : _interceptor is IInstanceInterceptor;
+
+        public bool IsTypeInterceptor
+            => _interceptor is null
+            ? typeof(ITypeInterceptor).IsAssignableFrom(_type)
+            : _interceptor is ITypeInterceptor;
+
 
         public override MatchRank Match(Type other)
         {

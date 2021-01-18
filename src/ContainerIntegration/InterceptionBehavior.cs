@@ -43,16 +43,6 @@ namespace Unity.Interception.ContainerIntegration
             : base(behaviorType)
         {
         }
-
-        /// <summary>
-        /// GetOrDefault the list of behaviors for the current type so that it can be added to.
-        /// </summary>
-        /// <param name="policies">Policy list.</param>
-        /// <returns>An instance of <see cref="InterceptionBehaviorsPolicy"/>.</returns>
-        protected override InterceptionBehaviorsPolicy GetBehaviorsPolicy<TPolicySet>(ref TPolicySet policies)
-        {
-            return InterceptionBehaviorsPolicy.GetOrCreate(ref policies);
-        }
     }
 
     /// <summary>

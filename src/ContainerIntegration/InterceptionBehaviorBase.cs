@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Unity.Extension;
 using Unity.Interception.ContainerIntegration.ObjectBuilder;
 using Unity.Interception.InterceptionBehaviors;
+using Unity.Interception.Interceptors;
+using Unity.Resolution;
 
 namespace Unity.Interception.ContainerIntegration
 {
@@ -9,10 +13,12 @@ namespace Unity.Interception.ContainerIntegration
     /// Base class for injection members that allow you to add
     /// interception behaviors.
     /// </summary>
-    public abstract class InterceptionBehaviorBase : InterceptionMember // TODO: IAddPolicies
+    public abstract class InterceptionBehaviorBase : InterceptionMember
     {
-        private readonly Contract _behaviorKey;
-        private readonly IInterceptionBehavior _explicitBehavior;
+        private readonly Type    _type;
+        private readonly string? _name;
+
+        private IInterceptionBehavior? _explicitBehavior;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IInterceptionBehavior"/> with a 
@@ -22,7 +28,7 @@ namespace Unity.Interception.ContainerIntegration
         protected InterceptionBehaviorBase(IInterceptionBehavior interceptionBehavior)
         {
             _explicitBehavior = interceptionBehavior ?? throw new ArgumentNullException(nameof(interceptionBehavior));
-            _behaviorKey = new Contract(interceptionBehavior.GetType(), null);
+            _type = interceptionBehavior.GetType();
         }
 
         /// <summary>
@@ -31,11 +37,10 @@ namespace Unity.Interception.ContainerIntegration
         /// </summary>
         /// <param name="behaviorType">Type of behavior to </param>
         /// <param name="name"></param>
-        protected InterceptionBehaviorBase(Type behaviorType, string name)
+        protected InterceptionBehaviorBase(Type behaviorType, string? name)
         {
-            _behaviorKey = new Contract(
-                behaviorType ?? throw new ArgumentNullException(nameof(behaviorType)),
-                name         ?? throw new ArgumentNullException(nameof(name)));
+            _type = behaviorType ?? throw new ArgumentNullException(nameof(behaviorType));
+            _name = name;
         }
 
         /// <summary>
@@ -48,38 +53,40 @@ namespace Unity.Interception.ContainerIntegration
         {
         }
 
-        public void AddPolicies<TPolicySet>(Type type, string name, ref TPolicySet policies)
-            where TPolicySet : IPolicySet
-        {
-            if (_explicitBehavior != null)
-            {
-                var behaviorsPolicy = GetBehaviorsPolicy(ref policies);
-                behaviorsPolicy.AddBehavior(_explicitBehavior);
-            }
-            else
-            {
-                var behaviorsPolicy = GetBehaviorsPolicy(ref policies);
-                behaviorsPolicy.AddBehaviorKey(_behaviorKey);
-            }
-        }
+
+        public virtual IInterceptionBehavior GetBehavior<TContext>(ref TContext context)
+            where TContext : IBuilderContext
+            => _explicitBehavior ??= (IInterceptionBehavior)context.Resolve(_type, _name)!;
+
 
         public override MatchRank Match(Type other)
         {
-            if (_behaviorKey.Type.Equals(other)) return MatchRank.ExactMatch;
+            if (_type.Equals(other)) return MatchRank.ExactMatch;
 
-            if (other.IsAssignableFrom(_behaviorKey.Type)) return MatchRank.Compatible;
+            if (other.IsAssignableFrom(_type)) return MatchRank.Compatible;
 
             return MatchRank.NoMatch;
         }
 
-        /// <summary>
-        /// GetOrDefault the list of behaviors for the current type so that it can be added to.
-        /// </summary>
-        /// <param name="policies">Policy list.</param>
-        /// <returns>An instance of <see cref="InterceptionBehaviorsPolicy"/>.</returns>
-        protected abstract InterceptionBehaviorsPolicy GetBehaviorsPolicy<TPolicySet>(ref TPolicySet policies)
-            where TPolicySet : IPolicySet;
+        public static IInterceptionBehavior[] GetEffectiveBehaviors<TContext>(ref TContext context, IInterceptor interceptor)
+            where TContext : IBuilderContext
+        {
+            var instances = context.OfType<InterceptionBehavior>().ToArray();
+            var behaviors = new IInterceptionBehavior[instances.Length];
+            
+            var interceptionRequest = new CurrentInterceptionRequest(interceptor, context.Contract.Type, context.Type);
+            var @override = new DependencyOverride<CurrentInterceptionRequest>(interceptionRequest);
 
-        public override bool BuildRequired => false;
+            for (var i = 0; i < instances.Length; i++)
+            {
+                var instance = instances[i];
+                behaviors[i] = instance._explicitBehavior is not null
+                    ? instance._explicitBehavior
+                    : (IInterceptionBehavior)context.Container.Resolve(instance._type, instance._name, @override)!;
+            }
+
+            return behaviors;
+        }
+
     }
 }

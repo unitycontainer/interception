@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Extension;
-using Unity.Interception.Extensions;
-using Unity.Interception.InterceptionBehaviors;
 using Unity.Interception.Interceptors;
-using Unity.Interception.Interceptors.InstanceInterceptors;
 
 namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 {
@@ -24,50 +21,27 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         public override void PostBuildUp<TContext>(ref TContext context)
         {
             // If it's already been intercepted, don't do it again.
-            if (context.Target is IInterceptingProxy) return;
+            if (context.Existing is IInterceptingProxy) return;
 
-            IInstanceInterceptor interceptor =
-                typeof(IInstanceInterceptor).FindInjectedMember<TContext, Interceptor>(ref context)?
-                                            .GetInterceptor<TContext, IInstanceInterceptor>(ref context);
-            if (null == interceptor)
-            { 
-                IInstanceInterceptionPolicy interceptionPolicy =
-                    FindInterceptionPolicy<TContext, IInstanceInterceptionPolicy>(ref context, true);
-                if (interceptionPolicy == null)
-                {
-                    return;
-                }
+            var member = context.OfType<Interceptor>()
+                                .FirstOrDefault(o => o.IsInstanceInterceptor);
+            
+            if (member is null) return;
 
-                interceptor = interceptionPolicy.GetInterceptor(ref context);
-            }
+            var interceptor = member.GetInterceptor(ref context);
 
-            IInterceptionBehaviorsPolicy interceptionBehaviorsPolicy =
-                FindInterceptionPolicy<TContext, IInterceptionBehaviorsPolicy>(ref context, true);
-            if (interceptionBehaviorsPolicy == null)
-            {
-                return;
-            }
+            var interceptionBehaviors = InterceptionBehaviorBase.GetEffectiveBehaviors(ref context, interceptor);
 
-            IAdditionalInterfacesPolicy additionalInterfacesPolicy =
-                FindInterceptionPolicy<TContext, IAdditionalInterfacesPolicy>(ref context, false);
-            IEnumerable<Type> additionalInterfaces =
-                additionalInterfacesPolicy != null ? additionalInterfacesPolicy.AdditionalInterfaces : Type.EmptyTypes;
-
-            Type typeToIntercept = context.Type; // TODO: context.RegistrationType;
-            Type implementationType = context.Target.GetType();
-
-            IInterceptionBehavior[] interceptionBehaviors =
-                interceptionBehaviorsPolicy.GetEffectiveBehaviors(
-                    ref context, interceptor, typeToIntercept, implementationType)
-                .ToArray();
+            IEnumerable<Type> additionalInterfaces = context.OfType<AdditionalInterface>()
+                                                            .Select(a => a.InterfaceType);
 
             if (interceptionBehaviors.Length > 0)
             {
-                context.Target =
+                context.Existing =
                     Intercept.ThroughProxyWithAdditionalInterfaces(
-                        typeToIntercept,
-                        context.Target,
-                        interceptor,
+                        context.Contract.Type,
+                        context.Existing,
+                        (IInstanceInterceptor)interceptor,
                         interceptionBehaviors,
                         additionalInterfaces);
             }
@@ -93,7 +67,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         public static TPolicyInterface GetPolicyOrDefault<TContext, TPolicyInterface>(ref TContext context)
             where TContext : IBuilderContext
         {
-            throw new NotImplementedException();
+            return default;
 //            return (TPolicyInterface)(GetNamedPolicy(ref context, context.RegistrationType, context.Name) ??
 //                                      GetNamedPolicy(ref context, context.RegistrationType, UnityContainer.All));
 

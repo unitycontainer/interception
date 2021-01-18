@@ -1,4 +1,5 @@
-﻿using Unity.Extension;
+﻿using System;
+using Unity.Extension;
 using Unity.Interception.Interceptors;
 
 namespace Unity.Interception.ContainerIntegration.ObjectBuilder
@@ -7,6 +8,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
     /// An interface that determines when to intercept instances
     /// and which interceptor to use.
     /// </summary>
+    [Obsolete]
     public interface IInstanceInterceptionPolicy 
     {
         /// <summary>

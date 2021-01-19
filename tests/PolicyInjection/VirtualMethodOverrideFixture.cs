@@ -10,7 +10,7 @@ using Unity.Interception.PolicyInjection;
 using Unity.Interception.PolicyInjection.MatchingRules;
 using Unity.Interception.PolicyInjection.Pipeline;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.PolicyInjection
+namespace PolicyInjection
 {
     /// <summary>
     /// Tests to verify behavior of call handlers in the presence of

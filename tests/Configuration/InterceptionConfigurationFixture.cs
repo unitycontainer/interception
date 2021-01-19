@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Unity;
+using Unity.Injection;
 using Unity.Interception;
 using Unity.Interception.ContainerIntegration;
 using Unity.Interception.Interceptors;
@@ -9,29 +10,66 @@ using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception
 using Unity.Interception.PolicyInjection;
 using Unity.Interception.TestSupport;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
+namespace Configuration
 {
     [TestClass]
     public class InterceptionConfigurationFixture
     {
-        [TestMethod]
+        #region Fields
+
+        const string METHOD = "Method";
+        const string ADDPOLICY = nameof(Interception.AddPolicy);
+        private IUnityContainer Container;
+
+        #endregion
+
+
+        #region Scaffolding
+
+        [TestInitialize]
+        public void SetUp() => Container = new UnityContainer()
+            .AddNewExtension<Interception>();
+
+        #endregion
+
+
+
+        [TestMethod("Interceptor Through Injection"), TestProperty(METHOD, nameof(InjectionMember))]
         public void CanSetUpInterceptorThroughInjectionMember()
         {
             CallCountHandler handler = new CallCountHandler();
 
-            IUnityContainer container = new UnityContainer();
-            container.AddNewExtension<Interception>();
-            container.Configure<Interception>()
+            Container.Configure<Interception>()
                 .AddPolicy("policy")
                     .AddMatchingRule<AlwaysMatchingRule>()
                     .AddCallHandler(handler);
 
-            container.RegisterType<IInterface, BaseClass>(
-                "test",
+            Container.RegisterType<IInterface, BaseClass>(
                 new Interceptor<InterfaceInterceptor>(),
                 new InterceptionBehavior<PolicyInjectionBehavior>());
 
-            IInterface instance = container.Resolve<IInterface>("test");
+            IInterface instance = Container.Resolve<IInterface>();
+
+            instance.DoSomething("1");
+
+            Assert.AreEqual(1, handler.CallCount);
+        }
+
+        [TestMethod("Interceptor Through Injection (named)"), TestProperty(METHOD, nameof(InjectionMember))]
+        public void CanSetUpInterceptorThroughInjectionMemberNamed()
+        {
+            CallCountHandler handler = new CallCountHandler();
+
+            Container.Configure<Interception>()
+                .AddPolicy("policy")
+                    .AddMatchingRule<AlwaysMatchingRule>()
+                    .AddCallHandler(handler);
+
+            Container.RegisterType<IInterface, BaseClass>("test",
+                new Interceptor<InterfaceInterceptor>(),
+                new InterceptionBehavior<PolicyInjectionBehavior>());
+
+            IInterface instance = Container.Resolve<IInterface>("test");
 
             instance.DoSomething("1");
 
@@ -43,15 +81,12 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
         {
             CallCountInterceptionBehavior interceptionBehavior = new CallCountInterceptionBehavior();
 
-            IUnityContainer container = new UnityContainer();
-            container.AddNewExtension<Interception>();
-
-            container.RegisterType<IInterface, BaseClass>(
+            Container.RegisterType<IInterface, BaseClass>(
                 "test",
                 new Interceptor<InterfaceInterceptor>(),
                 new InterceptionBehavior(interceptionBehavior));
 
-            IInterface instance = container.Resolve<IInterface>("test");
+            IInterface instance = Container.Resolve<IInterface>("test");
 
             instance.DoSomething("1");
 
@@ -61,19 +96,16 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
         [TestMethod]
         public void CanSetUpAdditionalInterfaceThroughInjectionMemberForInstanceInterception()
         {
-            IUnityContainer container = new UnityContainer();
-            container.AddNewExtension<Interception>();
-
             int invokeCount = 0;
 
-            container.RegisterType<IInterface, BaseClass>("test",
+            Container.RegisterType<IInterface, BaseClass>("test",
                                                           new Interceptor<InterfaceInterceptor>(),
                                                           new AdditionalInterface(typeof(IOtherInterface)),
                                                           new InterceptionBehavior(
                                                               new TestDelegateBehavior(
                                                                   (mi, gn) => { invokeCount++; return mi.CreateMethodReturn(0); })));
 
-            IInterface instance = container.Resolve<IInterface>("test");
+            IInterface instance = Container.Resolve<IInterface>("test");
 
             ((IOtherInterface)instance).DoSomethingElse("1");
 
@@ -83,12 +115,9 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
         [TestMethod]
         public void CanSetUpAdditionalInterfaceThroughInjectionMemberForTypeInterception()
         {
-            IUnityContainer container = new UnityContainer();
-            container.AddNewExtension<Interception>();
-
             int invokeCount = 0;
 
-            container.RegisterType<IInterface, BaseClass>(
+            Container.RegisterType<IInterface, BaseClass>(
                 "test",
                 new Interceptor<VirtualMethodInterceptor>(),
                 new AdditionalInterface(typeof(IOtherInterface)),
@@ -96,7 +125,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
                     new TestDelegateBehavior(
                         (mi, gn) => { invokeCount++; return mi.CreateMethodReturn(0); })));
 
-            IInterface instance = container.Resolve<IInterface>("test");
+            IInterface instance = Container.Resolve<IInterface>("test");
 
             ((IOtherInterface)instance).DoSomethingElse("1");
 
@@ -106,12 +135,9 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
         [TestMethod]
         public void CanSetUpAdditionalInterfaceThroughGenericInjectionMemberForTypeInterception()
         {
-            IUnityContainer container = new UnityContainer();
-            container.AddNewExtension<Interception>();
-
             int invokeCount = 0;
 
-            container.RegisterType<IInterface, BaseClass>(
+            Container.RegisterType<IInterface, BaseClass>(
                 "test",
                 new Interceptor<VirtualMethodInterceptor>(),
                 new AdditionalInterface<IOtherInterface>(),
@@ -119,7 +145,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
                     new TestDelegateBehavior(
                         (mi, gn) => { invokeCount++; return mi.CreateMethodReturn(0); })));
 
-            IInterface instance = container.Resolve<IInterface>("test");
+            IInterface instance = Container.Resolve<IInterface>("test");
 
             ((IOtherInterface)instance).DoSomethingElse("1");
 
@@ -139,30 +165,35 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
         {
             new AdditionalInterface(null);
         }
+    }
 
-        public class BaseClass : IInterface
+    #region Test Data
+
+
+    public class BaseClass : IInterface
+    {
+        public int DoSomething(string param)
         {
-            public int DoSomething(string param)
-            {
-                return int.Parse(param);
-            }
-
-            public int Property
-            {
-                get;
-                set;
-            }
+            return int.Parse(param);
         }
 
-        public interface IInterface
+        public int Property
         {
-            int DoSomething(string param);
-            int Property { get; set; }
-        }
-
-        public interface IOtherInterface
-        {
-            int DoSomethingElse(string param);
+            get;
+            set;
         }
     }
+
+    public interface IInterface
+    {
+        int DoSomething(string param);
+        int Property { get; set; }
+    }
+
+    public interface IOtherInterface
+    {
+        int DoSomethingElse(string param);
+    }
+    
+    #endregion
 }

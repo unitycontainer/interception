@@ -1,22 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net47</TargetFramework>
+    <TargetFrameworks>net47</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <RootNamespace>Unity.Interception.Tests</RootNamespace>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="TransparentProxyInterception\**" />
-    <EmbeddedResource Remove="TransparentProxyInterception\**" />
-    <None Remove="TransparentProxyInterception\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="InterceptionFixture.Desktop.cs" />
-    <Compile Remove="PolicyInjection\PolicyInjectionBehaviorFixture.cs" />
-    <Compile Remove="PolicyInjection\PolicyInjectionWithGenericMethodsFixture.Desktop.cs" />
-    <Compile Remove="PolicyInjection\VirtualMethodOverrideFixture.Desktop.cs" />
+  <ItemGroup Condition="!$(TargetFramework.StartsWith('net4'))">
   </ItemGroup>
 
   <ItemGroup>

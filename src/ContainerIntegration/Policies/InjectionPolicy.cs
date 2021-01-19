@@ -1,12 +1,10 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Unity.Interception.Interceptors;
 using Unity.Interception.PolicyInjection.MatchingRules;
 using Unity.Interception.PolicyInjection.Pipeline;
-using Unity.Interception.Utilities;
 
 namespace Unity.Interception.PolicyInjection.Policies
 {
@@ -21,8 +19,15 @@ namespace Unity.Interception.PolicyInjection.Policies
     /// <para>It also means that derived classes cannot override this rule. This is considered a feature.</para></remarks>
     public abstract class InjectionPolicy
     {
-        private readonly string _name;
-        private readonly IMatchingRule _doesNotHaveNoPoliciesAttributeRule;
+        #region Fields
+
+        private readonly string        _name;
+        private readonly IMatchingRule _rule;
+
+        #endregion
+
+
+        #region Constructors
 
         /// <summary>
         /// Creates a new empty Policy.
@@ -39,36 +44,27 @@ namespace Unity.Interception.PolicyInjection.Policies
         protected InjectionPolicy(string name)
         {
             _name = name;
-            _doesNotHaveNoPoliciesAttributeRule = new ApplyNoPoliciesMatchingRule();
+            _rule = new ApplyNoPoliciesMatchingRule();
         }
+
+        #endregion
+
+
+        #region Public Members
 
         /// <summary>
         /// Gets the name of this policy.
         /// </summary>
         /// <value>The name of the policy.</value>
-        public string Name
-        {
-            get { return _name; }
-        }
+        public string Name => _name;
 
         /// <summary>
         /// Checks if the rules in this policy match the given member info.
         /// </summary>
         /// <param name="member">MemberInfo to check against.</param>
-        /// <returns>true if ruleset matches, false if it does not.</returns>
-        public bool Matches(MethodImplementationInfo member)
-        {
-            return DoesNotHaveNoPoliciesAttributeRule(member) &&
-                DoesMatch(member);
-        }
-
-        private bool DoesNotHaveNoPoliciesAttributeRule(MethodImplementationInfo method)
-        {
-            bool doesNotHaveRule = true;
-            doesNotHaveRule &= method.InterfaceMethodInfo != null ? _doesNotHaveNoPoliciesAttributeRule.Matches(method.InterfaceMethodInfo) : true;
-            doesNotHaveRule &= _doesNotHaveNoPoliciesAttributeRule.Matches(method.ImplementationMethodInfo);
-            return doesNotHaveRule;
-        }
+        /// <returns>true if rule set matches, false if it does not.</returns>
+        public bool Matches(MethodImplementationInfo member) 
+            => DoesNotHaveNoPoliciesAttributeRule(member) && DoesMatch(member);
 
         /// <summary>
         /// Returns ordered collection of handlers in order that apply to the given member.
@@ -77,20 +73,24 @@ namespace Unity.Interception.PolicyInjection.Policies
         /// <param name="container">The <see cref="IUnityContainer"/> to use when creating handlers,
         /// if necessary.</param>
         /// <returns>Collection of handlers (possibly empty) that apply to this member.</returns>
-        public virtual IEnumerable<ICallHandler> GetHandlersFor(MethodImplementationInfo member, IUnityContainer container)
+        public virtual IEnumerable<ICallHandler> GetHandlersFor(MethodImplementationInfo member, IUnityContainer container) 
+            => DoesNotHaveNoPoliciesAttributeRule(member)
+                ? DoGetHandlersFor(member, container)
+                : Enumerable.Empty<ICallHandler>();
+
+        #endregion
+
+
+        #region Implementation
+
+        private bool DoesNotHaveNoPoliciesAttributeRule(MethodImplementationInfo method)
         {
-            if (DoesNotHaveNoPoliciesAttributeRule(member))
-            {
-                List<ICallHandler> handlers = new List<ICallHandler>(DoGetHandlersFor(member, container));
-                if (handlers.Count > 0)
-                {
-                    foreach (ICallHandler handler in handlers)
-                    {
-                        yield return handler;
-                    }
-                }
-            }
+            var doesNotHaveRule = true;
+            doesNotHaveRule &= method.InterfaceMethodInfo != null ? _rule.Matches(method.InterfaceMethodInfo) : true;
+            doesNotHaveRule &= _rule.Matches(method.ImplementationMethodInfo);
+            return doesNotHaveRule;
         }
+
 
         /// <summary>
         /// Given a method on an object, return the set of MethodBases for that method,
@@ -100,8 +100,6 @@ namespace Unity.Interception.PolicyInjection.Policies
         /// <returns>The set of methods</returns>
         protected static IEnumerable<MethodBase> GetMethodSet(MethodBase member)
         {
-            Guard.ArgumentNotNull(member, "member");
-
             List<MethodBase> methodSet = new List<MethodBase>(new[] { member });
             if (member.DeclaringType != null && !member.DeclaringType.IsInterface)
             {
@@ -121,6 +119,7 @@ namespace Unity.Interception.PolicyInjection.Policies
             return methodSet;
         }
 
+
         /// <summary>
         /// Derived classes implement this method to calculate if the policy
         /// will provide any handler to the specified member.
@@ -138,5 +137,7 @@ namespace Unity.Interception.PolicyInjection.Policies
         /// if necessary.</param>
         /// <returns>Enumerable collection of handlers for this method.</returns>
         protected abstract IEnumerable<ICallHandler> DoGetHandlersFor(MethodImplementationInfo member, IUnityContainer container);
+        
+        #endregion
     }
 }

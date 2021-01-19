@@ -1,10 +1,6 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Unity.Interception.InterceptionBehaviors;
+using Unity.Interception;
 using Unity.Interception.PolicyInjection.Pipeline;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests

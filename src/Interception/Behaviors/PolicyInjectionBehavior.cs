@@ -1,7 +1,6 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Unity.Interception.InterceptionBehaviors;
 using Unity.Interception.Interceptors;
@@ -16,7 +15,14 @@ namespace Unity.Interception.PolicyInjection
     /// </summary>
     public class PolicyInjectionBehavior : IInterceptionBehavior
     {
-        private readonly PipelineManager _pipelineManager;
+        #region Fields
+
+        private readonly PipelineManager? _pipelineManager;
+
+        #endregion
+
+
+        #region Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PolicyInjectionBehavior"/> with a pipeline manager.
@@ -26,6 +32,7 @@ namespace Unity.Interception.PolicyInjection
         {
             _pipelineManager = pipelineManager;
         }
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PolicyInjectionBehavior"/> with the given information
@@ -40,7 +47,6 @@ namespace Unity.Interception.PolicyInjection
         {
             Guard.ArgumentNotNull(interceptionRequest, "interceptionRequest");
 
-            var allPolicies = new PolicySet(policies);
             bool hasHandlers = false;
 
             var manager = new PipelineManager();
@@ -50,11 +56,24 @@ namespace Unity.Interception.PolicyInjection
                     interceptionRequest.TypeToIntercept, interceptionRequest.ImplementationType))
             {
                 bool hasNewHandlers = manager.InitializePipeline(method,
-                    allPolicies.GetHandlersFor(method, container));
+                    CalculateHandlersFor(policies, method, container));
                 hasHandlers = hasHandlers || hasNewHandlers;
             }
             _pipelineManager = hasHandlers ? manager : null;
         }
+
+        #endregion
+
+        public static IEnumerable<ICallHandler> CalculateHandlersFor(IEnumerable<InjectionPolicy> policies,
+                                                                     MethodImplementationInfo member,
+                                                                     IUnityContainer container)
+            => Enumerable.Concat(
+                policies.SelectMany(policy => policy.GetHandlersFor(member, container))
+                        .Where(handler => 0 < handler.Order)
+                        .OrderBy(handler => handler.Order),
+                policies.SelectMany(policy => policy.GetHandlersFor(member, container))
+                        .Where(handler => 0 == handler.Order));
+
 
         /// <summary>
         /// Applies the policy injection handlers configured for the invoked method.

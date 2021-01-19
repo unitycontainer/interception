@@ -16,15 +16,22 @@
     <AssemblyOriginatorKeyFile>package.snk</AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
     <!--<TargetFrameworks>net5.0;netcoreapp3.0;netcoreapp2.0;net48;net47;net46;net45;netstandard2.1;netstandard2.0</TargetFrameworks>-->
-    <TargetFrameworks>net5.0;netcoreapp3.0;netcoreapp2.0;net48;net47;net46;net45;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net5.0;netcoreapp3.0;netcoreapp2.0;net48;net47;net46;net45</TargetFrameworks>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="Interceptors\InstanceInterceptors\TransparentProxyInterception\**" />
-    <EmbeddedResource Remove="Interceptors\InstanceInterceptors\TransparentProxyInterception\**" />
-    <None Remove="Interceptors\InstanceInterceptors\TransparentProxyInterception\**" />
+  <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))">
+    <Compile Remove="Interceptors\InstanceInterceptors\TransparentProxyInterception\InterceptingRealProxy.Core.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition="!$(TargetFramework.StartsWith('net4'))">
+    <Compile Remove="Interceptors\InstanceInterceptors\TransparentProxyInterception\InterceptingRealProxy.cs" />
+    <Compile Remove="Interceptors\InstanceInterceptors\TransparentProxyInterception\TransparentProxyInputParameterCollection.cs" />
+    <Compile Remove="Interceptors\InstanceInterceptors\TransparentProxyInterception\TransparentProxyInterceptor.cs" />
+    <Compile Remove="Interceptors\InstanceInterceptors\TransparentProxyInterception\TransparentProxyMethodInvocation.cs" />
+    <Compile Remove="Interceptors\InstanceInterceptors\TransparentProxyInterception\TransparentProxyMethodReturn.cs" />
+    <Compile Remove="Interceptors\InstanceInterceptors\TransparentProxyInterception\TransparentProxyOutputParameterCollection.cs" />
   </ItemGroup>
   
   <ItemGroup>
@@ -85,19 +92,11 @@
     <PackageReference Include="Unity.Container" Version="$(UnityContainerVersion)" />
   </ItemGroup>
 
+  <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))">
+    <Reference Include="System.Runtime.Remoting" />
+  </ItemGroup>
+
   
-  <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
-    <Reference Include="System.Runtime.Remoting" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
-    <Reference Include="System.Runtime.Remoting" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net47'">
-    <Reference Include="System.Runtime.Remoting" />
-  </ItemGroup>
-
   <!-- Sourcelink -->
   <PropertyGroup>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -110,6 +109,10 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Abstractions\" />
   </ItemGroup>
 
 </Project>

@@ -1,10 +1,8 @@
-﻿
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Unity.Interception.PolicyInjection;
 using Unity.Interception.Utilities;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.PolicyInjection
+namespace PolicyInjection
 {
     [TestClass]
     public class HandlerPipelineKeyFixture

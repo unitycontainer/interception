@@ -1,10 +1,8 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Unity.Interception.PolicyInjection.Pipeline;
 
-namespace Unity.Interception.InterceptionBehaviors
+namespace Unity.Interception
 {
     /// <summary>
     /// Interception behaviors implement this interface and are called for each

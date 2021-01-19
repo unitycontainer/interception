@@ -1,6 +1,7 @@
 ﻿
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -72,7 +73,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
         private ISignatureTestTarget GetTarget()
         {
             var interceptor = new InterfaceInterceptor();
-            PolicySet policySet = GetPolicies();
+            var policySet = GetPolicies();
             var target = new SignatureTestTarget();
             IInterceptingProxy proxy = interceptor.CreateProxy(typeof(ISignatureTestTarget), target);
 
@@ -80,7 +81,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
             foreach (MethodImplementationInfo method in interceptor.GetInterceptableMethods(typeof(ISignatureTestTarget), typeof(SignatureTestTarget)))
             {
                 HandlerPipeline pipeline = new HandlerPipeline(
-                    policySet.GetHandlersFor(method, container));
+                    PolicyInjectionBehavior.CalculateHandlersFor(policySet, method, container));
                 manager.SetPipeline(method.ImplementationMethodInfo, pipeline);
             }
             proxy.AddInterceptionBehavior(new PolicyInjectionBehavior(manager));
@@ -88,9 +89,9 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
             return (ISignatureTestTarget)proxy;
         }
 
-        private PolicySet GetPolicies()
+        private List<InjectionPolicy> GetPolicies()
         {
-            PolicySet policies = new PolicySet();
+            var policies = new List<InjectionPolicy>();
 
             RuleDrivenPolicy noParamsPolicy
                 = new RuleDrivenPolicy(

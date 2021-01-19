@@ -1,9 +1,7 @@
-﻿
-
-using System;
+﻿using System;
 using Unity.Interception.PolicyInjection.Pipeline;
 
-namespace Unity.Interception.PolicyInjection.Policies
+namespace Unity.Interception
 {
     /// <summary>
     /// Base class for handler attributes used in the attribute-driven

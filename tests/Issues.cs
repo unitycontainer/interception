@@ -2,15 +2,13 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Unity;
-using Unity.Interception;
 using Unity.Interception.ContainerIntegration;
 using Unity.Interception.InterceptionBehaviors;
 using Unity.Interception.Interceptors;
 using Unity.Interception.PolicyInjection.Pipeline;
 using Unity.Lifetime;
 
-namespace UnityInterception.Tests
+namespace Unity.Interception.Issues
 {
     [TestClass]
     public class Issues

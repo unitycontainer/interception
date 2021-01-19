@@ -341,7 +341,7 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
                 _methodToOverride.IsGenericMethodDefinition
                     ? _methodToOverride.MakeGenericMethod(paramMapper.GenericMethodParameters)
                     : _methodToOverride);
-            if (_methodToOverride.DeclaringType.IsGenericType)
+            if (_methodToOverride.DeclaringType!.IsGenericType)
             {
                 // if the declaring type is generic, we need to get the method from the target type
                 il.Emit(OpCodes.Ldtoken, _targetType);

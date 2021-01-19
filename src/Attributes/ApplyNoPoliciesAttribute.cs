@@ -1,8 +1,6 @@
-﻿
+﻿using System;
 
-using System;
-
-namespace Unity.Interception.PolicyInjection.Policies
+namespace Unity.Interception
 {
     /// <summary>
     /// Attribute used to indicate that no interception should be applied to

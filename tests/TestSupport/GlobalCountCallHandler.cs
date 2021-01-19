@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Unity;
+using Unity.Interception;
 using Unity.Interception.PolicyInjection.Pipeline;
-using Unity.Interception.PolicyInjection.Policies;
 
 namespace Microsoft.Practices.Unity.TestSupport
 {

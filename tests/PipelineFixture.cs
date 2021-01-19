@@ -1,5 +1,6 @@
 ﻿
 
+using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Practices.Unity.InterceptionExtension.Tests.ObjectsUnderTest;
 using Microsoft.Practices.Unity.TestSupport;
@@ -7,6 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Unity;
 using Unity.Interception.Interceptors;
 using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception;
+using Unity.Interception.PolicyInjection;
 using Unity.Interception.PolicyInjection.MatchingRules;
 using Unity.Interception.PolicyInjection.Pipeline;
 using Unity.Interception.PolicyInjection.Policies;
@@ -32,18 +34,18 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
         public void ShouldBeCreateableWithHandlers()
         {
             IUnityContainer container = GetContainer();
-            PolicySet policies = GetPolicies(container);
+            var policies = GetPolicies(container);
             HandlerPipeline pipeline
-                = new HandlerPipeline(policies.GetHandlersFor(GetTargetMemberInfo(), container));
+                = new HandlerPipeline(PolicyInjectionBehavior.CalculateHandlersFor(policies, GetTargetMemberInfo(), container));
         }
 
         [TestMethod]
         public void ShouldBeInvokable()
         {
             IUnityContainer container = GetContainer();
-            PolicySet policies = GetPolicies(container);
+            var policies = GetPolicies(container);
             HandlerPipeline pipeline
-                = new HandlerPipeline(policies.GetHandlersFor(GetTargetMemberInfo(), container));
+                = new HandlerPipeline(PolicyInjectionBehavior.CalculateHandlersFor(policies, GetTargetMemberInfo(), container));
 
             IMethodReturn result = pipeline.Invoke(
                 MakeCallMessage(),
@@ -62,7 +64,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
             return string.Format("i = {0}", i);
         }
 
-        private PolicySet GetPolicies(IUnityContainer container)
+        private List<InjectionPolicy> GetPolicies(IUnityContainer container)
         {
             RuleDrivenPolicy p
                 = new RuleDrivenPolicy(
@@ -70,7 +72,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
                     new IMatchingRule[] { new AlwaysMatchingRule() },
                     new string[] { "call count", "rewrite" });
 
-            return new PolicySet(p);
+            return new List<InjectionPolicy> { p };
         }
 
         private IUnityContainer GetContainer()

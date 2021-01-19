@@ -4,11 +4,10 @@ using Unity;
 using Unity.Interception;
 using Unity.Interception.ContainerIntegration;
 using Unity.Interception.Interceptors;
-using Unity.Interception.Interceptors.InstanceInterceptors.InterfaceInterception;
 using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception;
 using Unity.Interception.PolicyInjection;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.PolicyInjection
+namespace PolicyInjection
 {
     /// <summary>
     /// Summary description for PolicyInjectionWithGenericMethodsFixture

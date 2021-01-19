@@ -11,7 +11,7 @@ using Unity.Interception.PolicyInjection.Pipeline;
 using Unity.Interception.PolicyInjection.Policies;
 using Unity.Lifetime;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
+namespace Configuration
 {
     [TestClass]
     public class ConvenienceConfigurationFixture

@@ -1,9 +1,5 @@
-﻿
-
-using System;
-using System.Collections.Specialized;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Unity.Interception.PolicyInjection.Policies;
+﻿using System;
+using Unity.Interception;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.ObjectsUnderTest
 {

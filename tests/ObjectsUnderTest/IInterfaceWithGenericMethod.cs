@@ -1,6 +1,4 @@
-﻿
-
-namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.ObjectsUnderTest
+﻿namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.ObjectsUnderTest
 {
     public interface IInterfaceWithGenericMethod
     {

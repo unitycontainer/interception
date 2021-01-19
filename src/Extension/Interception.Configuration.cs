@@ -2,7 +2,6 @@
 using System.Globalization;
 using Unity.Extension;
 using Unity.Interception.ContainerIntegration;
-using Unity.Interception.ContainerIntegration.ObjectBuilder;
 using Unity.Interception.Interceptors;
 using Unity.Interception.PolicyInjection.Policies;
 using Unity.Interception.Properties;
@@ -10,53 +9,9 @@ using Unity.Interception.Utilities;
 
 namespace Unity.Interception
 {
-    /// <summary>
-    /// A Unity container extension that allows you to configure
-    /// whether an object should be intercepted and which mechanism should
-    /// be used to do it, and also provides a convenient set of methods for
-    /// configuring injection for <see cref="RuleDrivenPolicy"/> instances.
-    /// </summary>
-    /// <seealso cref="SetDefaultInterceptorFor(Type, IInstanceInterceptor)"/>
-    /// <seealso cref="SetDefaultInterceptorFor(Type, ITypeInterceptor)"/>
-    /// <seealso cref="SetInterceptorFor(Type, string, IInstanceInterceptor)"/>
-    /// <seealso cref="SetInterceptorFor(Type, string, ITypeInterceptor)"/>
-    /// <seealso cref="AddPolicy"/>
-    public class Interception : UnityContainerExtension, IUnityContainerExtensionConfigurator
+    public partial class Interception : IUnityContainerExtensionConfigurator
     {
-        /// <summary>
-        /// Initial the container with this extension's functionality.
-        /// </summary>
-        protected override void Initialize()
-        {
-            if (Context is null) throw new ArgumentNullException(nameof(Context));
-
-            // Type pipeline
-            Context.TypePipelineChain.Add(new (UnityBuildStage, BuilderStrategy)[] 
-            { 
-                (UnityBuildStage.InterceptType,     new TypeInterceptionStrategy()),
-                (UnityBuildStage.InterceptInstance, new InstanceInterceptionStrategy())
-            });
-
-            // Factory
-            Context.FactoryPipelineChain.Add(new (UnityBuildStage, BuilderStrategy)[]
-            {
-                (UnityBuildStage.InterceptType,     new TypeInterceptionStrategy()),
-                (UnityBuildStage.InterceptInstance, new InstanceInterceptionStrategy())
-            });
-
-            // Instance pipeline
-            Context.InstancePipelineChain.Add(UnityBuildStage.InterceptInstance, new InstanceInterceptionStrategy());
-
-            Context.MappingPipelineChain.Add(new (UnityBuildStage, BuilderStrategy)[]
-            {
-                (UnityBuildStage.InterceptType,     new TypeInterceptionStrategy()),
-                (UnityBuildStage.InterceptInstance, new InstanceInterceptionStrategy())
-            });
-
-            // Try to register default policy
-            Context.Policies.CompareExchange<InjectionPolicy>(new AttributeDrivenPolicy(), null);
-        }
-
+        #region Set
 
         /// <summary>
         /// API to configure interception for a type.
@@ -65,7 +20,7 @@ namespace Unity.Interception
         /// <param name="name">Name type is registered under.</param>
         /// <param name="interceptor">Interceptor to use.</param>
         /// <returns>This extension object.</returns>
-        public Interception SetInterceptorFor(Type typeToIntercept, string name, ITypeInterceptor interceptor)
+        public Interception SetInterceptorFor(Type typeToIntercept, string? name, ITypeInterceptor interceptor)
         {
             //Guard.ArgumentNotNull(typeToIntercept, "typeToIntercept");
             //Guard.ArgumentNotNull(interceptor, "interceptor");
@@ -98,34 +53,11 @@ namespace Unity.Interception
         /// <summary>
         /// API to configure interception for a type.
         /// </summary>
-        /// <typeparam name="T">Type to intercept</typeparam>
-        /// <param name="name">Name type is registered under.</param>
-        /// <param name="interceptor">Interceptor object to use.</param>
-        /// <returns>This extension object.</returns>
-        public Interception SetInterceptorFor<T>(string name, ITypeInterceptor interceptor)
-        {
-            return SetInterceptorFor(typeof(T), name, interceptor);
-        }
-
-        /// <summary>
-        /// API to configure interception for a type.
-        /// </summary>
-        /// <typeparam name="T">Type to intercept</typeparam>
-        /// <param name="interceptor">Interceptor object to use.</param>
-        /// <returns>This extension object.</returns>
-        public Interception SetInterceptorFor<T>(ITypeInterceptor interceptor)
-        {
-            return SetInterceptorFor(typeof(T), null, interceptor);
-        }
-
-        /// <summary>
-        /// API to configure interception for a type.
-        /// </summary>
         /// <param name="typeToIntercept">Type to intercept.</param>
         /// <param name="name">Name type is registered under.</param>
         /// <param name="interceptor">Instance interceptor to use.</param>
         /// <returns>This extension object.</returns>
-        public Interception SetInterceptorFor(Type typeToIntercept, string name, IInstanceInterceptor interceptor)
+        public Interception SetInterceptorFor(Type typeToIntercept, string? name, IInstanceInterceptor interceptor)
         {
             Guard.ArgumentNotNull(typeToIntercept, "typeToIntercept");
             Guard.ArgumentNotNull(interceptor, "interceptor");
@@ -143,6 +75,22 @@ namespace Unity.Interception
 
             return this;
         }
+
+        /// <summary>
+        /// API to configure interception for a type.
+        /// </summary>
+        /// <param name="typeToIntercept">Type to intercept.</param>
+        /// <param name="interceptor">Instance interceptor to use.</param>
+        /// <returns>This extension object.</returns>
+        public Interception SetInterceptorFor(Type typeToIntercept, IInstanceInterceptor interceptor)
+        {
+            return SetInterceptorFor(typeToIntercept, null, interceptor);
+        }
+
+        #endregion
+
+
+        #region Set Default
 
         /// <summary>
         /// Set the interceptor for a type, regardless of what name is used to resolve the instances.
@@ -168,51 +116,6 @@ namespace Unity.Interception
         }
 
         /// <summary>
-        /// Set the interceptor for a type, regardless of what name is used to resolve the instances.
-        /// </summary>
-        /// <typeparam name="TTypeToIntercept">Type to intercept</typeparam>
-        /// <param name="interceptor">Interceptor instance.</param>
-        /// <returns>This extension object.</returns>
-        public Interception SetDefaultInterceptorFor<TTypeToIntercept>(ITypeInterceptor interceptor)
-        {
-            return SetDefaultInterceptorFor(typeof(TTypeToIntercept), interceptor);
-        }
-
-        /// <summary>
-        /// API to configure interception for a type.
-        /// </summary>
-        /// <param name="typeToIntercept">Type to intercept.</param>
-        /// <param name="interceptor">Instance interceptor to use.</param>
-        /// <returns>This extension object.</returns>
-        public Interception SetInterceptorFor(Type typeToIntercept, IInstanceInterceptor interceptor)
-        {
-            return SetInterceptorFor(typeToIntercept, null, interceptor);
-        }
-
-        /// <summary>
-        /// API to configure interception for a type.
-        /// </summary>
-        /// <typeparam name="T">Type to intercept.</typeparam>
-        /// <param name="name">Name type is registered under.</param>
-        /// <param name="interceptor">Instance interceptor to use.</param>
-        /// <returns>This extension object.</returns>
-        public Interception SetInterceptorFor<T>(string name, IInstanceInterceptor interceptor)
-        {
-            return SetInterceptorFor(typeof(T), name, interceptor);
-        }
-
-        /// <summary>
-        /// API to configure interception for a type.
-        /// </summary>
-        /// <typeparam name="T">Type to intercept.</typeparam>
-        /// <param name="interceptor">Instance interceptor to use.</param>
-        /// <returns>This extension object.</returns>
-        public Interception SetInterceptorFor<T>(IInstanceInterceptor interceptor)
-        {
-            return SetInterceptorFor(typeof(T), null, interceptor);
-        }
-
-        /// <summary>
         /// API to configure the default interception settings for a type.
         /// </summary>
         /// <param name="typeToIntercept">Type the interception is being configured for.</param>
@@ -235,16 +138,7 @@ namespace Unity.Interception
             return this;
         }
 
-        /// <summary>
-        /// API to configure the default interception settings for a type.
-        /// </summary>
-        /// <typeparam name="TTypeToIntercept">Type the interception is being configured for.</typeparam>
-        /// <param name="interceptor">The interceptor to use by default.</param>
-        /// <returns>This extension object.</returns>
-        public Interception SetDefaultInterceptorFor<TTypeToIntercept>(IInstanceInterceptor interceptor)
-        {
-            return SetDefaultInterceptorFor(typeof(TTypeToIntercept), interceptor);
-        }
+        #endregion
 
         private static void GuardTypeInterceptable(Type typeToIntercept, IInterceptor interceptor)
         {
@@ -259,6 +153,8 @@ namespace Unity.Interception
             }
         }
 
+        #region Policy
+
         /// <summary>
         /// Starts the definition of a new <see cref="RuleDrivenPolicy"/>.
         /// </summary>
@@ -270,10 +166,9 @@ namespace Unity.Interception
         /// This mechanism is just a shortcut for what can be natively expressed by wiring up together objects
         /// with repeated calls to the <see cref="IUnityContainer.RegisterType"/> method.
         /// </remarks>
-        public PolicyDefinition AddPolicy(string policyName)
-        {
-            Guard.ArgumentNotNullOrEmpty(policyName, "policyName");
-            return new PolicyDefinition(policyName, this);
-        }
+        public PolicyDefinition AddPolicy(string policyName) 
+            => new PolicyDefinition(policyName, this);
+
+        #endregion
     }
 }

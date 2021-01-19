@@ -1,51 +1,48 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Microsoft.Practices.Unity.TestSupport;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Unity;
+using Unity.Interception;
 using Unity.Interception.Interceptors;
+using Unity.Interception.PolicyInjection;
 using Unity.Interception.PolicyInjection.MatchingRules;
 using Unity.Interception.PolicyInjection.Pipeline;
 using Unity.Interception.PolicyInjection.Policies;
 
-namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
+namespace PolicyInjection
 {
     /// <summary>
-    /// Tests for the PolicySet class.
+    /// Tests for the var class.
     /// </summary>
     [TestClass]
-    public class PolicySetFixture
+    public class CalculateHandlersFixture
     {
-        private IUnityContainer container;
+        #region Fields
+
+        private IUnityContainer Container;
+
+        #endregion
+
+
+        #region Scaffolding
 
         [TestInitialize]
-        public void SetUp()
-        {
-            container = new UnityContainer();
-        }
+        public void SetUp() => Container = new UnityContainer();
 
-        //[TestMethod]
-        //public void ShouldInitializeToEmpty()
-        //{
-        //    PolicySet policies = new PolicySet();
+        #endregion
 
-        //    Assert.IsFalse(policies.AppliesTo(GetType()));
-        //    MethodInfo thisMember = GetType().GetMethod("ShouldInitializeToEmpty");
-        //    List<ICallHandler> handlers = new List<ICallHandler>(policies.GetHandlersFor(thisMember));
-        //    Assert.AreEqual(0, handlers.Count);
-        //}
 
-        [TestMethod]
+        [TestMethod("Add policy")]
         public void ShouldBeAbleToAddOnePolicy()
         {
-            container
+            Container
                 .RegisterInstance<ICallHandler>("Handler1", new Handler1())
                 .RegisterInstance<ICallHandler>("Handler2", new Handler2());
 
-            PolicySet policies = new PolicySet();
+            var policies = new List<InjectionPolicy>();
 
             RuleDrivenPolicy p
                 = new RuleDrivenPolicy(
@@ -55,9 +52,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
 
             policies.Add(p);
 
-            MethodImplementationInfo thisMember = GetMethodImplInfo<PolicySetFixture>("ShouldBeAbleToAddOnePolicy");
-            List<ICallHandler> handlers =
-                new List<ICallHandler>(policies.GetHandlersFor(thisMember, container));
+            MethodImplementationInfo thisMember = GetMethodImplInfo<CalculateHandlersFixture>("ShouldBeAbleToAddOnePolicy");
+            var handlers = PolicyInjectionBehavior.CalculateHandlersFor(policies, thisMember, Container).ToList();
 
             Assert.AreEqual(2, handlers.Count);
             Assert.IsTrue(typeof(Handler1) == handlers[0].GetType());
@@ -67,15 +63,15 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
         [TestMethod]
         public void ShouldMatchPolicyByTypeName()
         {
-            PolicySet policies = GetMultiplePolicySet();
+            var policies = GetMultiplePolicySet();
 
             MethodImplementationInfo nameDoesntMatchMember = GetMethodImplInfo<MatchesByType>("NameDoesntMatch");
             MethodImplementationInfo nameMatchMember = GetMethodImplInfo<MatchesByType>("NameMatch");
 
             List<ICallHandler> nameDoesntMatchHandlers =
-                new List<ICallHandler>(policies.GetHandlersFor(nameDoesntMatchMember, container));
+                new List<ICallHandler>(PolicyInjectionBehavior.CalculateHandlersFor(policies, nameDoesntMatchMember, Container));
             List<ICallHandler> nameMatchHandlers =
-                new List<ICallHandler>(policies.GetHandlersFor(nameMatchMember, container));
+                new List<ICallHandler>(PolicyInjectionBehavior.CalculateHandlersFor(policies, nameMatchMember, Container));
 
             Assert.AreEqual(1, nameDoesntMatchHandlers.Count);
             Assert.IsTrue(typeof(Handler1) == nameDoesntMatchHandlers[0].GetType());
@@ -88,14 +84,14 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
         [TestMethod]
         public void ShouldMatchPolicyByMethodName()
         {
-            PolicySet policies = GetMultiplePolicySet();
+            var policies = GetMultiplePolicySet();
 
             MethodImplementationInfo noMatchMember = GetMethodImplInfo<MatchesByMemberName>("NoMatch");
             MethodImplementationInfo nameMatchMember = GetMethodImplInfo<MatchesByMemberName>("NameMatch");
             List<ICallHandler> noMatchHandlers =
-                new List<ICallHandler>(policies.GetHandlersFor(noMatchMember, container));
+                new List<ICallHandler>(PolicyInjectionBehavior.CalculateHandlersFor(policies, noMatchMember, Container));
             List<ICallHandler> nameMatchHandlers =
-                new List<ICallHandler>(policies.GetHandlersFor(nameMatchMember, container));
+                new List<ICallHandler>(PolicyInjectionBehavior.CalculateHandlersFor(policies, nameMatchMember, Container));
 
             Assert.AreEqual(0, noMatchHandlers.Count);
             Assert.AreEqual(1, nameMatchHandlers.Count);
@@ -105,21 +101,21 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
         [TestMethod]
         public void ShouldNotMatchPolicyWhenNoRulesMatch()
         {
-            PolicySet policies = GetMultiplePolicySet();
+            var policies = GetMultiplePolicySet();
 
             MethodImplementationInfo noMatchMember = GetMethodImplInfo<NoMatchAnywhere>("NoMatchHere");
             List<ICallHandler> noMatchHandlers =
-                new List<ICallHandler>(policies.GetHandlersFor(noMatchMember, container));
+                new List<ICallHandler>(PolicyInjectionBehavior.CalculateHandlersFor(policies, noMatchMember, Container));
             Assert.AreEqual(0, noMatchHandlers.Count);
         }
 
         [TestMethod]
         public void ShouldGetCorrectHandlersGivenAttributesOnInterfaceMethodsAfterAddingAttributeDrivenPolicy()
         {
-            PolicySet policies = new PolicySet();
+            var policies = new List<InjectionPolicy>();
 
             List<ICallHandler> oneHandlers
-                = new List<ICallHandler>(policies.GetHandlersFor(GetMethodImplInfo<TwoType>("One"), container));
+                = new List<ICallHandler>(PolicyInjectionBehavior.CalculateHandlersFor(policies, GetMethodImplInfo<TwoType>("One"), Container));
 
             Assert.AreEqual(0, oneHandlers.Count);
 
@@ -130,7 +126,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
                 typeof(TwoType).GetMethod("One"));
 
             oneHandlers
-                = new List<ICallHandler>(policies.GetHandlersFor(oneInfo, container));
+                = new List<ICallHandler>(PolicyInjectionBehavior.CalculateHandlersFor(policies, oneInfo, Container));
 
             Assert.AreEqual(2, oneHandlers.Count);
             Assert.IsTrue(oneHandlers[0] is MarkerCallHandler);
@@ -143,7 +139,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
         [TestMethod]
         public void ShouldNotDuplicateHandlersWhenCreatingViaInterface()
         {
-            container
+            Container
                 .RegisterInstance<ICallHandler>("Handler1", new CallCountHandler())
                 .RegisterInstance<ICallHandler>("Handler2", new CallCountHandler());
 
@@ -152,12 +148,12 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
                     new IMatchingRule[] { new TypeMatchingRule("ITwo") },
                     new string[] { "Handler1", "Handler2" });
 
-            PolicySet policies = new PolicySet(policy);
+            var policies = new List<InjectionPolicy>() { policy };
             MethodImplementationInfo twoInfo = new MethodImplementationInfo(
                 typeof(ITwo).GetMethod("Two"), typeof(TwoType).GetMethod("Two"));
 
             List<ICallHandler> handlers
-                = new List<ICallHandler>(policies.GetHandlersFor(twoInfo, container));
+                = new List<ICallHandler>(PolicyInjectionBehavior.CalculateHandlersFor(policies, twoInfo, Container));
             Assert.AreEqual(2, handlers.Count);
         }
 
@@ -181,23 +177,23 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
             ICallHandler handler4 = new CallCountHandler();
             handler4.Order = 1;
 
-            container
+            Container
                 .RegisterInstance<ICallHandler>("Handler1", handler1)
                 .RegisterInstance<ICallHandler>("Handler2", handler2)
                 .RegisterInstance<ICallHandler>("Handler3", handler3)
                 .RegisterInstance<ICallHandler>("Handler4", handler4);
 
-            PolicySet policies = new PolicySet(policy);
+            var policies = new List<InjectionPolicy>() { policy };
 
             MethodImplementationInfo twoInfo = new MethodImplementationInfo(
                 typeof(ITwo).GetMethod("Two"), typeof(TwoType).GetMethod("Two"));
-            List<ICallHandler> handlers
-                = new List<ICallHandler>(policies.GetHandlersFor(twoInfo, container));
+            
+            var handlers = PolicyInjectionBehavior.CalculateHandlersFor(policies, twoInfo, Container).ToList();
 
-            Assert.AreSame(handler4, handlers[0]);
-            Assert.AreSame(handler3, handlers[1]);
-            Assert.AreSame(handler1, handlers[2]);
-            Assert.AreSame(handler2, handlers[3]);
+            Assert.AreEqual(handler4.Order, handlers[0].Order);
+            Assert.AreEqual(handler3.Order, handlers[1].Order);
+            Assert.AreEqual(handler1.Order, handlers[2].Order);
+            Assert.AreEqual(handler2.Order, handlers[3].Order);
         }
 
         [TestMethod]
@@ -226,7 +222,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
             ICallHandler handler6 = new CallCountHandler();
             handler6.Order = 1;
 
-            container
+            Container
                 .RegisterInstance<ICallHandler>("Handler1", handler1)
                 .RegisterInstance<ICallHandler>("Handler2", handler2)
                 .RegisterInstance<ICallHandler>("Handler3", handler3)
@@ -234,25 +230,25 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
                 .RegisterInstance<ICallHandler>("Handler5", handler5)
                 .RegisterInstance<ICallHandler>("Handler6", handler6);
 
-            PolicySet policies = new PolicySet(policy);
+            var policies = new List<InjectionPolicy>() { policy };
 
             MethodImplementationInfo twoInfo = new MethodImplementationInfo(
                 typeof(ITwo).GetMethod("Two"), typeof(TwoType).GetMethod("Two"));
 
             List<ICallHandler> handlers
-                = new List<ICallHandler>(policies.GetHandlersFor(twoInfo, container));
+                = new List<ICallHandler>(PolicyInjectionBehavior.CalculateHandlersFor(policies, twoInfo, Container));
 
-            Assert.AreEqual(handler6, handlers[0]);
-            Assert.AreEqual(handler4, handlers[1]);
-            Assert.AreEqual(handler2, handlers[2]);
-            Assert.AreEqual(handler3, handlers[3]);
-            Assert.AreEqual(handler5, handlers[4]);
-            Assert.AreEqual(handler1, handlers[5]);
+            Assert.AreEqual(handler6.Order, handlers[0].Order);
+            Assert.AreEqual(handler4.Order, handlers[1].Order);
+            Assert.AreEqual(handler2.Order, handlers[2].Order);
+            Assert.AreEqual(handler3.Order, handlers[3].Order);
+            Assert.AreEqual(handler5.Order, handlers[4].Order);
+            Assert.AreEqual(handler1.Order, handlers[5].Order);
         }
 
-        private PolicySet GetMultiplePolicySet()
+        private List<InjectionPolicy> GetMultiplePolicySet()
         {
-            container
+            Container
                 .RegisterInstance<ICallHandler>("Handler1", new Handler1())
                 .RegisterInstance<ICallHandler>("Handler2", new Handler2());
 
@@ -266,7 +262,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
                     new IMatchingRule[] { new MemberNameMatchingRule("NameMatch") },
                     new string[] { "Handler2" });
 
-            return new PolicySet(typeMatchPolicy, nameMatchPolicy);
+            return new List<InjectionPolicy> { typeMatchPolicy, nameMatchPolicy };
         }
 
         private MethodInfo GetNameDoesntMatchMethod()

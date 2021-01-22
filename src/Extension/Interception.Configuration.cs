@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Globalization;
 using Unity.Extension;
-using Unity.Interception.ContainerIntegration;
+using Unity.Injection;
 using Unity.Interception.Interceptors;
 using Unity.Interception.PolicyInjection.Policies;
-using Unity.Interception.Properties;
 using Unity.Interception.Utilities;
+using Unity.Lifetime;
 
 namespace Unity.Interception
 {
@@ -61,7 +60,9 @@ namespace Unity.Interception
         {
             Guard.ArgumentNotNull(typeToIntercept, "typeToIntercept");
             Guard.ArgumentNotNull(interceptor, "interceptor");
-            GuardTypeInterceptable(typeToIntercept, interceptor);
+
+            if (!interceptor.CanIntercept(typeToIntercept))
+                throw new ArgumentException($"The type {typeToIntercept.FullName} is not interceptable.");
 
             //var key = new Contract(typeToIntercept, name);
 
@@ -140,18 +141,6 @@ namespace Unity.Interception
 
         #endregion
 
-        private static void GuardTypeInterceptable(Type typeToIntercept, IInterceptor interceptor)
-        {
-            if (!interceptor.CanIntercept(typeToIntercept))
-            {
-                throw new ArgumentException(
-                    string.Format(
-                        CultureInfo.CurrentCulture,
-                        Resources.InterceptionNotSupported,
-                        typeToIntercept.FullName),
-                    nameof(typeToIntercept));
-            }
-        }
 
         #region Policy
 
@@ -166,8 +155,16 @@ namespace Unity.Interception
         /// This mechanism is just a shortcut for what can be natively expressed by wiring up together objects
         /// with repeated calls to the <see cref="IUnityContainer.RegisterType"/> method.
         /// </remarks>
-        public PolicyDefinition AddPolicy(string policyName) 
-            => new PolicyDefinition(policyName, this);
+        public PolicyDefinition AddPolicy(string policyName)
+        {
+            var policy = new PolicyDefinition(policyName, this);
+
+            // TODO: add support for updated lifetime
+            Container!.RegisterType<InjectionPolicy, RuleDrivenPolicy>(policy.Name, 
+                new InjectionConstructor(policy.Name, policy, policy));
+
+            return policy;
+        }
 
         #endregion
     }

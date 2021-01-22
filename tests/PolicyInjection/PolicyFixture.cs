@@ -11,7 +11,7 @@ using Unity.Interception.PolicyInjection.MatchingRules;
 using Unity.Interception.PolicyInjection.Pipeline;
 using Unity.Interception.PolicyInjection.Policies;
 
-namespace PolicyInjection
+namespace Unit.Tests
 {
     /// <summary>
     /// Tests for the Policy class
@@ -88,7 +88,12 @@ namespace PolicyInjection
         }
 
         private static InjectionPolicy CreatePolicy(IUnityContainer container, IMatchingRule[] rules) 
-            => new RuleDrivenPolicy(rules, new string[] { "handler1", "handler2", "handler3" });
+            => new RuleDrivenPolicy("Test", rules, new ICallHandler[] 
+            { 
+                container.Resolve<ICallHandler>("handler1"),
+                container.Resolve<ICallHandler>("handler2"),
+                container.Resolve<ICallHandler>("handler3")
+            });
 
         private static MethodImplementationInfo GetMethodImplInfo<T>(string methodName) 
             => new MethodImplementationInfo(null, typeof(T).GetMethod(methodName));

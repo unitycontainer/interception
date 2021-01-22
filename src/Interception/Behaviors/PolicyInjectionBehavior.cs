@@ -64,6 +64,7 @@ namespace Unity.Interception.PolicyInjection
 
         #endregion
 
+
         public static IEnumerable<ICallHandler> CalculateHandlersFor(IEnumerable<InjectionPolicy> policies,
                                                                      MethodImplementationInfo member,
                                                                      IUnityContainer container)

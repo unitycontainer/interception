@@ -1,5 +1,6 @@
 ﻿
 
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Practices.Unity.InterceptionExtension.Tests.ObjectsUnderTest;
@@ -66,13 +67,15 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
 
         private List<InjectionPolicy> GetPolicies(IUnityContainer container)
         {
-            RuleDrivenPolicy p
-                = new RuleDrivenPolicy(
-                    "PipelineTestPolicy",
-                    new IMatchingRule[] { new AlwaysMatchingRule() },
-                    new string[] { "call count", "rewrite" });
+            // TODO:
+            //RuleDrivenPolicy p
+            //    = new RuleDrivenPolicy(
+            //        "PipelineTestPolicy",
+            //        new IMatchingRule[] { new AlwaysMatchingRule() },
+            //        new string[] { "call count", "rewrite" });
 
-            return new List<InjectionPolicy> { p };
+            //return new List<InjectionPolicy> { p };
+            throw new NotImplementedException();
         }
 
         private IUnityContainer GetContainer()

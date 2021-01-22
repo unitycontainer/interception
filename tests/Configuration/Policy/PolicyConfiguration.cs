@@ -1,76 +1,18 @@
 ﻿using Microsoft.Practices.Unity.TestSupport;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
 using Unity;
 using Unity.Injection;
 using Unity.Interception;
 using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception;
 using Unity.Interception.PolicyInjection.MatchingRules;
 using Unity.Interception.PolicyInjection.Pipeline;
-using Unity.Interception.PolicyInjection.Policies;
 using Unity.Lifetime;
 
 namespace Configuration
 {
-    [TestClass]
-    public class ConvenienceConfigurationFixture
+    public partial class PolicyFixture
     {
-        #region Fields
-
-        private const string Name       = "name";
-        private const string PolicyName = "Policy1";
-        private IUnityContainer Container;
-
-        #endregion
-
-
-        #region Scaffolding
-
-        [TestInitialize]
-        public void TestInitialize() => Container = new UnityContainer()
-            .AddNewExtension<Interception>();
-
-        #endregion
-
-
-        [TestMethod("Empty Rule")]
-        public void CanSetUpAnEmptyRule()
-        {
-            // empty
-            Container.Configure<Interception>()
-                     .AddPolicy(PolicyName);
-
-            var policies = Container.Resolve<InjectionPolicy[]>();
-
-            Assert.AreEqual(2, policies.Length);
-            Assert.IsInstanceOfType(policies[0], typeof(AttributeDrivenPolicy));
-            Assert.IsInstanceOfType(policies[1], typeof(RuleDrivenPolicy));
-            Assert.AreEqual(PolicyName, policies[1].Name);
-        }
-
-
-        [TestMethod("Multiple Empty Rules")]
-        public void CanSetUpSeveralEmptyRules()
-        {
-            // empty
-            Container
-                .Configure<Interception>()
-                    .AddPolicy(PolicyName).Interception
-                    .AddPolicy("policy2");
-
-            List<InjectionPolicy> policies
-                = new List<InjectionPolicy>(Container.ResolveAll<InjectionPolicy>());
-
-            Assert.AreEqual(3, policies.Count);
-            Assert.IsInstanceOfType(policies[0], typeof(AttributeDrivenPolicy));
-            Assert.IsInstanceOfType(policies[1], typeof(RuleDrivenPolicy));
-            Assert.AreEqual(PolicyName, policies[1].Name);
-            Assert.IsInstanceOfType(policies[2], typeof(RuleDrivenPolicy));
-            Assert.AreEqual("policy2", policies[2].Name);
-        }
-
-
         [TestMethod("Policy With Rules And Handlers")]
         public void CanSetUpAPolicyWithGivenRulesAndHandlers()
         {

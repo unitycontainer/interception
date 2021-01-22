@@ -20,19 +20,25 @@ namespace Unity.Interception
         /// </remarks>
         public PolicyDefinition AddMatchingRule(string name)
         {
-            return AddElement<IMatchingRule>(name, UpdateRulesParameters);
+            _rules.Add(new ResolvedParameter<IMatchingRule>(name));
+            return this;
         }
 
         /// <summary>
         /// Makes <paramref name="instance"/> a matching rule in the current policy.
         /// </summary>
         /// <param name="instance">The new <see cref="IMatchingRule"/> for the policy.</param>
+        /// <param name="register">Tells extension to register the instance with root container</param>
         /// <returns>
         /// The <see cref="PolicyDefinition"/> than allows further configuration of the policy.
         /// </returns>
-        public PolicyDefinition AddMatchingRule(IMatchingRule instance)
+        public PolicyDefinition AddMatchingRule(IMatchingRule instance, bool register = false)
         {
-            return AddElement(instance, UpdateRulesParameters);
+            _rules.Add(instance!);
+
+            if (!register) return this;
+
+            return AddElement(instance);
         }
 
         /// <summary>
@@ -44,17 +50,8 @@ namespace Unity.Interception
         /// <returns>
         /// The <see cref="PolicyDefinition"/> than allows further configuration of the policy.
         /// </returns>
-        public PolicyDefinition AddMatchingRule(
-            Type type,
-            params InjectionMember[] injectionMembers)
-        {
-            return AddElement<IMatchingRule>(
-                type,
-                NewName(),
-                null,
-                injectionMembers,
-                UpdateRulesParameters);
-        }
+        public PolicyDefinition AddMatchingRule(Type type, params InjectionMember[] injectionMembers) 
+            => AddElement<IMatchingRule>(type, Guid.NewGuid().ToString(), null, injectionMembers);
 
         /// <summary>
         /// Configures injection for a new <see cref="IMatchingRule"/> and makes it available
@@ -67,18 +64,8 @@ namespace Unity.Interception
         /// <returns>
         /// The <see cref="PolicyDefinition"/> than allows further configuration of the policy.
         /// </returns>
-        public PolicyDefinition AddMatchingRule(
-            Type type,
-            LifetimeManager lifetimeManager,
-            params InjectionMember[] injectionMembers)
-        {
-            return AddElement<IMatchingRule>(
-                type,
-                NewName(),
-                lifetimeManager,
-                injectionMembers,
-                UpdateRulesParameters);
-        }
+        public PolicyDefinition AddMatchingRule(Type type, LifetimeManager lifetimeManager, params InjectionMember[] injectionMembers) 
+            => AddElement<IMatchingRule>(type, Guid.NewGuid().ToString(), lifetimeManager, injectionMembers);
 
         /// <summary>
         /// Configures injection for a new <see cref="IMatchingRule"/> using the specified name
@@ -90,18 +77,8 @@ namespace Unity.Interception
         /// <returns>
         /// The <see cref="PolicyDefinition"/> than allows further configuration of the policy.
         /// </returns>
-        public PolicyDefinition AddMatchingRule(
-            Type type,
-            string name,
-            params InjectionMember[] injectionMembers)
-        {
-            return AddElement<IMatchingRule>(
-                type,
-                name,
-                null,
-                injectionMembers,
-                UpdateRulesParameters);
-        }
+        public PolicyDefinition AddMatchingRule(Type type, string name, params InjectionMember[] injectionMembers) 
+            => AddElement<IMatchingRule>(type, name, null, injectionMembers);
 
         /// <summary>
         /// Configures injection for a new <see cref="IMatchingRule"/> and makes it available
@@ -115,19 +92,8 @@ namespace Unity.Interception
         /// <returns>
         /// The <see cref="PolicyDefinition"/> than allows further configuration of the policy.
         /// </returns>
-        public PolicyDefinition AddMatchingRule(
-            Type type,
-            string name,
-            LifetimeManager lifetimeManager,
-            params InjectionMember[] injectionMembers)
-        {
-            return AddElement<IMatchingRule>(
-                type,
-                name,
-                lifetimeManager,
-                injectionMembers,
-                UpdateRulesParameters);
-        }
+        public PolicyDefinition AddMatchingRule(Type type, string name, LifetimeManager lifetimeManager, params InjectionMember[] injectionMembers) 
+            => AddElement<IMatchingRule>(type, name, lifetimeManager, injectionMembers);
 
         /// <summary>
         /// Configures injection for a new <see cref="IMatchingRule"/> and makes it available
@@ -138,16 +104,9 @@ namespace Unity.Interception
         /// <returns>
         /// The <see cref="PolicyDefinition"/> than allows further configuration of the policy.
         /// </returns>
-        public PolicyDefinition AddMatchingRule<TMatchingRule>(
-            params InjectionMember[] injectionMembers)
-            where TMatchingRule : IMatchingRule
-        {
-            return AddElement<IMatchingRule, TMatchingRule>(
-                NewName(),
-                null,
-                injectionMembers,
-                UpdateRulesParameters);
-        }
+        public PolicyDefinition AddMatchingRule<TMatchingRule>(params InjectionMember[] injectionMembers)
+            where TMatchingRule : IMatchingRule 
+            => AddElement<IMatchingRule, TMatchingRule>(Guid.NewGuid().ToString(), null, injectionMembers);
 
         /// <summary>
         /// Configures injection for a new <see cref="IMatchingRule"/> and makes it available
@@ -160,17 +119,9 @@ namespace Unity.Interception
         /// <returns>
         /// The <see cref="PolicyDefinition"/> than allows further configuration of the policy.
         /// </returns>
-        public PolicyDefinition AddMatchingRule<TMatchingRule>(
-            LifetimeManager lifetimeManager,
-            params InjectionMember[] injectionMembers)
-            where TMatchingRule : IMatchingRule
-        {
-            return AddElement<IMatchingRule, TMatchingRule>(
-                NewName(),
-                lifetimeManager,
-                injectionMembers,
-                UpdateRulesParameters);
-        }
+        public PolicyDefinition AddMatchingRule<TMatchingRule>(LifetimeManager lifetimeManager, params InjectionMember[] injectionMembers)
+            where TMatchingRule : IMatchingRule 
+            => AddElement<IMatchingRule, TMatchingRule>(Guid.NewGuid().ToString(), lifetimeManager, injectionMembers);
 
         /// <summary>
         /// Configures injection for a new <see cref="IMatchingRule"/> using the specified name
@@ -182,17 +133,8 @@ namespace Unity.Interception
         /// <returns>
         /// The <see cref="PolicyDefinition"/> than allows further configuration of the policy.
         /// </returns>
-        public PolicyDefinition AddMatchingRule<TMatchingRule>(
-            string name,
-            params InjectionMember[] injectionMembers)
-            where TMatchingRule : IMatchingRule
-        {
-            return AddElement<IMatchingRule, TMatchingRule>(
-                name,
-                null,
-                injectionMembers,
-                UpdateRulesParameters);
-        }
+        public PolicyDefinition AddMatchingRule<TMatchingRule>(string name, params InjectionMember[] injectionMembers)
+            where TMatchingRule : IMatchingRule => AddElement<IMatchingRule, TMatchingRule>(name, null, injectionMembers);
 
         /// <summary>
         /// Configures injection for a new <see cref="IMatchingRule"/> using the specified name
@@ -207,17 +149,7 @@ namespace Unity.Interception
         /// <returns>
         /// The <see cref="PolicyDefinition"/> than allows further configuration of the policy.
         /// </returns>
-        public PolicyDefinition AddMatchingRule<TMatchingRule>(
-            string name,
-            LifetimeManager lifetimeManager,
-            params InjectionMember[] injectionMembers)
-            where TMatchingRule : IMatchingRule
-        {
-            return AddElement<IMatchingRule, TMatchingRule>(
-                name,
-                lifetimeManager,
-                injectionMembers,
-                UpdateRulesParameters);
-        }
+        public PolicyDefinition AddMatchingRule<TMatchingRule>(string name, LifetimeManager lifetimeManager, params InjectionMember[] injectionMembers)
+            where TMatchingRule : IMatchingRule => AddElement<IMatchingRule, TMatchingRule>(name, lifetimeManager, injectionMembers);
     }
 }

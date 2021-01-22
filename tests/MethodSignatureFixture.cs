@@ -93,60 +93,61 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
         {
             var policies = new List<InjectionPolicy>();
 
-            RuleDrivenPolicy noParamsPolicy
-                = new RuleDrivenPolicy(
-                    "noParamsPolicy",
-                    new IMatchingRule[] { new MatchByNameRule("MethodWithNoParameters") },
-                    new string[] { "Handler1" });
-            container.RegisterInstance<ICallHandler>("Handler1", new SignatureCheckingHandler(new Type[] { }));
-            policies.Add(noParamsPolicy);
+            // TODO:
+            //RuleDrivenPolicy noParamsPolicy
+            //    = new RuleDrivenPolicy(
+            //        "noParamsPolicy",
+            //        new IMatchingRule[] { new MatchByNameRule("MethodWithNoParameters") },
+            //        new string[] { "Handler1" });
+            //container.RegisterInstance<ICallHandler>("Handler1", new SignatureCheckingHandler(new Type[] { }));
+            //policies.Add(noParamsPolicy);
 
-            RuleDrivenPolicy simpleInputsPolicy
-                = new RuleDrivenPolicy(
-                    "simpleInputsPolicy",
-                    new IMatchingRule[] { new MatchByNameRule("MethodWithSimpleInputs") },
-                    new string[] { "Handler2" });
-            container.RegisterInstance<ICallHandler>(
-                "Handler2",
-                new SignatureCheckingHandler(new Type[] { typeof(int), typeof(string) }));
-            policies.Add(simpleInputsPolicy);
+            //RuleDrivenPolicy simpleInputsPolicy
+            //    = new RuleDrivenPolicy(
+            //        "simpleInputsPolicy",
+            //        new IMatchingRule[] { new MatchByNameRule("MethodWithSimpleInputs") },
+            //        new string[] { "Handler2" });
+            //container.RegisterInstance<ICallHandler>(
+            //    "Handler2",
+            //    new SignatureCheckingHandler(new Type[] { typeof(int), typeof(string) }));
+            //policies.Add(simpleInputsPolicy);
 
-            RuleDrivenPolicy outParamsPolicy
-                = new RuleDrivenPolicy(
-                    "outParamsPolicy",
-                    new IMatchingRule[] { new MatchByNameRule("MethodWithOutParams") },
-                    new string[] { "Handler3" });
-            container.RegisterInstance<ICallHandler>(
-                "Handler3",
-                new SignatureCheckingHandler(new Type[] { typeof(int).MakeByRefType(), typeof(string).MakeByRefType() }));
-            policies.Add(outParamsPolicy);
+            //RuleDrivenPolicy outParamsPolicy
+            //    = new RuleDrivenPolicy(
+            //        "outParamsPolicy",
+            //        new IMatchingRule[] { new MatchByNameRule("MethodWithOutParams") },
+            //        new string[] { "Handler3" });
+            //container.RegisterInstance<ICallHandler>(
+            //    "Handler3",
+            //    new SignatureCheckingHandler(new Type[] { typeof(int).MakeByRefType(), typeof(string).MakeByRefType() }));
+            //policies.Add(outParamsPolicy);
 
-            RuleDrivenPolicy mixedParamsPolicy
-                = new RuleDrivenPolicy(
-                    "mixedParamsPolicy",
-                    new IMatchingRule[] { new MatchByNameRule("MethodWithInOutByrefParams") },
-                    new string[] { "Handler4" });
-            container.RegisterInstance<ICallHandler>(
-                "Handler4",
-                new SignatureCheckingHandler(
-                   new Type[]
-                           {
-                               typeof(int),
-                               typeof(string).MakeByRefType(),
-                               typeof(float).MakeByRefType(),
-                               typeof(decimal)
-                           }));
-            policies.Add(mixedParamsPolicy);
+            //RuleDrivenPolicy mixedParamsPolicy
+            //    = new RuleDrivenPolicy(
+            //        "mixedParamsPolicy",
+            //        new IMatchingRule[] { new MatchByNameRule("MethodWithInOutByrefParams") },
+            //        new string[] { "Handler4" });
+            //container.RegisterInstance<ICallHandler>(
+            //    "Handler4",
+            //    new SignatureCheckingHandler(
+            //       new Type[]
+            //               {
+            //                   typeof(int),
+            //                   typeof(string).MakeByRefType(),
+            //                   typeof(float).MakeByRefType(),
+            //                   typeof(decimal)
+            //               }));
+            //policies.Add(mixedParamsPolicy);
 
-            RuleDrivenPolicy varargsParamsPolicy
-                = new RuleDrivenPolicy(
-                    "varargsParamsPolicy",
-                    new IMatchingRule[] { new MatchByNameRule("MethodWithVarArgs") },
-                    new string[] { "Handler5" });
-            container.RegisterInstance<ICallHandler>(
-                "Handler5",
-                new SignatureCheckingHandler(new Type[] { typeof(int), typeof(string).MakeArrayType() }));
-            policies.Add(varargsParamsPolicy);
+            //RuleDrivenPolicy varargsParamsPolicy
+            //    = new RuleDrivenPolicy(
+            //        "varargsParamsPolicy",
+            //        new IMatchingRule[] { new MatchByNameRule("MethodWithVarArgs") },
+            //        new string[] { "Handler5" });
+            //container.RegisterInstance<ICallHandler>(
+            //    "Handler5",
+            //    new SignatureCheckingHandler(new Type[] { typeof(int), typeof(string).MakeArrayType() }));
+            //policies.Add(varargsParamsPolicy);
 
             return policies;
         }

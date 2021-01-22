@@ -2,7 +2,7 @@
 using Unity.Interception.PolicyInjection;
 using Unity.Interception.Utilities;
 
-namespace PolicyInjection
+namespace Unit.Tests
 {
     [TestClass]
     public class HandlerPipelineKeyFixture

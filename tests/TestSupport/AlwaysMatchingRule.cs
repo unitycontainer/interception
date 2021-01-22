@@ -10,6 +10,8 @@ namespace Microsoft.Practices.Unity.TestSupport
     /// </summary>
     public class AlwaysMatchingRule : IMatchingRule
     {
+        public string Name { get; set; }
+
         [InjectionConstructor]
         public AlwaysMatchingRule()
         {
@@ -17,6 +19,8 @@ namespace Microsoft.Practices.Unity.TestSupport
 
         public bool Matches(MethodBase member)
         {
+            Name = member.Name;
+
             return true;
         }
     }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Unity.Interception.Interceptors;
 using Unity.Interception.PolicyInjection.MatchingRules;
 using Unity.Interception.PolicyInjection.Pipeline;
@@ -14,29 +15,22 @@ namespace Unity.Interception.PolicyInjection.Policies
     public class RuleDrivenPolicy : InjectionPolicy
     {
         private readonly MatchingRuleSet _ruleSet;
-        private readonly IEnumerable<string> _callHandlerNames;
+        private readonly ICallHandler[] _handlers;
 
-        /// <summary>
-        /// Creates a new <see cref="RuleDrivenPolicy"/> object with a set of matching rules
-        /// and the names to use when resolving handlers.
-        /// </summary>
-        public RuleDrivenPolicy(IMatchingRule[] matchingRules, string[] callHandlerNames)
-            : this("Unnamed policy", matchingRules, callHandlerNames)
-        {
-        }
 
         /// <summary>
         /// Creates a new <see cref="RuleDrivenPolicy"/> object with a name, a set of matching rules
         /// and the names to use when resolving handlers.
         /// </summary>
-        public RuleDrivenPolicy(string name, IMatchingRule[] matchingRules, string[] callHandlerNames)
+        public RuleDrivenPolicy(string name, IMatchingRule[] rules, ICallHandler[] handlers)
             : base(name)
         {
             _ruleSet = new MatchingRuleSet();
-            _ruleSet.AddRange(matchingRules);
+            _ruleSet.AddRange(rules);
 
-            _callHandlerNames = callHandlerNames;
+            _handlers = handlers;
         }
+
 
         /// <summary>
         /// Checks if the rules in this policy match the given member info.
@@ -63,9 +57,9 @@ namespace Unity.Interception.PolicyInjection.Policies
         {
             if (Matches(member))
             {
-                foreach (string callHandlerName in _callHandlerNames)
+                foreach (var callHandler in _handlers)
                 {
-                    yield return container.Resolve<ICallHandler>(callHandlerName);
+                    yield return callHandler;
                 }
             }
         }

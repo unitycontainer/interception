@@ -43,8 +43,8 @@ namespace Unity.Interception
                 (UnityBuildStage.InterceptInstance, new InstanceInterceptionStrategy())
             });
 
-            // Try to register default policy
-            Context.Policies.CompareExchange<InjectionPolicy>(new AttributeDrivenPolicy(), null);
+            Context.Container.RegisterInstance<InjectionPolicy>(typeof(AttributeDrivenPolicy).AssemblyQualifiedName,
+                                                                new AttributeDrivenPolicy());
         }
     }
 }

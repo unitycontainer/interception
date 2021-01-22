@@ -1,6 +1,5 @@
 ﻿
-
-namespace Unity.Interception.PolicyInjection.MatchingRules
+namespace Unity.Interception
 {
     /// <summary>
     /// Class used for storing information about a single name/ignoreCase

@@ -1,6 +1,6 @@
-﻿
+﻿using Unity.Interception.PolicyInjection.Pipeline;
 
-namespace Unity.Interception.PolicyInjection.Pipeline
+namespace Unity.Interception
 {
     /// <summary>
     /// Handlers implement this interface and are called for each

@@ -1,9 +1,7 @@
-﻿
-
-using System.Reflection;
+﻿using System.Reflection;
 using Unity.Interception.Utilities;
 
-namespace Unity.Interception.PolicyInjection.MatchingRules
+namespace Unity.Interception
 {
     /// <summary>
     /// A <see cref="IMatchingRule"/> implementation that fails to match
@@ -26,7 +24,7 @@ namespace Unity.Interception.PolicyInjection.MatchingRules
                 (member.GetCustomAttributes(typeof(ApplyNoPoliciesAttribute), false).Length != 0);
 
             hasNoPoliciesAttribute |=
-                (member.DeclaringType.GetCustomAttributes(typeof(ApplyNoPoliciesAttribute), false).
+                (member.DeclaringType!.GetCustomAttributes(typeof(ApplyNoPoliciesAttribute), false).
                     Length != 0);
             return !hasNoPoliciesAttribute;
         }

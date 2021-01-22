@@ -1,13 +1,11 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Unity;
 using Unity.Interception;
 using Unity.Interception.Interceptors;
-using Unity.Interception.PolicyInjection.MatchingRules;
 using Unity.Interception.PolicyInjection.Pipeline;
-using Unity.Interception.PolicyInjection.Policies;
 using Unity.Interception.Utilities;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests

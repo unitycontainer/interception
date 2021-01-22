@@ -1,12 +1,10 @@
-﻿
-
-using System.Globalization;
+﻿using System.Globalization;
 using System.Reflection;
 
-namespace Unity.Interception.PolicyInjection.MatchingRules
+namespace Unity.Interception
 {
     /// <summary>
-    /// Some utility extension methods to make things portable to Silverlight.
+    /// Some utility extension methods to make things portable.
     /// </summary>
     internal static class UtilityExtensions
     {

@@ -12,12 +12,8 @@ using System.Runtime.CompilerServices;
 using Unity;
 using Unity.Interception;
 using Unity.Interception.Interceptors;
-using Unity.Interception.Interceptors.InstanceInterceptors;
-using Unity.Interception.Interceptors.InstanceInterceptors.InterfaceInterception;
 using Unity.Interception.PolicyInjection;
-using Unity.Interception.PolicyInjection.MatchingRules;
 using Unity.Interception.PolicyInjection.Pipeline;
-using Unity.Interception.PolicyInjection.Policies;
 using Unity.Interception.TestSupport;
 using Unity.Interception.Utilities;
 using Unity.Lifetime;
@@ -140,8 +136,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
             IInstanceInterceptor interceptor = new InterfaceInterceptor();
             MyDal target = new MyDal();
 
-            CallCountHandler depositHandler = new CallCountHandler();
-            CallCountHandler withdrawHandler = new CallCountHandler();
+            InvokeCountHandler depositHandler = new InvokeCountHandler();
+            InvokeCountHandler withdrawHandler = new InvokeCountHandler();
             PipelineManager manager = new PipelineManager();
             manager.SetPipeline(typeof(IDal).GetMethod("Deposit"),
                 new HandlerPipeline(new ICallHandler[] { depositHandler }));
@@ -159,8 +155,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
             intercepted.Withdraw(15.00);
             intercepted.Withdraw(6.25);
 
-            Assert.AreEqual(3, depositHandler.CallCount);
-            Assert.AreEqual(2, withdrawHandler.CallCount);
+            Assert.AreEqual(3, depositHandler.Count);
+            Assert.AreEqual(2, withdrawHandler.Count);
 
             Assert.AreEqual(100.0 + 25.95 + 19.95 - 15.00 - 6.25, target.Balance);
         }
@@ -332,7 +328,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
 
         public class CallCountAttribute : HandlerAttribute
         {
-            public static CallCountHandler Handler = new CallCountHandler();
+            public static InvokeCountHandler Handler = new InvokeCountHandler();
 
             public override ICallHandler CreateHandler(IUnityContainer container)
             {
@@ -1680,7 +1676,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
                     .SetInterceptorFor(typeof(IFoo), new InterfaceInterceptor())
                     .AddPolicy("AlwaysMatches")
                     .AddMatchingRule<AlwaysMatchingRule>()
-                    .AddCallHandler<CallCountHandler>("callCount", new ContainerControlledLifetimeManager())
+                    .AddCallHandler<InvokeCountHandler>("callCount", new ContainerControlledLifetimeManager())
                 .Interception
                 .Container;
 
@@ -1693,8 +1689,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
             }
             catch (Exception ex)
             {
-                CallCountHandler handler = (CallCountHandler)(container.Resolve<ICallHandler>("callCount"));
-                Assert.AreEqual(1, handler.CallCount);
+                InvokeCountHandler handler = (InvokeCountHandler)(container.Resolve<ICallHandler>("callCount"));
+                Assert.AreEqual(1, handler.Count);
                 Assert.IsInstanceOfType(ex, typeof(FooCrashedException));
 
                 var stackTrace = ex.StackTrace.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);

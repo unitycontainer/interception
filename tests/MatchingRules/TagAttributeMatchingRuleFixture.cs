@@ -1,10 +1,6 @@
-﻿
-
-using System.Collections.Generic;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Reflection;
-using Microsoft.Practices.Unity.InterceptionExtension.Tests.ObjectsUnderTest;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Unity.Interception.PolicyInjection.MatchingRules;
+using Unity.Interception;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.MatchingRules
 {

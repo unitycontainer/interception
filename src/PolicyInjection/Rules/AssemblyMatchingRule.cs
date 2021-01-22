@@ -1,11 +1,9 @@
-﻿
-
-using System;
+﻿using System;
 using System.Globalization;
 using System.Reflection;
 using Unity.Interception.Utilities;
 
-namespace Unity.Interception.PolicyInjection.MatchingRules
+namespace Unity.Interception
 {
     /// <summary>
     /// An <see cref="IMatchingRule"/> that matches the assembly name of the

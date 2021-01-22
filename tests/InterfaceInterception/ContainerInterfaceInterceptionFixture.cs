@@ -7,12 +7,8 @@ using System.Linq;
 using Unity;
 using Unity.Interception;
 using Unity.Interception.ContainerIntegration;
-using Unity.Interception.InterceptionBehaviors;
 using Unity.Interception.Interceptors;
-using Unity.Interception.Interceptors.InstanceInterceptors.InterfaceInterception;
-using Unity.Interception.PolicyInjection.MatchingRules;
 using Unity.Interception.PolicyInjection.Pipeline;
-using Unity.Interception.PolicyInjection.Policies;
 using Unity.Lifetime;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterception
@@ -30,7 +26,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
                     .SetInterceptorFor<IDal>(new InterfaceInterceptor())
                     .AddPolicy("AlwaysMatches")
                     .AddMatchingRule<AlwaysMatchingRule>()
-                    .AddCallHandler<CallCountHandler>("callCount", new ContainerControlledLifetimeManager())
+                    .AddCallHandler<InvokeCountHandler>("callCount", new ContainerControlledLifetimeManager())
                     .Interception
                 .Container;
 
@@ -42,8 +38,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
             dal.Deposit(65.0);
             dal.Withdraw(15.0);
 
-            CallCountHandler handler = (CallCountHandler)(container.Resolve<ICallHandler>("callCount"));
-            Assert.AreEqual(3, handler.CallCount);
+            InvokeCountHandler handler = (InvokeCountHandler)(container.Resolve<ICallHandler>("callCount"));
+            Assert.AreEqual(3, handler.Count);
         }
 
         [TestMethod]
@@ -56,7 +52,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
                     .SetInterceptorFor(typeof(InterfaceInterceptorFixture.IGenericOne<>), new InterfaceInterceptor())
                     .AddPolicy("AlwaysMatches")
                     .AddMatchingRule<AlwaysMatchingRule>()
-                    .AddCallHandler<CallCountHandler>("callCount", new ContainerControlledLifetimeManager())
+                    .AddCallHandler<InvokeCountHandler>("callCount", new ContainerControlledLifetimeManager())
                     .Interception
                 .Container;
 
@@ -67,8 +63,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterce
             target.DoSomething(17m);
             target.DoSomething(84.2m);
 
-            CallCountHandler handler = (CallCountHandler)(container.Resolve<ICallHandler>("callCount"));
-            Assert.AreEqual(3, handler.CallCount);
+            InvokeCountHandler handler = (InvokeCountHandler)(container.Resolve<ICallHandler>("callCount"));
+            Assert.AreEqual(3, handler.Count);
         }
 
         [TestMethod]

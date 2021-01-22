@@ -1,10 +1,8 @@
-﻿
-
-using System;
+﻿using System;
 using System.Reflection;
 using Unity.Interception.Utilities;
 
-namespace Unity.Interception.PolicyInjection.MatchingRules
+namespace Unity.Interception
 {
     /// <summary>
     /// A <see cref="TagAttribute"/> that checks a member for the presence

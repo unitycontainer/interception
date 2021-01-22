@@ -1,5 +1,4 @@
-﻿
-
+﻿using Unity.Interception;
 using Unity.Interception.PolicyInjection.Pipeline;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.ObjectsUnderTest

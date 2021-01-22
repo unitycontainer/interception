@@ -1,8 +1,4 @@
-﻿
-
-using System;
-using System.Collections.Specialized;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Unity.Interception;
 using Unity.Interception.PolicyInjection.Pipeline;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.ObjectsUnderTest

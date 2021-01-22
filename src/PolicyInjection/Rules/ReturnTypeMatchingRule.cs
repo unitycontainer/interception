@@ -1,9 +1,7 @@
-﻿
-
-using System;
+﻿using System;
 using System.Reflection;
 
-namespace Unity.Interception.PolicyInjection.MatchingRules
+namespace Unity.Interception
 {
     /// <summary>
     /// An <see cref="IMatchingRule"/> that checks to see if a member has a specified

@@ -9,6 +9,6 @@ namespace Unity.Interception.ContainerIntegration
     public abstract class InterceptionMember : InjectionMember, 
                                                IMatch<Type, MatchRank>
     {
-        public virtual MatchRank Match(Type other) => MatchRank.NoMatch;
+        public virtual MatchRank Matches(Type other) => MatchRank.NoMatch;
     }
 }

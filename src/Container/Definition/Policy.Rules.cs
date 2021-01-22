@@ -1,6 +1,5 @@
 ﻿using System;
 using Unity.Injection;
-using Unity.Interception.PolicyInjection.MatchingRules;
 using Unity.Lifetime;
 
 namespace Unity.Interception

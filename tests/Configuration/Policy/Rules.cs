@@ -1,7 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Unity;
 using Unity.Interception;
-using Unity.Interception.PolicyInjection.Policies;
 
 namespace Configuration
 {
@@ -33,7 +32,7 @@ namespace Configuration
             Assert.IsNotNull(policy);
             Assert.IsInstanceOfType(policy, typeof(RuleDrivenPolicy));
             Assert.AreEqual(PolicyName, policy.Name);
-            Assert.IsTrue(policy.Matches(method));
+            Assert.IsTrue(policy.Matches(info));
         }
 
 
@@ -49,7 +48,7 @@ namespace Configuration
             Assert.IsNotNull(policy);
             Assert.IsInstanceOfType(policy, typeof(RuleDrivenPolicy));
             Assert.AreEqual(PolicyName, policy.Name);
-            Assert.IsTrue(policy.Matches(method));
+            Assert.IsTrue(policy.Matches(info));
         }
     }
 }

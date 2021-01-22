@@ -1,8 +1,6 @@
-﻿
+﻿using System;
 
-using System;
-
-namespace Unity.Interception.PolicyInjection.MatchingRules
+namespace Unity.Interception
 {
     /// <summary>
     /// A simple attribute used to "tag" classes, methods, or properties with a

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using Unity.Injection;
-using Unity.Interception.PolicyInjection.MatchingRules;
 using Unity.Interception.PolicyInjection.Pipeline;
 
 namespace Unity.Interception

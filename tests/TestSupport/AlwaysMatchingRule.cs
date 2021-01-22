@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 using Unity;
-using Unity.Interception.PolicyInjection.MatchingRules;
+using Unity.Interception;
 
 namespace Microsoft.Practices.Unity.TestSupport
 {

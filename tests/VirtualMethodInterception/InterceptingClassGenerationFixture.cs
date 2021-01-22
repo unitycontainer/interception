@@ -108,7 +108,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
             ClassWithDefaultCtor instance = WireupHelper.GetInterceptingInstance<ClassWithDefaultCtor>();
             IInterceptingProxy pm = (IInterceptingProxy)instance;
 
-            CallCountHandler handler = new CallCountHandler();
+            InvokeCountHandler handler = new InvokeCountHandler();
             PostCallCountHandler postHandler = new PostCallCountHandler();
             HandlerPipeline pipeline = new HandlerPipeline(new ICallHandler[] { postHandler, handler });
             PipelineManager manager = new PipelineManager();
@@ -117,7 +117,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
 
             instance.MethodOne();
 
-            Assert.AreEqual(1, handler.CallCount);
+            Assert.AreEqual(1, handler.Count);
             Assert.AreEqual(1, postHandler.CallsCompleted);
         }
 
@@ -128,7 +128,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
             ClassWithDefaultCtor instance = WireupHelper.GetInterceptingInstance<ClassWithDefaultCtor>();
             IInterceptingProxy pm = (IInterceptingProxy)instance;
 
-            CallCountHandler handler = new CallCountHandler();
+            InvokeCountHandler handler = new InvokeCountHandler();
             PostCallCountHandler postHandler = new PostCallCountHandler();
             HandlerPipeline pipeline = new HandlerPipeline(new ICallHandler[] { postHandler, handler });
             PipelineManager manager = new PipelineManager();
@@ -145,7 +145,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
                 // We're expecting this one
             }
 
-            Assert.AreEqual(1, handler.CallCount);
+            Assert.AreEqual(1, handler.Count);
             Assert.AreEqual(1, postHandler.CallsCompleted);
         }
 

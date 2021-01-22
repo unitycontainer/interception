@@ -1,11 +1,9 @@
-﻿
-
-using System;
+﻿using System;
 using System.Reflection;
 using Unity.Interception.Properties;
 using Unity.Interception.Utilities;
 
-namespace Unity.Interception.PolicyInjection.MatchingRules
+namespace Unity.Interception
 {
     /// <summary>
     /// An implementation of <see cref="IMatchingRule"/> that checks to see if

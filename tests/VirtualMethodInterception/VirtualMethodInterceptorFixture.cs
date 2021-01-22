@@ -49,7 +49,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         [TestMethod]
         public void CanInterceptMethods()
         {
-            CallCountHandler h1 = new CallCountHandler();
+            InvokeCountHandler h1 = new InvokeCountHandler();
             VirtualMethodInterceptor interceptor = new VirtualMethodInterceptor();
             Type proxyType = interceptor.CreateProxyType(typeof(TwoOverrideableMethods));
 
@@ -62,14 +62,14 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
             instance.DoSomething();
 
             Assert.IsTrue(instance.DidSomething);
-            Assert.AreEqual(1, h1.CallCount);
+            Assert.AreEqual(1, h1.Count);
         }
 
         [TestMethod]
         public void CanInterceptProperties()
         {
-            CallCountHandler getHandler = new CallCountHandler();
-            CallCountHandler setHandler = new CallCountHandler();
+            InvokeCountHandler getHandler = new InvokeCountHandler();
+            InvokeCountHandler setHandler = new InvokeCountHandler();
 
             VirtualMethodInterceptor interceptor = new VirtualMethodInterceptor();
             Assert.IsTrue(interceptor.CanIntercept(typeof(OverrideableProperies)));
@@ -93,8 +93,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
 
             Assert.AreEqual(5 * 15, total);
 
-            Assert.AreEqual(5, getHandler.CallCount);
-            Assert.AreEqual(2, setHandler.CallCount);
+            Assert.AreEqual(5, getHandler.Count);
+            Assert.AreEqual(2, setHandler.Count);
         }
 
         [TestMethod]
@@ -114,8 +114,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         [TestMethod]
         public void EventsAreIntercepted()
         {
-            CallCountHandler fireHandler = new CallCountHandler();
-            CallCountHandler addHandler = new CallCountHandler();
+            InvokeCountHandler fireHandler = new InvokeCountHandler();
+            InvokeCountHandler addHandler = new InvokeCountHandler();
 
             VirtualMethodInterceptor interceptor = new VirtualMethodInterceptor();
             Assert.IsTrue(interceptor.CanIntercept(typeof(OverrideableProperies)));
@@ -135,8 +135,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
 
             Assert.IsTrue(raised);
 
-            Assert.AreEqual(2, fireHandler.CallCount);
-            Assert.AreEqual(1, addHandler.CallCount);
+            Assert.AreEqual(2, fireHandler.Count);
+            Assert.AreEqual(1, addHandler.Count);
         }
 
         [TestMethod]
@@ -157,7 +157,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         [TestMethod]
         public void CanInterceptTypeWithNonDefaultCtor()
         {
-            CallCountHandler h1 = new CallCountHandler();
+            InvokeCountHandler h1 = new InvokeCountHandler();
             VirtualMethodInterceptor interceptor = new VirtualMethodInterceptor();
             Type proxyType = interceptor.CreateProxyType(typeof(ClassWithNonDefaultCtor));
 
@@ -170,7 +170,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
 
             Assert.AreEqual("arg-value", instance.GetArg());
 
-            Assert.AreEqual(1, h1.CallCount);
+            Assert.AreEqual(1, h1.Count);
         }
 
         [TestMethod]
@@ -879,7 +879,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
                     .SetInterceptorFor(typeof(Foo), new VirtualMethodInterceptor())
                     .AddPolicy("AlwaysMatches")
                     .AddMatchingRule<AlwaysMatchingRule>()
-                    .AddCallHandler<CallCountHandler>("callCount", new ContainerControlledLifetimeManager())
+                    .AddCallHandler<InvokeCountHandler>("callCount", new ContainerControlledLifetimeManager())
                 .Interception
                 .Container;
 
@@ -892,8 +892,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
             }
             catch (Exception ex)
             {
-                CallCountHandler handler = (CallCountHandler)(container.Resolve<ICallHandler>("callCount"));
-                Assert.AreEqual(1, handler.CallCount);
+                InvokeCountHandler handler = (InvokeCountHandler)(container.Resolve<ICallHandler>("callCount"));
+                Assert.AreEqual(1, handler.Count);
                 Assert.IsInstanceOfType(ex, typeof(FooCrashedException));
 
                 var stackTrace = ex.StackTrace.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);

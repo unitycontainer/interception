@@ -1,16 +1,15 @@
-﻿using System;
+﻿using Microsoft.Practices.Unity.TestSupport;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Microsoft.Practices.Unity.TestSupport;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Unity;
 using Unity.Interception;
 using Unity.Interception.Interceptors;
 using Unity.Interception.PolicyInjection;
-using Unity.Interception.PolicyInjection.MatchingRules;
 using Unity.Interception.PolicyInjection.Pipeline;
-using Unity.Interception.PolicyInjection.Policies;
 
 namespace Unit.Tests
 {
@@ -139,13 +138,13 @@ namespace Unit.Tests
         public void ShouldNotDuplicateHandlersWhenCreatingViaInterface()
         {
             Container
-                .RegisterInstance<ICallHandler>("Handler1", new CallCountHandler())
-                .RegisterInstance<ICallHandler>("Handler2", new CallCountHandler());
+                .RegisterInstance<ICallHandler>("Handler1", new InvokeCountHandler())
+                .RegisterInstance<ICallHandler>("Handler2", new InvokeCountHandler());
 
             RuleDrivenPolicy policy
                 = new RuleDrivenPolicy("MatchesInterfacePolicy",
                     new IMatchingRule[] { new TypeMatchingRule("ITwo") },
-                    new ICallHandler[] { new CallCountHandler(), new CallCountHandler() });
+                    new ICallHandler[] { new InvokeCountHandler(), new InvokeCountHandler() });
 
             var policies = new List<InjectionPolicy>() { policy };
             MethodImplementationInfo twoInfo = new MethodImplementationInfo(
@@ -160,16 +159,16 @@ namespace Unit.Tests
         public void HandlersOrderedProperly()
         {
 
-            ICallHandler handler1 = new CallCountHandler();
+            ICallHandler handler1 = new InvokeCountHandler();
             handler1.Order = 3;
 
-            ICallHandler handler2 = new CallCountHandler();
+            ICallHandler handler2 = new InvokeCountHandler();
             handler2.Order = 0;
 
-            ICallHandler handler3 = new CallCountHandler();
+            ICallHandler handler3 = new InvokeCountHandler();
             handler3.Order = 2;
 
-            ICallHandler handler4 = new CallCountHandler();
+            ICallHandler handler4 = new InvokeCountHandler();
             handler4.Order = 1;
 
             RuleDrivenPolicy policy
@@ -198,22 +197,22 @@ namespace Unit.Tests
             //        new IMatchingRule[] { new TypeMatchingRule("ITwo") },
             //        new string[] { "Handler1", "Handler2", "Handler3", "Handler4", "Handler5", "Handler6" });
 
-            //ICallHandler handler1 = new CallCountHandler();
+            //ICallHandler handler1 = new InvokeCountHandler();
             //handler1.Order = 0;
 
-            //ICallHandler handler2 = new CallCountHandler();
+            //ICallHandler handler2 = new InvokeCountHandler();
             //handler2.Order = 3;
 
-            //ICallHandler handler3 = new CallCountHandler();
+            //ICallHandler handler3 = new InvokeCountHandler();
             //handler3.Order = 3;
 
-            //ICallHandler handler4 = new CallCountHandler();
+            //ICallHandler handler4 = new InvokeCountHandler();
             //handler4.Order = 2;
 
-            //ICallHandler handler5 = new CallCountHandler();
+            //ICallHandler handler5 = new InvokeCountHandler();
             //handler5.Order = 4;
 
-            //ICallHandler handler6 = new CallCountHandler();
+            //ICallHandler handler6 = new InvokeCountHandler();
             //handler6.Order = 1;
 
             //Container
@@ -261,6 +260,8 @@ namespace Unit.Tests
                 typeof(T).GetMethod(methodName));
         }
     }
+    
+    #region Test Data
 
     internal class MatchesByType
     {
@@ -362,4 +363,52 @@ namespace Unit.Tests
             return new MarkerCallHandler(this.handlerName);
         }
     }
+
+    public class Handler1 : ICallHandler
+    {
+        private int order = 0;
+
+        /// <summary>
+        /// Gets or sets the order in which the handler will be executed
+        /// </summary>
+        public int Order
+        {
+            get { return order; }
+            set { order = value; }
+        }
+
+        public IMethodReturn Invoke(IMethodInvocation input,
+                                    GetNextHandlerDelegate getNext)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class Handler2 : ICallHandler
+    {
+        private int order = 0;
+
+        /// <summary>
+        /// Gets or sets the order in which the handler will be executed
+        /// </summary>
+        public int Order
+        {
+            get { return order; }
+            set { order = value; }
+        }
+
+        public IMethodReturn Invoke(IMethodInvocation input,
+                                    GetNextHandlerDelegate getNext)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public interface IYetAnotherInterface
+    {
+        void MyMethod();
+    }
+
+    #endregion
+
 }

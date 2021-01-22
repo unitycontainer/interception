@@ -1,27 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Unity.Interception.Interceptors;
-using Unity.Interception.PolicyInjection.MatchingRules;
-using Unity.Interception.PolicyInjection.Pipeline;
 
-namespace Unity.Interception.PolicyInjection.Policies
+namespace Unity.Interception
 {
     /// <summary>
     /// Base class for Policies that specifies which handlers apply to which methods of an object.
     /// </summary>
     /// <remarks>
     /// <para>This base class always enforces the 
-    /// <see cref="ApplyNoPoliciesMatchingRule"/> before
-    /// passing the checks onto derived classes. This way, derived classes do not need to
-    /// worry about implementing this check.</para>
-    /// <para>It also means that derived classes cannot override this rule. This is considered a feature.</para></remarks>
+    /// <see cref="ApplyNoPoliciesMatchingRule"/> before passing the checks onto derived classes. 
+    /// This way, derived classes do not need to worry about implementing this check.</para>
+    /// <para>It also means that derived classes cannot override this rule. This is considered a feature.</para>
+    /// </remarks>
     public abstract class InjectionPolicy
     {
         #region Fields
 
-        private readonly string        _name;
+        private readonly string _name;
         private readonly IMatchingRule _rule;
 
         #endregion
@@ -90,35 +86,6 @@ namespace Unity.Interception.PolicyInjection.Policies
             doesNotHaveRule &= _rule.Matches(method.ImplementationMethodInfo);
             return doesNotHaveRule;
         }
-
-
-        /// <summary>
-        /// Given a method on an object, return the set of MethodBases for that method,
-        /// plus any interface methods that the member implements.
-        /// </summary>
-        /// <param name="member">Member to get Method Set for.</param>
-        /// <returns>The set of methods</returns>
-        protected static IEnumerable<MethodBase> GetMethodSet(MethodBase member)
-        {
-            List<MethodBase> methodSet = new List<MethodBase>(new[] { member });
-            if (member.DeclaringType != null && !member.DeclaringType.IsInterface)
-            {
-                foreach (Type itf in member.DeclaringType.GetInterfaces())
-                {
-                    InterfaceMapping mapping = member.DeclaringType.GetInterfaceMap(itf);
-                    for (int i = 0; i < mapping.TargetMethods.Length; ++i)
-                    {
-                        if (mapping.TargetMethods[i] == member)
-                        {
-                            methodSet.Add(mapping.InterfaceMethods[i]);
-                        }
-                    }
-                }
-            }
-
-            return methodSet;
-        }
-
 
         /// <summary>
         /// Derived classes implement this method to calculate if the policy

@@ -37,7 +37,7 @@ namespace Configuration
         [TestMethod("Interceptor Through Injection"), TestProperty(METHOD, nameof(InjectionMember))]
         public void CanSetUpInterceptorThroughInjectionMember()
         {
-            CallCountHandler handler = new CallCountHandler();
+            InvokeCountHandler handler = new InvokeCountHandler();
 
             Container.Configure<Interception>()
                 .AddPolicy("policy")
@@ -52,13 +52,13 @@ namespace Configuration
 
             instance.DoSomething("1");
 
-            Assert.AreEqual(1, handler.CallCount);
+            Assert.AreEqual(1, handler.Count);
         }
 
         [TestMethod("Interceptor Through Injection (named)"), TestProperty(METHOD, nameof(InjectionMember))]
         public void CanSetUpInterceptorThroughInjectionMemberNamed()
         {
-            CallCountHandler handler = new CallCountHandler();
+            InvokeCountHandler handler = new InvokeCountHandler();
 
             Container.Configure<Interception>()
                 .AddPolicy("policy")
@@ -73,7 +73,7 @@ namespace Configuration
 
             instance.DoSomething("1");
 
-            Assert.AreEqual(1, handler.CallCount);
+            Assert.AreEqual(1, handler.Count);
         }
 
         [TestMethod]

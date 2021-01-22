@@ -59,7 +59,7 @@ namespace Unity.Interception.ContainerIntegration
             => _explicitBehavior ??= (IInterceptionBehavior)context.Resolve(_type, _name)!;
 
 
-        public override MatchRank Match(Type other)
+        public override MatchRank Matches(Type other)
         {
             if (_type.Equals(other)) return MatchRank.ExactMatch;
 

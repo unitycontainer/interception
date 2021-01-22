@@ -172,8 +172,8 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
                 Label done = il.DefineLabel();
                 LocalBuilder ex = il.DeclareLocal(typeof(Exception));
 
-                LocalBuilder baseReturn = null;
-                LocalBuilder parameters = null;
+                LocalBuilder? baseReturn = null;
+                LocalBuilder? parameters = null;
                 if (MethodHasReturnValue)
                 {
                     baseReturn = il.DeclareLocal(paramMapper.GetParameterType(_methodToOverride.ReturnType));
@@ -233,7 +233,7 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
                 il.Emit(OpCodes.Ldarg_1);
                 if (MethodHasReturnValue)
                 {
-                    il.Emit(OpCodes.Ldloc, baseReturn);
+                    il.Emit(OpCodes.Ldloc,   baseReturn);
                     if (ReturnType.IsValueType || ReturnType.IsGenericParameter)
                     {
                         il.Emit(OpCodes.Box, paramMapper.GetReturnType());

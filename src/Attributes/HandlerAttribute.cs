@@ -1,5 +1,4 @@
 ﻿using System;
-using Unity.Interception.PolicyInjection.Pipeline;
 
 namespace Unity.Interception
 {

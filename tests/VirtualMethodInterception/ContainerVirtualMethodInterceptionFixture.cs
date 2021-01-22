@@ -9,9 +9,7 @@ using Unity.Interception.ContainerIntegration;
 using Unity.Interception.Interceptors;
 using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception;
 using Unity.Interception.PolicyInjection;
-using Unity.Interception.PolicyInjection.MatchingRules;
 using Unity.Interception.PolicyInjection.Pipeline;
-using Unity.Interception.PolicyInjection.Policies;
 using Unity.Lifetime;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInterception
@@ -26,8 +24,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         [TestMethod]
         public void InterceptedClassGetsReturned()
         {
-            CallCountHandler h1 = new CallCountHandler();
-            CallCountHandler h2 = new CallCountHandler();
+            InvokeCountHandler h1 = new InvokeCountHandler();
+            InvokeCountHandler h2 = new InvokeCountHandler();
 
             IUnityContainer container = GetConfiguredContainer(h1, h2);
             AddPoliciesToContainer(container);
@@ -41,8 +39,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         [TestMethod]
         public void AttachedHandlersAreCalled()
         {
-            CallCountHandler h1 = new CallCountHandler();
-            CallCountHandler h2 = new CallCountHandler();
+            InvokeCountHandler h1 = new InvokeCountHandler();
+            InvokeCountHandler h2 = new InvokeCountHandler();
 
             IUnityContainer container = new UnityContainer()
                 .AddNewExtension<Interception>()
@@ -76,8 +74,8 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
                 target.MethodTwo("hi", twoCount);
             }
 
-            Assert.AreEqual(oneCount, h1.CallCount);
-            Assert.AreEqual(twoCount, h2.CallCount);
+            Assert.AreEqual(oneCount, h1.Count);
+            Assert.AreEqual(twoCount, h2.Count);
         }
 
         [TestMethod]
@@ -112,7 +110,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
             Assert.IsTrue(testClass.TestMethod3(), "always true");
             Assert.IsTrue(testClass.TestMethod4(), "abstract");
 
-            Assert.AreEqual(4, ((CallCountHandler)container.Resolve<ICallHandler>("TestCallHandler")).CallCount);
+            Assert.AreEqual(4, ((InvokeCountHandler)container.Resolve<ICallHandler>("TestCallHandler")).Count);
         }
 
         [TestMethod]
@@ -230,7 +228,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
             IUnityContainer container = new UnityContainer()
                 .AddNewExtension<Interception>()
                 .RegisterType<IMatchingRule, AlwaysMatchingRule>("AlwaysMatchingRule")
-                .RegisterType<ICallHandler, CallCountHandler>("TestCallHandler", new ContainerControlledLifetimeManager());
+                .RegisterType<ICallHandler, InvokeCountHandler>("TestCallHandler", new ContainerControlledLifetimeManager());
 
             container.Configure<Interception>()
                 .SetDefaultInterceptorFor<NewVirtualOverrideTestClass>(new VirtualMethodInterceptor())

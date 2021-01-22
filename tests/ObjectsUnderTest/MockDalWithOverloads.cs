@@ -1,7 +1,4 @@
-﻿
-
-using System;
-using Unity.Interception.PolicyInjection.MatchingRules;
+﻿using Unity.Interception;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.ObjectsUnderTest
 {

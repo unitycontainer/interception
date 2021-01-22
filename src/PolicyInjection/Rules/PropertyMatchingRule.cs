@@ -1,10 +1,8 @@
-﻿
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
 using Unity.Interception.Utilities;
 
-namespace Unity.Interception.PolicyInjection.MatchingRules
+namespace Unity.Interception
 {
     /// <summary>
     /// An <see cref="IMatchingRule"/> implementation that matches properties

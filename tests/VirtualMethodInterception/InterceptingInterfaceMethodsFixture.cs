@@ -1,7 +1,5 @@
-﻿
-
-using Microsoft.Practices.Unity.TestSupport;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Unity.Interception;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInterception
 {
@@ -11,13 +9,13 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         [TestMethod]
         public void ImplicitlyImplementedMethodsAreInterceptedIfVirtual()
         {
-            CallCountHandler handler = new CallCountHandler();
+            InvokeCountHandler handler = new InvokeCountHandler();
             Interesting instance = WireupHelper.GetInterceptedInstance<Interesting>("DoSomethingInteresting", handler);
 
             instance.DoSomethingInteresting();
 
             Assert.IsTrue(instance.SomethingWasCalled);
-            Assert.AreEqual(1, handler.CallCount);
+            Assert.AreEqual(1, handler.Count);
         }
     }
 

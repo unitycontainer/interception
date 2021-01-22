@@ -1,15 +1,13 @@
-﻿
-
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using Microsoft.Practices.Unity.InterceptionExtension.Tests.MatchingRules.SeparateTopLevel;
+﻿using Microsoft.Practices.Unity.InterceptionExtension.Tests.MatchingRules.SeparateTopLevel;
 using Microsoft.Practices.Unity.InterceptionExtension.Tests.MatchingRules.TopLevel;
 using Microsoft.Practices.Unity.InterceptionExtension.Tests.MatchingRules.TopLevel.SecondLevel;
 using Microsoft.Practices.Unity.InterceptionExtension.Tests.MatchingRules.TopLevel.SecondLevel.ThirdLevel;
 using Microsoft.Practices.Unity.InterceptionExtension.Tests.MatchingRules.TopLevelTwo;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Unity.Interception.PolicyInjection.MatchingRules;
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
+using Unity.Interception;
 
 [module: SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1403:FileMayOnlyContainASingleNamespace", Justification = "Test needs multiple namespaces so keep the namespaces and test together")]
 

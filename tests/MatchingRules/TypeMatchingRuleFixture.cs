@@ -1,9 +1,8 @@
-﻿
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Unity.Interception.PolicyInjection.MatchingRules;
+using Unity.Interception;
 
 [module: SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1403:FileMayOnlyContainASingleNamespace", Justification = "Test needs multiple namespaces so keep the namespaces and test together")]
 

@@ -75,7 +75,7 @@ namespace Unity.Interception.ContainerIntegration
             : _interceptor is ITypeInterceptor;
 
 
-        public override MatchRank Match(Type other)
+        public override MatchRank Matches(Type other)
         {
             if (_type.Equals(other)) return MatchRank.ExactMatch;
 

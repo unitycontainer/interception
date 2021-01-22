@@ -1,7 +1,7 @@
 ﻿using System;
 using Unity.Extension;
 using Unity.Interception.ContainerIntegration.ObjectBuilder;
-using Unity.Interception.PolicyInjection.Policies;
+using Unity.Interception.PolicyInjection;
 
 namespace Unity.Interception
 {

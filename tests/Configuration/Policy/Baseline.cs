@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Unity;
 using Unity.Interception;
-using Unity.Interception.PolicyInjection.Policies;
 
 namespace Configuration
 {
@@ -24,9 +23,8 @@ namespace Configuration
         public void CanSetUpEmptyRule()
         {
             // empty
-            Container
-                .Configure<Interception>()
-                    .AddPolicy(PolicyName);
+            Container.Configure<Interception>()
+                     .AddPolicy(PolicyName);
 
             var policies = Container.Resolve<InjectionPolicy[]>();
 

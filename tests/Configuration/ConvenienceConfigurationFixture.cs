@@ -6,9 +6,7 @@ using Unity;
 using Unity.Injection;
 using Unity.Interception;
 using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception;
-using Unity.Interception.PolicyInjection.MatchingRules;
 using Unity.Interception.PolicyInjection.Pipeline;
-using Unity.Interception.PolicyInjection.Policies;
 using Unity.Lifetime;
 
 namespace Configuration
@@ -75,7 +73,7 @@ namespace Configuration
         public void CanSetUpAPolicyWithGivenRulesAndHandlers()
         {
             IMatchingRule rule1 = new AlwaysMatchingRule();
-            ICallHandler handler1 = new CallCountHandler();
+            ICallHandler handler1 = new InvokeCountHandler();
 
             Container.Configure<Interception>()
                      .AddPolicy(PolicyName)
@@ -89,7 +87,7 @@ namespace Configuration
             Wrappable wrappable1 = Container.Resolve<Wrappable>(Name);
             wrappable1.Method2();
 
-            Assert.AreEqual(1, ((CallCountHandler)handler1).CallCount);
+            Assert.AreEqual(1, ((InvokeCountHandler)handler1).Count);
         }
 
         [TestMethod]
@@ -261,10 +259,10 @@ namespace Configuration
                         .AddMatchingRule<AlwaysMatchingRule>(
                             "rule1",
                             new ContainerControlledLifetimeManager())
-                        .AddCallHandler<CallCountHandler>(
+                        .AddCallHandler<InvokeCountHandler>(
                             "handler1",
                             (LifetimeManager)null)
-                        .AddCallHandler<CallCountHandler>(
+                        .AddCallHandler<InvokeCountHandler>(
                             "handler2",
                             new ContainerControlledLifetimeManager(),
                             new InjectionProperty("Order", 10));
@@ -278,11 +276,11 @@ namespace Configuration
             Wrappable wrappable1 = Container.Resolve<Wrappable>(Name);
             wrappable1.Method2();
 
-            CallCountHandler handler1 = (CallCountHandler)Container.Resolve<ICallHandler>("handler1");
-            CallCountHandler handler2 = (CallCountHandler)Container.Resolve<ICallHandler>("handler2");
+            InvokeCountHandler handler1 = (InvokeCountHandler)Container.Resolve<ICallHandler>("handler1");
+            InvokeCountHandler handler2 = (InvokeCountHandler)Container.Resolve<ICallHandler>("handler2");
 
-            Assert.AreEqual(0, handler1.CallCount);     // not lifetime maanaged
-            Assert.AreEqual(1, handler2.CallCount);     // lifetime managed
+            Assert.AreEqual(0, handler1.Count);     // not lifetime maanaged
+            Assert.AreEqual(1, handler2.Count);     // lifetime managed
         }
 
         [TestMethod]
@@ -295,7 +293,7 @@ namespace Configuration
                         .AddPolicy(PolicyName)
                             .AddMatchingRule(typeof(AlwaysMatchingRule))
                             .AddMatchingRule((string)null)
-                            .AddCallHandler(new CallCountHandler());
+                            .AddCallHandler(new InvokeCountHandler());
                 Assert.Fail("Should have thrown");
             }
             catch (ArgumentException)

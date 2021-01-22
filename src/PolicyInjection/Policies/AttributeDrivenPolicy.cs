@@ -1,18 +1,23 @@
 ﻿using System.Collections.Generic;
 using Unity.Interception.Interceptors;
-using Unity.Interception.PolicyInjection.MatchingRules;
-using Unity.Interception.PolicyInjection.Pipeline;
 using Unity.Interception.Utilities;
 
-namespace Unity.Interception.PolicyInjection.Policies
+namespace Unity.Interception
 {
     /// <summary>
-    /// A <see cref="InjectionPolicy"/> class that reads and constructs handlers
+    /// A <see cref="InjectionPolicy"/> that reads and creates handlers
     /// based on <see cref="HandlerAttribute"/> on the target.
     /// </summary>
     public class AttributeDrivenPolicy : InjectionPolicy
     {
+        #region Fields
+
         private readonly AttributeDrivenPolicyMatchingRule _attributeMatchRule;
+
+        #endregion
+
+
+        #region Constructors
 
         /// <summary>
         /// Constructs a new instance of the <see cref="AttributeDrivenPolicy"/>.
@@ -23,6 +28,11 @@ namespace Unity.Interception.PolicyInjection.Policies
             _attributeMatchRule = new AttributeDrivenPolicyMatchingRule();
         }
 
+
+        #endregion
+
+
+
         /// <summary>
         /// Derived classes implement this method to calculate if the policy
         /// will provide any handler to the specified member.
@@ -31,8 +41,6 @@ namespace Unity.Interception.PolicyInjection.Policies
         /// <returns>true if policy applies to this member, false if not.</returns>
         protected override bool DoesMatch(MethodImplementationInfo member)
         {
-            Guard.ArgumentNotNull(member, "member");
-
             bool matchesInterface = member.InterfaceMethodInfo != null ? _attributeMatchRule.Matches(member.InterfaceMethodInfo) : false;
             bool matchesImplementation = _attributeMatchRule.Matches(member.ImplementationMethodInfo);
 
@@ -56,6 +64,7 @@ namespace Unity.Interception.PolicyInjection.Policies
                     yield return attr.CreateHandler(container);
                 }
             }
+
             foreach (HandlerAttribute attr in ReflectionHelper.GetAllAttributes<HandlerAttribute>(member.ImplementationMethodInfo, true))
             {
                 yield return attr.CreateHandler(container);

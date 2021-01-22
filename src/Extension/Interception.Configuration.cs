@@ -2,9 +2,8 @@
 using Unity.Extension;
 using Unity.Injection;
 using Unity.Interception.Interceptors;
-using Unity.Interception.PolicyInjection.Policies;
+using Unity.Interception.PolicyInjection;
 using Unity.Interception.Utilities;
-using Unity.Lifetime;
 
 namespace Unity.Interception
 {

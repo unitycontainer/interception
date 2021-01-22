@@ -1,18 +1,14 @@
-﻿
-
+﻿using Microsoft.Practices.Unity.TestSupport;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Microsoft.Practices.Unity.InterceptionExtension.Tests.ObjectsUnderTest;
-using Microsoft.Practices.Unity.TestSupport;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Unity;
+using Unity.Interception;
 using Unity.Interception.Interceptors;
 using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception;
 using Unity.Interception.PolicyInjection;
-using Unity.Interception.PolicyInjection.MatchingRules;
 using Unity.Interception.PolicyInjection.Pipeline;
-using Unity.Interception.PolicyInjection.Policies;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
 {
@@ -22,7 +18,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
     [TestClass]
     public class PipelineFixture
     {
-        private CallCountHandler callCountHandler;
+        private InvokeCountHandler callCountHandler;
         private StringReturnRewriteHandler returnHandler;
 
         [TestMethod]
@@ -56,7 +52,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
                     return MakeReturnMessage(message);
                 });
             Assert.IsNotNull(result);
-            Assert.AreEqual(1, callCountHandler.CallCount);
+            Assert.AreEqual(1, callCountHandler.Count);
             Assert.AreEqual(returnHandler.ValueToRewriteTo, (string)result.ReturnValue);
         }
 
@@ -80,7 +76,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
 
         private IUnityContainer GetContainer()
         {
-            callCountHandler = new CallCountHandler();
+            callCountHandler = new InvokeCountHandler();
             returnHandler = new StringReturnRewriteHandler("REWRITE");
 
             IUnityContainer container

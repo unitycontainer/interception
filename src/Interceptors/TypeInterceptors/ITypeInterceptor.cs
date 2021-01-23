@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Unity.Interception.Interceptors
+namespace Unity.Interception
 {
     /// <summary>
     /// Interface for interceptor objects that generate

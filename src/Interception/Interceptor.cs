@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using Unity.Extension;
-using Unity.Interception.Interceptors;
+using Unity.Injection;
 using Unity.Interception.Interceptors;
 
-namespace Unity.Interception.ContainerIntegration
+namespace Unity.Interception
 {
     /// <summary>
     /// Stores information about the <see cref="IInterceptor"/> to be used to intercept an object and
@@ -13,7 +14,7 @@ namespace Unity.Interception.ContainerIntegration
     public class Interceptor : InterceptionMember
     {
         private IInterceptor? _interceptor;
-        private readonly Type _type;
+        private readonly Type    _type;
         private readonly string? _name;
 
         /// <summary>
@@ -24,7 +25,7 @@ namespace Unity.Interception.ContainerIntegration
         /// <see langword="null"/>.</exception>
         public Interceptor(IInterceptor interceptor)
         {
-            _interceptor = interceptor ?? throw new ArgumentNullException(nameof(interceptor));
+            _interceptor = interceptor;
             _type = interceptor.GetType();
         }
 
@@ -50,8 +51,9 @@ namespace Unity.Interception.ContainerIntegration
         /// </summary>
         /// <param name="interceptorType">Type of the interceptor.</param>
         public Interceptor(Type interceptorType)
-            : this(interceptorType, null)
         {
+            _type = interceptorType;
+            _name = default;
         }
 
         /// <summary>
@@ -93,6 +95,8 @@ namespace Unity.Interception.ContainerIntegration
     public class Interceptor<TInterceptor> : Interceptor
         where TInterceptor : IInterceptor
     {
+        #region Constructors
+
         /// <summary>
         /// Initialize an instance of <see cref="Interceptor{TInterceptor}"/> that will
         /// resolve the given interceptor type.
@@ -111,5 +115,7 @@ namespace Unity.Interception.ContainerIntegration
             : base(typeof(TInterceptor), name)
         {
         }
+
+        #endregion
     }
 }

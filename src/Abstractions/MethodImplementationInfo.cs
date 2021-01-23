@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace Unity.Interception.Interceptors
+namespace Unity.Interception
 {
     /// <summary>
     /// A dumb data holder that returns the MethodInfo for both an

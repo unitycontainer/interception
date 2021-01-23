@@ -1,12 +1,10 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Interception.Properties;
 using Unity.Interception.Utilities;
 
-namespace Unity.Interception.Interceptors
+namespace Unity.Interception
 {
     /// <summary>
     /// Maps types involving generic parameter types from reflected types into equivalent versions involving generated types.

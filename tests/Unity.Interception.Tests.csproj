@@ -4,6 +4,7 @@
     <TargetFrameworks>net47</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <RootNamespace>Unity.Interception.Tests</RootNamespace>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup Condition="!$(TargetFramework.StartsWith('net4'))">

@@ -1,31 +1,35 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Unity.Extension;
-using Unity.Interception.ContainerIntegration.ObjectBuilder;
 using Unity.Interception.InterceptionBehaviors;
 using Unity.Interception.Interceptors;
 using Unity.Resolution;
 
-namespace Unity.Interception.ContainerIntegration
+namespace Unity.Interception
 {
     /// <summary>
-    /// Base class for injection members that allow you to add
-    /// interception behaviors.
+    /// Stores information about a single <see cref="IInterceptionBehavior"/> to be used on an intercepted object and
+    /// configures a container accordingly.
     /// </summary>
-    public abstract class InterceptionBehaviorBase : InterceptionMember
+    /// <seealso cref="IInterceptionBehavior"/>
+    public class InterceptionBehavior : InterceptionMember
     {
-        private readonly Type    _type;
-        private readonly string? _name;
+        #region Fields
 
+        private readonly Type _type;
+        private readonly string? _name;
         private IInterceptionBehavior? _explicitBehavior;
+
+        #endregion
+
+        #region Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IInterceptionBehavior"/> with a 
         /// <see cref="IInterceptionBehavior"/>.
         /// </summary>
         /// <param name="interceptionBehavior">The interception behavior to use.</param>
-        protected InterceptionBehaviorBase(IInterceptionBehavior interceptionBehavior)
+        public InterceptionBehavior(IInterceptionBehavior interceptionBehavior)
         {
             _explicitBehavior = interceptionBehavior ?? throw new ArgumentNullException(nameof(interceptionBehavior));
             _type = interceptionBehavior.GetType();
@@ -37,7 +41,7 @@ namespace Unity.Interception.ContainerIntegration
         /// </summary>
         /// <param name="behaviorType">Type of behavior to </param>
         /// <param name="name"></param>
-        protected InterceptionBehaviorBase(Type behaviorType, string? name)
+        public InterceptionBehavior(Type behaviorType, string? name)
         {
             _type = behaviorType ?? throw new ArgumentNullException(nameof(behaviorType));
             _name = name;
@@ -48,16 +52,15 @@ namespace Unity.Interception.ContainerIntegration
         /// given behavior type.
         /// </summary>
         /// <param name="behaviorType">Type of behavior to </param>
-        protected InterceptionBehaviorBase(Type behaviorType)
+        public InterceptionBehavior(Type behaviorType)
             : this(behaviorType, null)
         {
         }
 
+        #endregion
 
-        public virtual IInterceptionBehavior GetBehavior<TContext>(ref TContext context)
-            where TContext : IBuilderContext
-            => _explicitBehavior ??= (IInterceptionBehavior)context.Resolve(_type, _name)!;
 
+        #region Injection
 
         public override MatchRank Matches(Type other)
         {
@@ -67,13 +70,23 @@ namespace Unity.Interception.ContainerIntegration
 
             return MatchRank.NoMatch;
         }
+        
+        #endregion
+
+
+        #region Behavior
+
+        public virtual IInterceptionBehavior GetBehavior<TContext>(ref TContext context)
+            where TContext : IBuilderContext
+            => _explicitBehavior ??= (IInterceptionBehavior)context.Resolve(_type, _name)!;
+
 
         public static IInterceptionBehavior[] GetEffectiveBehaviors<TContext>(ref TContext context, IInterceptor interceptor)
             where TContext : IBuilderContext
         {
             var instances = context.OfType<InterceptionBehavior>().ToArray();
             var behaviors = new IInterceptionBehavior[instances.Length];
-            
+
             var interceptionRequest = new CurrentInterceptionRequest(interceptor, context.Contract.Type, context.Type);
             var @override = new DependencyOverride<CurrentInterceptionRequest>(interceptionRequest);
 
@@ -88,5 +101,32 @@ namespace Unity.Interception.ContainerIntegration
             return behaviors;
         }
 
+        #endregion
+    }
+
+    /// <summary>
+    /// A generic version of <see cref="InterceptionBehavior"/> that lets you
+    /// specify behavior types using generic syntax.
+    /// </summary>
+    /// <typeparam name="TBehavior">Type of behavior to register.</typeparam>
+    public class InterceptionBehavior<TBehavior> : InterceptionBehavior
+        where TBehavior : IInterceptionBehavior
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InterceptionBehavior"/> with a 
+        /// given behavior type.
+        /// </summary>
+        public InterceptionBehavior() 
+            : base(typeof(TBehavior)) 
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InterceptionBehavior"/> with a 
+        /// given type/name pair.
+        /// </summary>
+        /// <param name="name">Name to use to resolve the behavior.</param>
+        public InterceptionBehavior(string name) 
+            : base(typeof(TBehavior), name) 
+        { }
     }
 }

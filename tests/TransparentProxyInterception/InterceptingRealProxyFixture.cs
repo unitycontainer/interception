@@ -1,10 +1,8 @@
-﻿
-
+﻿using Microsoft.Practices.Unity.TestSupport;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.ComponentModel;
-using Microsoft.Practices.Unity.TestSupport;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Unity.Interception.Interceptors;
+using Unity.Interception;
 using Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyInterception;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.TransparaentProxyInterception.Tests

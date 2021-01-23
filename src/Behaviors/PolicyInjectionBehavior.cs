@@ -7,7 +7,7 @@ using Unity.Interception.Interceptors;
 using Unity.Interception.PolicyInjection.Pipeline;
 using Unity.Interception.Utilities;
 
-namespace Unity.Interception.PolicyInjection
+namespace Unity.Interception
 {
     /// <summary>
     /// Interceptor that performs policy injection.

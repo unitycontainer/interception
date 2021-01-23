@@ -1,6 +1,4 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
@@ -27,10 +25,7 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
         public bool CanIntercept(Type t)
         {
             Guard.ArgumentNotNull(t, "t");
-            return t.IsClass &&
-                (t.IsPublic || t.IsNestedPublic) &&
-                t.IsVisible &&
-                !t.IsSealed;
+            return t.IsClass && (t.IsPublic || t.IsNestedPublic) && t.IsVisible && !t.IsSealed;
         }
 
         /// <summary>

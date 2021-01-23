@@ -1,7 +1,6 @@
 ﻿using System;
 using Unity.Extension;
-using Unity.Interception.ContainerIntegration.ObjectBuilder;
-using Unity.Interception.PolicyInjection;
+using Unity.Interception.Strategies;
 
 namespace Unity.Interception
 {
@@ -13,6 +12,20 @@ namespace Unity.Interception
     /// </summary>
     public partial class Interception : UnityContainerExtension
     {
+        #region Fields
+
+        private readonly Schemes _interceptors;
+
+        #endregion
+
+
+        #region Constructors
+
+        public Interception() => _interceptors = new Schemes();
+
+        #endregion
+
+
         /// <summary>
         /// Initial the container with this extension's functionality.
         /// </summary>
@@ -20,27 +33,33 @@ namespace Unity.Interception
         {
             if (Context is null) throw new ArgumentNullException(nameof(Context));
 
+            Context.Policies.Set(typeof(Schemes), _interceptors);
+
+            var type     = new TypeInterceptionStrategy(_interceptors);
+            var instance = new InstanceInterceptionStrategy(_interceptors);
+
             // Type pipeline
             Context.TypePipelineChain.Add(new (UnityBuildStage, BuilderStrategy)[] 
             { 
-                (UnityBuildStage.InterceptType,     new TypeInterceptionStrategy()),
-                (UnityBuildStage.InterceptInstance, new InstanceInterceptionStrategy())
+                (UnityBuildStage.InterceptType,     type),
+                (UnityBuildStage.InterceptInstance, instance)
             });
 
             // Factory
             Context.FactoryPipelineChain.Add(new (UnityBuildStage, BuilderStrategy)[]
             {
-                (UnityBuildStage.InterceptType,     new TypeInterceptionStrategy()),
-                (UnityBuildStage.InterceptInstance, new InstanceInterceptionStrategy())
+                (UnityBuildStage.InterceptType,     type),
+                (UnityBuildStage.InterceptInstance, instance)
             });
 
             // Instance pipeline
-            Context.InstancePipelineChain.Add(UnityBuildStage.InterceptInstance, new InstanceInterceptionStrategy());
+            Context.InstancePipelineChain.Add(UnityBuildStage.InterceptInstance, instance);
 
+            // Mapping pipeline
             Context.MappingPipelineChain.Add(new (UnityBuildStage, BuilderStrategy)[]
             {
-                (UnityBuildStage.InterceptType,     new TypeInterceptionStrategy()),
-                (UnityBuildStage.InterceptInstance, new InstanceInterceptionStrategy())
+                (UnityBuildStage.InterceptType,     type),
+                (UnityBuildStage.InterceptInstance, instance)
             });
 
             Context.Container.RegisterInstance<InjectionPolicy>(typeof(AttributeDrivenPolicy).AssemblyQualifiedName,

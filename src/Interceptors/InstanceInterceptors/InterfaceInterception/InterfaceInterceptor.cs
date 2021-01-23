@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using Unity.Interception.Interceptors.InstanceInterceptors.InterfaceInterception;
 using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception.InterceptingClassGeneration;
 
-namespace Unity.Interception.Interceptors
+namespace Unity.Interception
 {
     /// <summary>
     /// An instance interceptor that works by generating a

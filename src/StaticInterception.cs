@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Unity.Interception.InterceptionBehaviors;
-using Unity.Interception.Interceptors;
 using Unity.Interception.Properties;
 using Unity.Interception.Utilities;
 

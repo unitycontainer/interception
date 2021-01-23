@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Unity.Container;
 using Unity.Extension;
-using Unity.Interception.InterceptionBehaviors;
 using Unity.Interception.Interceptors;
 
 namespace Unity.Interception.ContainerIntegration.ObjectBuilder

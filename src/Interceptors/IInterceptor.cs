@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Unity.Interception.Interceptors
+namespace Unity.Interception
 {
     /// <summary>
     /// Base interface for type and instance based interceptor classes.

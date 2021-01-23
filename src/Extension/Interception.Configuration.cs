@@ -1,8 +1,6 @@
 ﻿using System;
 using Unity.Extension;
 using Unity.Injection;
-using Unity.Interception.Interceptors;
-using Unity.Interception.PolicyInjection;
 using Unity.Interception.Utilities;
 
 namespace Unity.Interception

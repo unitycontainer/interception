@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Reflection.Emit;
 
-namespace Unity.Interception.Interceptors
+namespace Unity.Interception
 {
     public static class InterceptorClassGenerator
     {

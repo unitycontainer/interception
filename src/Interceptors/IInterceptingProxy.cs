@@ -1,8 +1,4 @@
-﻿
-
-using Unity.Interception.InterceptionBehaviors;
-
-namespace Unity.Interception.Interceptors
+﻿namespace Unity.Interception
 {
     /// <summary>
     /// This interface is implemented by all proxy objects, type or instance based.

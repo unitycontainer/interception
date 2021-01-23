@@ -1,16 +1,10 @@
-﻿
-
+﻿using Microsoft.Practices.Unity.TestSupport;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using System.Runtime.Remoting.Proxies;
-using System.Text;
-using Microsoft.Practices.Unity.TestSupport;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Unity.Interception.Interceptors;
-using Unity.Interception.Interceptors.InstanceInterceptors;
-using Unity.Interception.Interceptors.InstanceInterceptors.InterfaceInterception;
+using Unity.Interception;
 
 namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.InterfaceInterception
 {

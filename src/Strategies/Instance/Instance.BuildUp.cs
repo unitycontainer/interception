@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Extension;
-using Unity.Interception.Interceptors;
+using Unity.Interception.ContainerIntegration;
 
-namespace Unity.Interception.ContainerIntegration.ObjectBuilder
+namespace Unity.Interception.Strategies
 {
     /// <summary>
     /// A <see cref="BuilderStrategy"/> that intercepts objects
     /// in the build chain by creating a proxy object.
     /// </summary>
-    public class InstanceInterceptionStrategy : BuilderStrategy
+    public partial class InstanceInterceptionStrategy
     {
         /// <summary>
         /// Called during the chain of responsibility for a build operation. The
@@ -30,7 +30,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
 
             if (interceptor is null) return;
 
-            var interceptionBehaviors = InterceptionBehaviorBase.GetEffectiveBehaviors(ref context, interceptor);
+            var interceptionBehaviors = InterceptionBehavior.GetEffectiveBehaviors(ref context, interceptor);
 
             IEnumerable<Type> additionalInterfaces = context.OfType<AdditionalInterface>()
                                                             .Select(a => a.InterfaceType);

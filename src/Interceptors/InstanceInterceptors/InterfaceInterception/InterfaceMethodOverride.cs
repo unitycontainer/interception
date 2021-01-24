@@ -166,8 +166,8 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
                 Label done = il.DefineLabel();
                 LocalBuilder ex = il.DeclareLocal(typeof(Exception));
 
-                LocalBuilder baseReturn = null;
-                LocalBuilder parameters = null;
+                LocalBuilder? baseReturn = null;
+                LocalBuilder? parameters = null;
 
                 if (MethodHasReturnValue)
                 {
@@ -295,7 +295,7 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
         {
             string methodName =
                 _explicitImplementation
-                        ? _methodToOverride.DeclaringType.Name + "." + _methodToOverride.Name
+                        ? _methodToOverride.DeclaringType!.Name + "." + _methodToOverride.Name
                         : _methodToOverride.Name;
 
             MethodBuilder methodBuilder =

@@ -5,14 +5,12 @@ using Unity;
 using Unity.Injection;
 using Unity.Interception;
 using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception;
-using Unity.Interception.PolicyInjection.Pipeline;
 using Unity.Lifetime;
 
 namespace Configuration
 {
     public partial class PolicyFixture
     {
-        [Ignore]
         [TestMethod("Policy With Rules And Handlers")]
         public void CanSetUpAPolicyWithGivenRulesAndHandlers()
         {

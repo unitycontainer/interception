@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using Unity.Interception.Tests;
 
-namespace Storage
+namespace Unit.Tests
 {
     public partial class Schemes
     {

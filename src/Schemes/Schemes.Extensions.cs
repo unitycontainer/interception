@@ -18,11 +18,11 @@ namespace Unity.Interception
             => (TPolicy)schemes.Get(typeof(TTarget), typeof(TPolicy));
 
 
-        public static TPolicy? Get<TPolicy>(this Schemes schemes, Type type, string name)
+        public static TPolicy? Get<TPolicy>(this Schemes schemes, Type type, string? name)
             where TPolicy : ISequenceSegment
             => (TPolicy)schemes.Get(type, name, typeof(TPolicy));
 
-        public static TPolicy? Get<TTarget, TPolicy>(this Schemes schemes, string name)
+        public static TPolicy? Get<TTarget, TPolicy>(this Schemes schemes, string? name)
             where TPolicy : ISequenceSegment
             => (TPolicy)schemes.Get(typeof(TTarget), name, typeof(TPolicy));
 
@@ -41,11 +41,11 @@ namespace Unity.Interception
             => schemes.Set(typeof(TTarget), typeof(TPolicy), policy);
 
 
-        public static void Set<TPolicy>(this Schemes schemes, Type type, string name, TPolicy policy)
+        public static void Set<TPolicy>(this Schemes schemes, Type type, string? name, TPolicy policy)
             where TPolicy : ISequenceSegment
             => schemes.Set(type, name, typeof(TPolicy), policy);
 
-        public static void Set<TTarget, TPolicy>(this Schemes schemes, string name, TPolicy policy)
+        public static void Set<TTarget, TPolicy>(this Schemes schemes, string? name, TPolicy policy)
             where TPolicy : ISequenceSegment
             => schemes.Set(typeof(TTarget), name, typeof(TPolicy), policy);
 
@@ -61,10 +61,10 @@ namespace Unity.Interception
             => schemes.Clear(typeof(TTarget), typeof(TPolicy));
 
 
-        public static void Clear<TPolicy>(this Schemes schemes, Type type, string name)
+        public static void Clear<TPolicy>(this Schemes schemes, Type type, string? name)
             => schemes.Clear(type, name, typeof(TPolicy));
 
-        public static void Clear<TTarget, TPolicy>(this Schemes schemes, string name)
+        public static void Clear<TTarget, TPolicy>(this Schemes schemes, string? name)
             => schemes.Clear(typeof(TTarget), name, typeof(TPolicy));
     }
 }

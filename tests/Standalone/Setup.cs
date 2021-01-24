@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using Unity;
 using Unity.Interception;
 using Unity.Interception.InterceptionBehaviors;
 using Unity.Interception.Interceptors;
@@ -259,6 +260,8 @@ namespace Standalone
 
         public class RejectingInterceptor : IInstanceInterceptor, ITypeInterceptor
         {
+            public ISequenceSegment Next { get; set; }
+
             public bool CanIntercept(Type t)
             {
                 return false;

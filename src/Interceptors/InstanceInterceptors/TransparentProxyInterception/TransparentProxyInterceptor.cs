@@ -95,5 +95,12 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyI
             RealProxy realProxy = new InterceptingRealProxy(target, t, additionalInterfaces);
             return (IInterceptingProxy)realProxy.GetTransparentProxy();
         }
+
+
+        #region ISequenceSegment
+
+        public ISequenceSegment? Next { get; set; }
+
+        #endregion
     }
 }

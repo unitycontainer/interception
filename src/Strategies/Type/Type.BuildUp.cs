@@ -40,27 +40,21 @@ namespace Unity.Interception.Strategies
 
             IEnumerable<IInterceptionBehavior> interceptionBehaviors =
                 interceptionBehaviorsPolicy == null
-                    ?
-                        Enumerable.Empty<IInterceptionBehavior>()
-                    : Enumerable.Empty<IInterceptionBehavior>();
-                        //interceptionBehaviorsPolicy.GetEffectiveBehaviors(
-                        //    ref context, interceptor, typeToBuild, typeToBuild)
-                        //.Where(ib => ib.WillExecute);
-
+                    ? Enumerable.Empty<IInterceptionBehavior>()
+                    : interceptionBehaviorsPolicy.GetEffectiveBehaviors(ref context, interceptor, context.Contract.Type, context.Type)
+                                                 .Where(ib => ib.WillExecute);
 
             IEnumerable<Type> additionalInterfaces = context.OfType<AdditionalInterface>()
                                                             .Select(a => a.InterfaceType);
 
             var enumerable = interceptionBehaviors as IInterceptionBehavior[] ?? interceptionBehaviors.ToArray();
-            
+
             context.Set(typeof(EffectiveInterceptionBehaviorsPolicy), new EffectiveInterceptionBehaviorsPolicy { Behaviors = enumerable });
 
             Type[] allAdditionalInterfaces =
                 Intercept.GetAllAdditionalInterfaces(enumerable, additionalInterfaces);
 
-            //Type interceptingType =
-            //    ((ITypeInterceptor)interceptor.GetInterceptor(ref context))
-            //                                  .CreateProxyType(typeToBuild, allAdditionalInterfaces);
+            Type interceptingType = interceptor.CreateProxyType(typeToBuild, allAdditionalInterfaces);
 
             //DerivedTypeConstructorSelectorPolicy.SetPolicyForInterceptingType(ref context, interceptingType);
         }
@@ -96,14 +90,17 @@ namespace Unity.Interception.Strategies
             }
         }
 
-        public static TPolicy? PolicyOrDefault<TContext, TPolicy>(ref TContext context)
+        public TPolicy? PolicyOrDefault<TContext, TPolicy>(ref TContext context)
             where TContext : IBuilderContext
-            where TPolicy : class
+            where TPolicy : ISequenceSegment
         {
             return context.Contract.Type.IsGenericType
-                 ? context.Policies.Get<TPolicy>(context.Contract.Type) ??
-                   context.Policies.Get<TPolicy>(context.Generic ??= context.Contract.Type.GetGenericTypeDefinition())
-                 : context.Policies.Get<TPolicy>(context.Contract.Type);
+                 ? _interceptors.Get<TPolicy>(context.Contract.Type, context.Contract.Name) ??
+                   _interceptors.Get<TPolicy>(context.Generic ??= context.Contract.Type.GetGenericTypeDefinition(), context.Contract.Name) ??
+                   _interceptors.Get<TPolicy>(context.Contract.Type) ??
+                   _interceptors.Get<TPolicy>(context.Generic ??= context.Contract.Type.GetGenericTypeDefinition())
+                 : _interceptors.Get<TPolicy>(context.Contract.Type, context.Contract.Name) ??
+                   _interceptors.Get<TPolicy>(context.Contract.Type);
         }
 
         #endregion

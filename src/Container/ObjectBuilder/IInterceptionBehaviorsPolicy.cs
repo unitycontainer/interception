@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using Unity.Extension;
-using Unity.Interception.Interceptors;
 
-namespace Unity.Interception.ContainerIntegration.ObjectBuilder
+namespace Unity.Interception.ContainerIntegration
 {
     /// <summary>
     /// An policy that returns a sequence of <see cref="IInterceptionBehavior"/> 
     /// instances for an intercepted object.
     /// </summary>
-    public interface IInterceptionBehaviorsPolicy 
+    public interface IInterceptionBehaviorsPolicy : ISequenceSegment 
     {
         /// <summary>
         /// GetOrDefault the set of <see cref="NamedTypeBuildKey"/> that can be used to resolve the
@@ -30,8 +29,7 @@ namespace Unity.Interception.ContainerIntegration.ObjectBuilder
         /// <param name="typeToIntercept">Type that interception was requested on.</param>
         /// <param name="implementationType">Type that implements the interception.</param>
         /// <returns></returns>
-        IEnumerable<IInterceptionBehavior> GetEffectiveBehaviors(IUnityContainer container, IInterceptor interceptor,
-                                                                 Type typeToIntercept, Type implementationType);
+        IEnumerable<IInterceptionBehavior> GetEffectiveBehaviors(IUnityContainer container, IInterceptor interceptor, Type typeToIntercept, Type implementationType);
     }
 
 

@@ -288,7 +288,7 @@ namespace Unity.Interception
         /// <param name="target">Type of the registration</param>
         /// <param name="name">Name of the registration</param>
         /// <param name="type">Type of policy to be removed</param>
-        public void Clear(Type? target, string name, Type type)
+        public void Clear(Type? target, string? name, Type type)
         {
             var meta = Meta;
             var hash = (uint)GetHashCode(target, name, type);

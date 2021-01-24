@@ -2,10 +2,11 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using Unity;
 using Unity.Extension;
 using Unity.Storage;
 
-namespace Storage
+namespace Unit.Tests
 {
 
     [TestClass]
@@ -89,9 +90,7 @@ namespace Storage
 
     public class TestInstance : ISequenceSegment
     {
-        public object Next { get; set; }
-
-        public int Length => ((Next as ISequenceSegment)?.Length ?? 0) + 1;
+        public ISequenceSegment Next { get; set; }
     }
 
     #endregion

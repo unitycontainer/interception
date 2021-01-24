@@ -1,11 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
-using System.Threading;
-using Unity.Extension;
 using Unity.Interception.Tests;
 
-namespace Storage
+namespace Unit.Tests
 {
     public partial class Schemes
     {

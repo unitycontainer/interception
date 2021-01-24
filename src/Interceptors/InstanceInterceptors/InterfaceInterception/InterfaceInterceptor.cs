@@ -104,5 +104,12 @@ namespace Unity.Interception
         }
 
         #endregion
+
+
+        #region ISequenceSegment
+
+        public ISequenceSegment? Next { get; set; }
+
+        #endregion
     }
 }

@@ -120,5 +120,12 @@ namespace Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodIntercep
 
             return interceptorType;
         }
+
+
+        #region ISequenceSegment
+
+        public ISequenceSegment? Next { get; set; }
+
+        #endregion
     }
 }

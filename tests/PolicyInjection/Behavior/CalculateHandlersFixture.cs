@@ -1,14 +1,9 @@
-﻿using Microsoft.Practices.Unity.TestSupport;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Unity;
 using Unity.Interception;
-using Unity.Interception.Interceptors;
-using Unity.Interception.PolicyInjection;
 using Unity.Interception.PolicyInjection.Pipeline;
 
 namespace Unit.Tests

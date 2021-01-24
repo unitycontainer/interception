@@ -6,7 +6,7 @@ namespace Unity.Interception
     /// <summary>
     /// Base interface for type and instance based interceptor classes.
     /// </summary>
-    public interface IInterceptor
+    public interface IInterceptor : ISequenceSegment
     {
         /// <summary>
         /// Can this interceptor generate a proxy for the given type?

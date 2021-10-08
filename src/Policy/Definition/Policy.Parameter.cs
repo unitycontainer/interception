@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using Unity.Injection;
-using Unity.Interception.PolicyInjection.Pipeline;
 
 namespace Unity.Interception
 {
@@ -9,15 +8,17 @@ namespace Unity.Interception
     {
         protected override MatchRank Match(Type type) 
             => ReferenceEquals(typeof(IMatchingRule[]), type) || 
-               ReferenceEquals(typeof(ICallHandler[]),  type)
+               ReferenceEquals(typeof(IList),  type)
                 ? MatchRank.ExactMatch
                 : MatchRank.NoMatch;
 
 
         public override void ProvideImport<TContext, TDescriptor>(ref TDescriptor descriptor)
-            => descriptor.Arguments 
-            = ReferenceEquals(typeof(IMatchingRule[]), descriptor.ContractType)
-            ? (IList)_rules
-            : (IList)_handlers;
+        {
+            if (ReferenceEquals(typeof(IMatchingRule[]), descriptor.ContractType))
+                descriptor.Arguments = (IList)_rules;
+            else
+                descriptor.Value = (IList)_handlers;
+        }
     }
 }

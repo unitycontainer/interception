@@ -283,6 +283,7 @@ namespace Configuration
             Assert.AreEqual(1, handler2.Count);     // lifetime managed
         }
 
+        [Ignore("Validation")]
         [TestMethod]
         public void SettingUpAPolicyWithANullRuleElementThrows()
         {

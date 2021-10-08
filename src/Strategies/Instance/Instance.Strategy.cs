@@ -6,20 +6,13 @@ namespace Unity.Interception.Strategies
     /// A <see cref="BuilderStrategy"/> that intercepts objects
     /// in the build chain by creating a proxy object.
     /// </summary>
-    public partial class InstanceInterceptionStrategy : BuilderStrategy
+    public partial class InstanceInterceptionStrategy : InterceptionStrategy
     {
-        #region Fields
-
-        private readonly Schemes _interceptors;
-
-        #endregion
-
-
         #region Constructors
 
-        public InstanceInterceptionStrategy(Schemes interceptors)
-        {
-            _interceptors = interceptors;
+        public InstanceInterceptionStrategy(Interception extension)
+            : base(extension)
+        { 
         }
 
         #endregion

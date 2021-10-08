@@ -5,9 +5,7 @@ using Unity;
 using Unity.Injection;
 using Unity.Interception;
 using Unity.Interception.ContainerIntegration;
-using Unity.Interception.Interceptors;
 using Unity.Interception.Interceptors.TypeInterceptors.VirtualMethodInterception;
-using Unity.Interception.PolicyInjection;
 using Unity.Interception.TestSupport;
 
 namespace Configuration
@@ -137,13 +135,11 @@ namespace Configuration
         {
             int invokeCount = 0;
 
-            Container.RegisterType<IInterface, BaseClass>(
-                "test",
+            Container.RegisterType<IInterface, BaseClass>("test",
                 new Interceptor<VirtualMethodInterceptor>(),
                 new AdditionalInterface<IOtherInterface>(),
                 new InterceptionBehavior(
-                    new TestDelegateBehavior(
-                        (mi, gn) => { invokeCount++; return mi.CreateMethodReturn(0); })));
+                    new TestDelegateBehavior((mi, gn) => { invokeCount++; return mi.CreateMethodReturn(0); })));
 
             IInterface instance = Container.Resolve<IInterface>("test");
 

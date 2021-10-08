@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using Unity.Extension;
-using Unity.Injection;
-using Unity.Interception.Interceptors;
+using Unity.Interception.ContainerIntegration;
 
 namespace Unity.Interception
 {
@@ -60,9 +58,8 @@ namespace Unity.Interception
         /// Interceptor to use.
         /// </summary>
         /// <param name="context">Context for current build operation.</param>
-        public IInterceptor GetInterceptor<TContext>(ref TContext context)
-            where TContext : IBuilderContext 
-            => _interceptor ??= (IInterceptor)context.Resolve(_type, _name)!;
+        public IInterceptor GetInterceptor(Interception extension)
+            => _interceptor ??= (IInterceptor)extension.Container!.Resolve(_type, _name)!;
 
 
 

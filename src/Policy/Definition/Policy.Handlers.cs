@@ -1,6 +1,5 @@
 ﻿using System;
 using Unity.Injection;
-using Unity.Interception.PolicyInjection.Pipeline;
 using Unity.Lifetime;
 
 namespace Unity.Interception
@@ -52,8 +51,8 @@ namespace Unity.Interception
         /// <returns>
         /// The <see cref="PolicyDefinition"/> than allows further configuration of the policy.
         /// </returns>
-        public PolicyDefinition AddCallHandler(Type type, params InjectionMember[] injectionMembers)
-            => AddElement<ICallHandler>(type, Guid.NewGuid().ToString(), null, injectionMembers);
+        public PolicyDefinition AddCallHandler(Type type, params InjectionMember[] injectionMembers) 
+            => AddElement<ICallHandler>(_handlers, type, null, injectionMembers);
 
         /// <summary>
         /// Configures injection for a new <see cref="ICallHandler"/> and makes it available
@@ -67,7 +66,7 @@ namespace Unity.Interception
         /// The <see cref="PolicyDefinition"/> than allows further configuration of the policy.
         /// </returns>
         public PolicyDefinition AddCallHandler(Type type, LifetimeManager lifetimeManager, params InjectionMember[] injectionMembers)
-            => AddElement<ICallHandler>(type, Guid.NewGuid().ToString(), lifetimeManager, injectionMembers);
+            => AddElement<ICallHandler>(_handlers, type, lifetimeManager, injectionMembers);
 
         /// <summary>
         /// Configures injection for a new <see cref="ICallHandler"/> using the specified name
@@ -80,7 +79,7 @@ namespace Unity.Interception
         /// The <see cref="PolicyDefinition"/> than allows further configuration of the policy.
         /// </returns>
         public PolicyDefinition AddCallHandler(Type type, string name, params InjectionMember[] injectionMembers)
-            => AddElement<ICallHandler>(type, name, null, injectionMembers);
+            => AddElement<ICallHandler>(_handlers, type, name, null, injectionMembers);
 
         /// <summary>
         /// Configures injection for a new <see cref="ICallHandler"/> using the specified name
@@ -96,7 +95,7 @@ namespace Unity.Interception
         /// The <see cref="PolicyDefinition"/> than allows further configuration of the policy.
         /// </returns>
         public PolicyDefinition AddCallHandler(Type type, string name, LifetimeManager lifetimeManager, params InjectionMember[] injectionMembers)
-            => AddElement<ICallHandler>(type, name, lifetimeManager, injectionMembers);
+            => AddElement<ICallHandler>(_handlers, type, name, lifetimeManager, injectionMembers);
 
         /// <summary>
         /// Configures injection for a new <see cref="ICallHandler"/> and makes it available
@@ -109,7 +108,7 @@ namespace Unity.Interception
         /// </returns>
         public PolicyDefinition AddCallHandler<TCallHandler>(params InjectionMember[] injectionMembers)
             where TCallHandler : ICallHandler
-            => AddElement<ICallHandler, TCallHandler>(Guid.NewGuid().ToString(), null, injectionMembers);
+            => AddElement<ICallHandler>(_handlers, typeof(TCallHandler), null, injectionMembers);
 
         /// <summary>
         /// Configures injection for a new <see cref="ICallHandler"/> and makes it available
@@ -123,8 +122,8 @@ namespace Unity.Interception
         /// The <see cref="PolicyDefinition"/> than allows further configuration of the policy.
         /// </returns>
         public PolicyDefinition AddCallHandler<TCallHandler>(LifetimeManager lifetimeManager, params InjectionMember[] injectionMembers)
-            where TCallHandler : ICallHandler 
-            => AddElement<ICallHandler, TCallHandler>(Guid.NewGuid().ToString(), lifetimeManager, injectionMembers);
+            where TCallHandler : ICallHandler
+            => AddElement<ICallHandler>(_handlers, typeof(TCallHandler), lifetimeManager, injectionMembers);
 
         /// <summary>
         /// Configures injection for a new <see cref="ICallHandler"/> using the specified name
@@ -138,7 +137,7 @@ namespace Unity.Interception
         /// </returns>
         public PolicyDefinition AddCallHandler<TCallHandler>(string name, params InjectionMember[] injectionMembers)
             where TCallHandler : ICallHandler 
-            => AddElement<ICallHandler, TCallHandler>(name, null, injectionMembers);
+            => AddElement<ICallHandler>(_handlers, typeof(TCallHandler), name, null, injectionMembers);
 
         /// <summary>
         /// Configures injection for a new <see cref="ICallHandler"/> using the specified name
@@ -154,7 +153,7 @@ namespace Unity.Interception
         /// The <see cref="PolicyDefinition"/> than allows further configuration of the policy.
         /// </returns>
         public PolicyDefinition AddCallHandler<TCallHandler>(string name, LifetimeManager lifetimeManager, params InjectionMember[] injectionMembers)
-            where TCallHandler : ICallHandler 
-            => AddElement<ICallHandler, TCallHandler>(name, lifetimeManager, injectionMembers);
+            where TCallHandler : ICallHandler
+            => AddElement<ICallHandler>(_handlers, typeof(TCallHandler), name, lifetimeManager, injectionMembers);
     }
 }

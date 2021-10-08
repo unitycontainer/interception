@@ -253,7 +253,7 @@ namespace Unity.Interception
 
             Type interceptionType = interceptor.CreateProxyType(implementationType, allAdditionalInterfaces);
 
-            var proxy = (IInterceptingProxy)Activator.CreateInstance(interceptionType, constructorParameters);
+            var proxy = (IInterceptingProxy)Activator.CreateInstance(interceptionType, constructorParameters)!;
 
             foreach (IInterceptionBehavior interceptionBehavior in activeBehaviors)
             {

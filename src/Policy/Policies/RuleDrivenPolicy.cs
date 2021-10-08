@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
-using Unity.Interception.Interceptors;
-using Unity.Interception.PolicyInjection.Pipeline;
 
 namespace Unity.Interception
 {
@@ -15,7 +14,7 @@ namespace Unity.Interception
         #region Fields
 
         private readonly IMatchingRule[] _rules;
-        private readonly ICallHandler[] _handlers;
+        private readonly IList _handlers;
 
         #endregion
 
@@ -26,11 +25,10 @@ namespace Unity.Interception
         /// Creates a new <see cref="RuleDrivenPolicy"/> object with a name, a set of matching rules
         /// and the names to use when resolving handlers.
         /// </summary>
-        public RuleDrivenPolicy(string name, IMatchingRule[] rules, ICallHandler[] handlers)
+        public RuleDrivenPolicy(string name, IMatchingRule[] rules, IList handlers)
             : base(name)
         {
             _rules = rules;
-
             _handlers = handlers;
         }
 
@@ -60,9 +58,17 @@ namespace Unity.Interception
         {
             if (Matches(member))
             {
-                foreach (var callHandler in _handlers)
+                for (var i = 0; i < _handlers.Count; i++)
                 {
-                    yield return callHandler;
+                    var entry = _handlers[i];
+
+                    if (entry is string name)
+                    {
+                        entry = container.Resolve(typeof(ICallHandler), name);
+                        _handlers[i] = entry;
+                    }
+
+                    yield return (ICallHandler)entry!;
                 }
             }
         }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Extension;
 using Unity.Interception.ContainerIntegration;
-using Unity.Interception.ContainerIntegration.ObjectBuilder;
 
 namespace Unity.Interception.Strategies
 {
@@ -23,40 +22,45 @@ namespace Unity.Interception.Strategies
         {
             if (context.Existing != null) return;
 
-            ITypeInterceptor? interceptor = 
-                context.OfType<Interceptor>(o => o.IsTypeInterceptor)?
-                       .GetInterceptor(ref context) as ITypeInterceptor ??
-                PolicyOrDefault<TContext, ITypeInterceptor>(ref context);
-            
-            if (interceptor is null) return;
+            var info = new RegistrationInfo(ref context);
+
+            try
+            {
+                var interceptor = GetInterceptor(ref context);
+                if (interceptor is null) return;
+
+                var injection = context.FirstOrDefault<InterceptionBehavior>();
+                var behaviors = injection is null
+                    ? GetInjectedBehaviors(injection, context.Overrides) 
+                    : GetPolicyBehaviors(interceptor);
+            }
+            catch (Exception ex)
+            {
+                context.Error(ex.Message);
+                return;
+            }
 
 
             Type typeToBuild = context.Type;
+//            var interceptionBehaviorsPolicy = PolicyOrDefault<TContext, IInterceptionBehaviorsPolicy>(ref context);
 
+            //IEnumerable<IInterceptionBehavior> interceptionBehaviors =
+            //    interceptionBehaviorsPolicy == null
+            //        ? Enumerable.Empty<IInterceptionBehavior>()
+            //        : interceptionBehaviorsPolicy.GetEffectiveBehaviors(ref context, interceptor, context.Contract.Type, context.Type)
+            //                                     .Where(ib => ib.WillExecute);
 
-            var behavior = (InterceptionBehavior?)context.Registration?.Get(typeof(InterceptionBehavior));
+            //var injectedBehaviors = InterceptionBehavior.GetEffectiveBehaviors(ref context, interceptor);
+            //var enumerable = interceptionBehaviors.Concat(injectedBehaviors).ToArray();
 
-            var interceptionBehaviorsPolicy = PolicyOrDefault<TContext, IInterceptionBehaviorsPolicy>(ref context);
+            //context.Set(typeof(EffectiveInterceptionBehaviorsPolicy), new EffectiveInterceptionBehaviorsPolicy { Behaviors = enumerable });
 
-            IEnumerable<IInterceptionBehavior> interceptionBehaviors =
-                interceptionBehaviorsPolicy == null
-                    ? Enumerable.Empty<IInterceptionBehavior>()
-                    : interceptionBehaviorsPolicy.GetEffectiveBehaviors(ref context, interceptor, context.Contract.Type, context.Type)
-                                                 .Where(ib => ib.WillExecute);
+            //Type[] allAdditionalInterfaces = Intercept.GetAllAdditionalInterfaces(enumerable, context.OfType<AdditionalInterface>()
+            //                                                                                         .Select(a => a.InterfaceType));
 
-            IEnumerable<Type> additionalInterfaces = context.OfType<AdditionalInterface>()
-                                                            .Select(a => a.InterfaceType);
+            //Type interceptingType = interceptor.CreateProxyType(typeToBuild, allAdditionalInterfaces);
 
-            var enumerable = interceptionBehaviors as IInterceptionBehavior[] ?? interceptionBehaviors.ToArray();
-
-            context.Set(typeof(EffectiveInterceptionBehaviorsPolicy), new EffectiveInterceptionBehaviorsPolicy { Behaviors = enumerable });
-
-            Type[] allAdditionalInterfaces =
-                Intercept.GetAllAdditionalInterfaces(enumerable, additionalInterfaces);
-
-            Type interceptingType = interceptor.CreateProxyType(typeToBuild, allAdditionalInterfaces);
-
-            //DerivedTypeConstructorSelectorPolicy.SetPolicyForInterceptingType(ref context, interceptingType);
+            //context.AsType(interceptingType);
         }
 
         /// <summary>
@@ -76,7 +80,7 @@ namespace Unity.Interception.Strategies
                 return;
             }
 
-            var effectiveInterceptionBehaviorsPolicy = (EffectiveInterceptionBehaviorsPolicy)context.Registration.Get(
+            var effectiveInterceptionBehaviorsPolicy = (EffectiveInterceptionBehaviorsPolicy)context.Get(
                 typeof(EffectiveInterceptionBehaviorsPolicy));
 
             if (effectiveInterceptionBehaviorsPolicy == null)
@@ -88,19 +92,6 @@ namespace Unity.Interception.Strategies
             {
                 proxy.AddInterceptionBehavior(interceptionBehavior);
             }
-        }
-
-        public TPolicy? PolicyOrDefault<TContext, TPolicy>(ref TContext context)
-            where TContext : IBuilderContext
-            where TPolicy : ISequenceSegment
-        {
-            return context.Contract.Type.IsGenericType
-                 ? _interceptors.Get<TPolicy>(context.Contract.Type, context.Contract.Name) ??
-                   _interceptors.Get<TPolicy>(context.Generic ??= context.Contract.Type.GetGenericTypeDefinition(), context.Contract.Name) ??
-                   _interceptors.Get<TPolicy>(context.Contract.Type) ??
-                   _interceptors.Get<TPolicy>(context.Generic ??= context.Contract.Type.GetGenericTypeDefinition())
-                 : _interceptors.Get<TPolicy>(context.Contract.Type, context.Contract.Name) ??
-                   _interceptors.Get<TPolicy>(context.Contract.Type);
         }
 
         #endregion

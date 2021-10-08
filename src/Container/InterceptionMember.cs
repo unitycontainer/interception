@@ -1,7 +1,7 @@
 ﻿using System;
 using Unity.Injection;
 
-namespace Unity.Interception
+namespace Unity.Interception.ContainerIntegration
 {
     /// <summary>
     /// Stores information about a an intercepted object and configures a container accordingly.

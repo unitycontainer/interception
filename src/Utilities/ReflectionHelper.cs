@@ -19,7 +19,7 @@ namespace Unity.Interception.Utilities
         /// </summary>
         /// <param name="method">MethodBase for the property's get or set method.</param>
         /// <returns>PropertyInfo for the property, or null if method is not part of a property.</returns>
-        public static PropertyInfo GetPropertyFromMethod(MethodBase method)
+        public static PropertyInfo? GetPropertyFromMethod(MethodBase method)
         {
             Guard.ArgumentNotNull(method, "method");
 
@@ -42,7 +42,7 @@ namespace Unity.Interception.Utilities
         {
             Guard.ArgumentNotNull(method, "method");
 
-            PropertyInfo property = null;
+            PropertyInfo? property = null;
             if (method.IsSpecialName)
             {
                 var containingType = method.DeclaringType;
@@ -65,11 +65,11 @@ namespace Unity.Interception.Utilities
                                 null,
                                 propertyType,
                                 indexerTypes,
-                                null);
+                                null)!;
                     }
                 }
             }
-            return property;
+            return property!;
         }
 
         private static void GetPropertyTypes(MethodInfo method, bool isGetter, out Type propertyType, out Type[] indexerTypes)
@@ -119,7 +119,7 @@ namespace Unity.Interception.Utilities
         /// <summary>
         /// Given a particular MemberInfo, find all the attributes that apply to this
         /// member. Specifically, it returns the attributes on the type, then (if it's a
-        /// property accessor) on the property, then on the member itself.
+        /// property accessors) on the property, then on the member itself.
         /// </summary>
         /// <typeparam name="TAttribute">Type of attribute to retrieve.</typeparam>
         /// <param name="member">The member to look at.</param>
@@ -136,7 +136,7 @@ namespace Unity.Interception.Utilities
             {
                 attributes.AddRange(GetAttributes<TAttribute>(member.DeclaringType, inherits));
 
-                MethodInfo methodInfo = member as MethodInfo;
+                var methodInfo = member as MethodInfo;
                 if (methodInfo != null)
                 {
                     PropertyInfo prop = GetPropertyFromMethod(methodInfo);
@@ -150,20 +150,8 @@ namespace Unity.Interception.Utilities
             return attributes.ToArray();
         }
 
-        public static readonly MethodInfo ExceptionDispatchInfoCaptureMethod;
+        public static readonly MethodInfo? ExceptionDispatchInfoCaptureMethod;
 
-        public static readonly MethodInfo ExceptionDispatchInfoThrowMethod;
-
-        static ReflectionHelper()
-        {
-            Assembly mscorlib = typeof(int).Assembly;
-            ExceptionDispatchInfoCaptureMethod = mscorlib
-                ?.GetType("System.Runtime.ExceptionServices.ExceptionDispatchInfo")
-                ?.GetMethod("Capture", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(Exception) }, null);
-
-            ExceptionDispatchInfoThrowMethod = mscorlib
-                ?.GetType("System.Runtime.ExceptionServices.ExceptionDispatchInfo")
-                ?.GetMethod("Throw", BindingFlags.Public | BindingFlags.Instance, null, new Type[] { }, null);
-        }
+        public static readonly MethodInfo? ExceptionDispatchInfoThrowMethod;
     }
 }

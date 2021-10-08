@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
 using Unity.Extension;
+using Unity.Interception.ContainerIntegration;
 using Unity.Interception.InterceptionBehaviors;
-using Unity.Interception.Interceptors;
 using Unity.Resolution;
 
 namespace Unity.Interception
@@ -21,6 +21,7 @@ namespace Unity.Interception
         private IInterceptionBehavior? _explicitBehavior;
 
         #endregion
+
 
         #region Constructors
 
@@ -76,9 +77,8 @@ namespace Unity.Interception
 
         #region Behavior
 
-        public virtual IInterceptionBehavior GetBehavior<TContext>(ref TContext context)
-            where TContext : IBuilderContext
-            => _explicitBehavior ??= (IInterceptionBehavior)context.Resolve(_type, _name)!;
+        public virtual IInterceptionBehavior GetBehavior(Interception extension)
+            => _explicitBehavior ??= (IInterceptionBehavior)extension.Container!.Resolve(_type, _name)!;
 
 
         public static IInterceptionBehavior[] GetEffectiveBehaviors<TContext>(ref TContext context, IInterceptor interceptor)
@@ -128,5 +128,15 @@ namespace Unity.Interception
         public InterceptionBehavior(string name) 
             : base(typeof(TBehavior), name) 
         { }
+    }
+
+
+    public static class InterceptionBehaviorExtensions
+    {
+        //public static IEnumerable<IInterceptionBehavior> GetBehavior<TContext>(ref TContext context)
+        //{ 
+            
+        //}
+
     }
 }

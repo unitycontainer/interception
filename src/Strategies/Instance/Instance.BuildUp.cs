@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Extension;
-using Unity.Interception.ContainerIntegration;
 
 namespace Unity.Interception.Strategies
 {
@@ -23,27 +22,36 @@ namespace Unity.Interception.Strategies
             // If it's already been intercepted, don't do it again.
             if (context.Existing is IInterceptingProxy) return;
 
-            var interceptor = context.OfType<Interceptor>()
-                                     .FirstOrDefault(o => o.IsInstanceInterceptor)?
-                                     .GetInterceptor(ref context) as IInstanceInterceptor ??
-                              GetPolicyOrDefault<TContext, IInstanceInterceptor>(ref context);
-
-            if (interceptor is null) return;
-
-            var interceptionBehaviors = InterceptionBehavior.GetEffectiveBehaviors(ref context, interceptor);
-
-            IEnumerable<Type> additionalInterfaces = context.OfType<AdditionalInterface>()
-                                                            .Select(a => a.InterfaceType);
-
-            if (interceptionBehaviors.Length > 0)
+            try
             {
-                context.Existing =
-                    Intercept.ThroughProxyWithAdditionalInterfaces(
-                        context.Contract.Type,
-                        context.Existing,
-                        interceptor,
-                        interceptionBehaviors,
-                        additionalInterfaces);
+                var interceptor = GetInterceptor(ref context);
+                if (interceptor is null) return;
+
+                var injection = context.FirstOrDefault<InterceptionBehavior>();
+                var behaviors = injection is null
+                    ? GetInjectedBehaviors(injection, context.Overrides)
+                    : GetPolicyBehaviors(interceptor);
+
+
+                var interceptionBehaviors = InterceptionBehavior.GetEffectiveBehaviors(ref context, interceptor);
+
+                IEnumerable<Type> additionalInterfaces = context.OfType<AdditionalInterface>()
+                                                                .Select(a => a.InterfaceType);
+
+                if (interceptionBehaviors.Length > 0)
+                {
+                    context.Existing =
+                        Intercept.ThroughProxyWithAdditionalInterfaces(
+                            context.Contract.Type,
+                            context.Existing,
+                            interceptor,
+                            interceptionBehaviors,
+                            additionalInterfaces);
+                }
+            }
+            catch (Exception ex)
+            {
+                context.Error(ex.Message);
             }
         }
 
@@ -70,7 +78,7 @@ namespace Unity.Interception.Strategies
         {
             return context.Contract.Type.IsGenericType
                 ? context.Policies.Get<TPolicy>(context.Contract.Type) ??
-                  context.Policies.Get<TPolicy>(context.Generic ??= context.Contract.Type.GetGenericTypeDefinition())
+                  context.Policies.Get<TPolicy>(context.TypeDefinition!)
                 : context.Policies.Get<TPolicy>(context.Contract.Type);
         }
     }

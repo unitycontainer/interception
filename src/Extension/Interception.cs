@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using Unity.Extension;
 using Unity.Interception.Strategies;
+using Unity.Storage;
 
 namespace Unity.Interception
 {
@@ -10,18 +12,37 @@ namespace Unity.Interception
     /// be used to do it, and also provides a convenient set of methods for
     /// configuring injection for <see cref="RuleDrivenPolicy"/> instances.
     /// </summary>
-    public partial class Interception : UnityContainerExtension
+    public partial class Interception : UnityContainerExtension,  
+                                        IUnityContainerExtensionConfigurator
     {
         #region Fields
 
-        private readonly Schemes _interceptors;
+
+        protected int Count;
+
+        [CLSCompliant(false)]
+        protected Entry[] Data;
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never), CLSCompliant(false)]
+        protected Metadata[] Meta;
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        protected readonly object SyncRoot = new object();
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        protected int Prime = 1;
+
 
         #endregion
 
 
         #region Constructors
 
-        public Interception() => _interceptors = new Schemes();
+        public Interception()
+        {
+            Data = new Entry[Storage.Prime.Numbers[Prime]];
+            Meta = new Metadata[Storage.Prime.Numbers[++Prime]];
+        }
 
         #endregion
 
@@ -33,10 +54,8 @@ namespace Unity.Interception
         {
             if (Context is null) throw new ArgumentNullException(nameof(Context));
 
-            Context.Policies.Set(typeof(Schemes), _interceptors);
-
-            var type     = new TypeInterceptionStrategy(_interceptors);
-            var instance = new InstanceInterceptionStrategy(_interceptors);
+            var type     = new TypeInterceptionStrategy(this);
+            var instance = new InstanceInterceptionStrategy(this);
 
             // Type pipeline
             Context.TypePipelineChain.Add(new (UnityBuildStage, BuilderStrategy)[] 

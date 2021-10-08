@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Unity.Extension;
+using Unity.Interception.ContainerIntegration;
 
 namespace Unity.Interception.Strategies
 {
@@ -9,18 +10,13 @@ namespace Unity.Interception.Strategies
     /// build type. If present, it substitutes types so that proxy class gets
     /// built up instead. On the way back, it hooks up the appropriate handlers.
     /// </summary>
-    public partial class TypeInterceptionStrategy : BuilderStrategy
+    public partial class TypeInterceptionStrategy : InterceptionStrategy
     {
-        #region Fields
-
-        private readonly Schemes _interceptors;
-
-        #endregion
-
-
         #region Constructors
 
-        public TypeInterceptionStrategy(Schemes interceptors) => _interceptors = interceptors;
+        public TypeInterceptionStrategy(Interception extension)
+            : base(extension)
+        { }
 
         #endregion
 
@@ -28,7 +24,7 @@ namespace Unity.Interception.Strategies
         #region Nested Types
 
 
-        private class EffectiveInterceptionBehaviorsPolicy 
+        private class EffectiveInterceptionBehaviorsPolicy : InterceptionMember
         {
             public EffectiveInterceptionBehaviorsPolicy()
             {

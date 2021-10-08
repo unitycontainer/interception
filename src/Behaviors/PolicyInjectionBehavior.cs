@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Unity.Interception.InterceptionBehaviors;
-using Unity.Interception.Interceptors;
 using Unity.Interception.PolicyInjection.Pipeline;
 using Unity.Interception.Utilities;
 

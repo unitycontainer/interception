@@ -20,6 +20,7 @@ namespace Unity.Interception
 
         #endregion
 
+
         #region Constructors
 
         internal PolicyDefinition(string? policyName, Interception extension)
@@ -34,9 +35,7 @@ namespace Unity.Interception
         #endregion
 
 
-
         public string Name => _name;
-
 
         /// <summary>
         /// The <see cref="Interception"/> extension to which the policy was added.

@@ -1,11 +1,10 @@
 ﻿using System;
-using Unity.Extension;
 using Unity.Injection;
 using Unity.Interception.ContainerIntegration;
 
 namespace Unity.Interception
 {
-    public partial class Interception : IUnityContainerExtensionConfigurator
+    public partial class Interception
     {
         #region Set
 
@@ -18,21 +17,13 @@ namespace Unity.Interception
         /// <returns>This extension object.</returns>
         public Interception SetInterceptorFor(Type typeToIntercept, string? name, ITypeInterceptor interceptor)
         {
-            _interceptors.Set(typeToIntercept, name, interceptor);
-            _interceptors.Set(typeToIntercept, name, (IInterceptionBehaviorsPolicy)
+            Set(typeToIntercept, name, interceptor);
+
+            this.Set<IInterceptionBehaviorsPolicy>(typeToIntercept, name, 
                 new InterceptionBehaviorsPolicy(typeof(PolicyInjectionBehavior)));
 
             return this;
         }
-
-        /// <summary>
-        /// API to configure interception for a type.
-        /// </summary>
-        /// <param name="typeToIntercept">Type to intercept.</param>
-        /// <param name="interceptor">Interceptor to use.</param>
-        /// <returns>This extension object.</returns>
-        public Interception SetInterceptorFor(Type typeToIntercept, ITypeInterceptor interceptor) 
-            => SetInterceptorFor(typeToIntercept, null, interceptor);
 
         /// <summary>
         /// API to configure interception for a type.
@@ -43,21 +34,13 @@ namespace Unity.Interception
         /// <returns>This extension object.</returns>
         public Interception SetInterceptorFor(Type typeToIntercept, string? name, IInstanceInterceptor interceptor)
         {
-            _interceptors.Set(typeToIntercept, name, interceptor);
-            _interceptors.Set(typeToIntercept, name, (IInterceptionBehaviorsPolicy)
+            Set(typeToIntercept, name, typeof(IInstanceInterceptor), interceptor);
+
+            this.Set<IInterceptionBehaviorsPolicy>(typeToIntercept, name,
                 new InterceptionBehaviorsPolicy(typeof(PolicyInjectionBehavior)));
 
             return this;
         }
-
-        /// <summary>
-        /// API to configure interception for a type.
-        /// </summary>
-        /// <param name="typeToIntercept">Type to intercept.</param>
-        /// <param name="interceptor">Instance interceptor to use.</param>
-        /// <returns>This extension object.</returns>
-        public Interception SetInterceptorFor(Type typeToIntercept, IInstanceInterceptor interceptor) 
-            => SetInterceptorFor(typeToIntercept, null, interceptor);
 
         #endregion
 
@@ -72,7 +55,11 @@ namespace Unity.Interception
         /// <returns>This extension object.</returns>
         public Interception SetDefaultInterceptorFor(Type typeToIntercept, ITypeInterceptor interceptor)
         {
-            _interceptors.Set(typeToIntercept, interceptor);
+            Set(typeToIntercept, typeof(ITypeInterceptor), interceptor);
+
+            this.Set<IInterceptionBehaviorsPolicy>(typeToIntercept,
+                new InterceptionBehaviorsPolicy(typeof(PolicyInjectionBehavior)));
+
             return this;
         }
 
@@ -84,7 +71,11 @@ namespace Unity.Interception
         /// <returns>This extension object.</returns>
         public Interception SetDefaultInterceptorFor(Type typeToIntercept, IInstanceInterceptor interceptor)
         {
-            _interceptors.Set(typeToIntercept, interceptor);
+            Set(typeToIntercept, typeof(IInstanceInterceptor), interceptor);
+
+            this.Set<IInterceptionBehaviorsPolicy>(typeToIntercept,
+                new InterceptionBehaviorsPolicy(typeof(PolicyInjectionBehavior)));
+
             return this;
         }
 
@@ -108,9 +99,7 @@ namespace Unity.Interception
         {
             var policy = new PolicyDefinition(policyName, this);
 
-            // TODO: add support for updated lifetime
-            Container!.RegisterType<InjectionPolicy, RuleDrivenPolicy>(policy.Name, 
-                new InjectionConstructor(policy.Name, policy, policy));
+            Container!.RegisterType<InjectionPolicy, RuleDrivenPolicy>(policy.Name, new InjectionConstructor(policy.Name, policy, policy));
 
             return policy;
         }

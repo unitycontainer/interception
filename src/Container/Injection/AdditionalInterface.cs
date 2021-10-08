@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Globalization;
+using Unity.Interception.ContainerIntegration;
 using Unity.Interception.Properties;
 
-namespace Unity.Interception.ContainerIntegration
+namespace Unity.Interception
 {
     /// <summary>
     /// Stores information about a single <see cref="Type"/> to be an additional interface for an intercepted object and

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using Unity;
 using Unity.Extension;
-using Unity.Storage;
 
 namespace Unit.Tests
 {
@@ -17,8 +16,9 @@ namespace Unit.Tests
         const string SET = "Get/Set/Clear(Type)";
         const string LIST = "Get/Set/Clear(Type, Type)";
         const string NAMED = "Get/Set/Clear(Type, String, Type)";
-        const string INTERFACE     = "Testing";
-        const string SET_PATTERN   = "{0}({1}, {2})";
+        const string ENUMERATIONS = "OfType(..)";
+        const string INTERFACE    = "Testing";
+        const string SET_PATTERN  = "{0}({1}, {2})";
         const string LIST_PATTERN = "{0}({1}, {2}, {3})";
         const string NAMED_PATTERN = "{0}({1}, {2}, {3}, {4})";
         const string SET_POLICIES  = "IPolicies.{0}({1}, {2})";

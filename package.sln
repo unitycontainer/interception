@@ -1,11 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27004.2002
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33414.496
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Unity.Interception", "src\Unity.Interception.csproj", "{B73259E0-77F8-41FD-9A7A-CAB8AC231086}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Interception.Tests", "tests\Unity.Interception.Tests.csproj", "{83D32085-6A48-4EDE-B1CD-1B6D00BE10C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Unity.Interception.Tests", "tests\Unity.Interception.Tests.csproj", "{83D32085-6A48-4EDE-B1CD-1B6D00BE10C9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C91F0F99-DC35-4F2A-BF51-73EB45A64EBC}"
+	ProjectSection(SolutionItems) = preProject
+		appveyor.yml = appveyor.yml
+		codecov.yml = codecov.yml
+		package.props = package.props
+		RELEASE-NOTES.txt = RELEASE-NOTES.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -3,8 +3,6 @@
   <Import Project="..\package.props" />
 
   <PropertyGroup>
-    <FileVersion>$(Version).0</FileVersion>
-    <AssemblyVersion>$(Version).0</AssemblyVersion>
     <PackageId>Unity.Interception</PackageId>
     <Description>Unity Interception</Description>
     <Copyright>Copyright © .NET Foundation and Contributors. All Rights Reserved</Copyright>
@@ -21,6 +19,12 @@
     <DelaySign>false</DelaySign>
     <TargetFrameworks>net6.0;netstandard2.0
 	</TargetFrameworks>
+
+    <PackageVersion>$(VersionBase)-rc.1</PackageVersion>
+	<Version>$(VersionBase)</Version>
+	<FileVersion>$(VersionBase).0</FileVersion>
+	<AssemblyVersion>$(VersionBase).0</AssemblyVersion>
+  
   </PropertyGroup>
 
   <ItemGroup>
@@ -87,4 +91,16 @@
     </PackageReference>
   </ItemGroup>
 
+
+  <!-- Release Notes -->
+
+  <Target Name="PreparePackageReleaseNotesFromFile" BeforeTargets="GenerateNuspec">
+    <ReadLinesFromFile File="../RELEASE-NOTES.txt">
+      <Output TaskParameter="Lines" ItemName="ReleaseNoteLines" />
+    </ReadLinesFromFile>
+    <PropertyGroup>
+      <PackageReleaseNotes>@(ReleaseNoteLines, '%0a')</PackageReleaseNotes>
+    </PropertyGroup>
+  </Target>
+	
 </Project>

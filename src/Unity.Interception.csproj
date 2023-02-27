@@ -17,13 +17,13 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>package.snk</AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
-    <TargetFrameworks>net6.0;netstandard2.0
-	</TargetFrameworks>
-
-    <PackageVersion>$(VersionBase)-rc.1</PackageVersion>
-	<Version>$(VersionBase)</Version>
-	<FileVersion>$(VersionBase).0</FileVersion>
-	<AssemblyVersion>$(VersionBase).0</AssemblyVersion>
+	  
+    <Version>$(VersionMajor).$(VersionMinor).$(VersionPatch)</Version>
+	<VersionBuild Condition="'$(VersionBuild)' == ''">0</VersionBuild>
+	<FileVersion>$(Version).$(VersionBuild)</FileVersion>
+    <AssemblyVersion>$(Version).$(VersionBuild)</AssemblyVersion>
+	<PackageVersion Condition="'$(VersionSuffix)' == ''">$(Version)</PackageVersion>
+    <PackageVersion Condition="'$(VersionSuffix)' != ''">$(Version)-$(VersionSuffix)</PackageVersion>
   
   </PropertyGroup>
 
@@ -50,16 +50,18 @@
     <DebugType>Full</DebugType>
   </PropertyGroup>
 
+<!-- Unity.Container -->
+
   <PropertyGroup>
-    <UnityContainer>..\..\Container\src\Unity.Container.csproj</UnityContainer>
+    <UnityContainerProject>..\..\Container\src\Unity.Container.csproj</UnityContainerProject>
   </PropertyGroup>
 
-  <ItemGroup Condition="Exists('$(UnityContainer)')">
-    <ProjectReference Include="$(UnityContainer)" />
+  <ItemGroup Condition="Exists('$(UnityContainerProject)')">
+    <ProjectReference Include="$(UnityContainerProject)" />
   </ItemGroup>
 
-  <ItemGroup Condition="!Exists('$(UnityContainer)')">
-    <PackageReference Include="Unity.Container" Version="$(UnityContainerVersion)" />
+  <ItemGroup Condition="!Exists('$(UnityContainerProject)')">
+    <PackageReference Include="Unity.Container" Version="$(VersionMajor).$(VersionMinor).*-*" />
   </ItemGroup>
 
   <ItemGroup>

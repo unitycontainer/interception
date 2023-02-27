@@ -18,9 +18,9 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.TransparentProxy
         [TestMethod]
         public void InterceptorReturnsSingleMethod()
         {
-            List<MethodImplementationInfo> methods = GetMethods<SingleInterceptableMethod>();
+            List<MethodImplementationInfo> methods = GetMethods<TypeWithSingleMethod>();
 
-            CollectionAssertExtensions.AreEquivalent(GetOnlyImplementations(typeof(SingleInterceptableMethod), "MyMethod"),
+            CollectionAssertExtensions.AreEquivalent(GetOnlyImplementations(typeof(TypeWithSingleMethod), "MyMethod"),
                 methods);
         }
 
@@ -150,20 +150,20 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.TransparentProxy
         public void CanCreateProxyWithAdditionalInterfaces()
         {
             IInstanceInterceptor interceptor = new TransparentProxyInterceptor();
-            SingleInterceptableMethod target = new SingleInterceptableMethod();
+            TypeWithSingleMethod target = new TypeWithSingleMethod();
 
-            object proxy = interceptor.CreateProxy(typeof(SingleInterceptableMethod), target, typeof(IMyOperations));
+            object proxy = interceptor.CreateProxy(typeof(TypeWithSingleMethod), target, typeof(IMyOperations));
 
             Assert.IsTrue(proxy is IMyOperations);
         }
     }
 
-    internal class SingleInterceptableMethod : MarshalByRefObject
+    internal class TypeWithSingleMethod : MarshalByRefObject
     {
         public void MyMethod() { }
     }
 
-    internal class InheritsSingleMethodAndAdds : SingleInterceptableMethod
+    internal class InheritsSingleMethodAndAdds : TypeWithSingleMethod
     {
         public void AnotherMethod()
         {

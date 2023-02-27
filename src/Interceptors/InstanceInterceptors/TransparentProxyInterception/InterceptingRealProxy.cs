@@ -1,16 +1,8 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
-
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Reflection;
-using System.Runtime.Remoting;
-using System.Runtime.Remoting.Messaging;
-using System.Runtime.Remoting.Proxies;
 using System.Security;
-using System.Security.Permissions;
 using Unity.Interception.InterceptionBehaviors;
-using Unity.Interception.PolicyInjection.Pipeline;
-using Unity.Interception.Properties;
 using Unity.Interception.Utilities;
 
 namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyInterception
@@ -20,9 +12,8 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyI
     /// invoked by a call on the corresponding TransparentProxy
     /// object. It routes calls through the handlers as appropriate.
     /// </summary>
-    [SecurityCritical]
-    [SecurityPermission(SecurityAction.Demand, Flags = SecurityPermissionFlag.Infrastructure)]
-    public class InterceptingRealProxy : RealProxy, IRemotingTypeInfo, IInterceptingProxy
+    [Obsolete("Please use InterceptingDispatchProxy instead", true)]    
+    public class InterceptingRealProxy : IInterceptingProxy
     {
         private readonly InterceptionBehaviorPipeline _interceptorsPipeline = new InterceptionBehaviorPipeline();
         private readonly ReadOnlyCollection<Type> _additionalInterfaces;
@@ -34,11 +25,7 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyI
         /// <param name="target">Target object to intercept calls to.</param>
         /// <param name="classToProxy">Type to return as the type being proxied.</param>
         /// <param name="additionalInterfaces">Additional interfaces the proxy must implement.</param>
-        public InterceptingRealProxy(
-            object target,
-            Type classToProxy,
-            params Type[] additionalInterfaces)
-            : base(classToProxy)
+        public InterceptingRealProxy(object target, Type classToProxy, params Type[] additionalInterfaces)
         {
             Guard.ArgumentNotNull(target, "target");
             Target = target;
@@ -84,7 +71,7 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyI
         /// <param name="fromType">The type to cast to. </param>
         /// <param name="o">The object for which to check casting. </param>
         /// <exception cref="T:System.Security.SecurityException">The immediate caller makes the call through a reference to the interface and does not have infrastructure permission. </exception>
-        [SecurityCritical]
+        
         public bool CanCastTo(Type fromType, object o)
         {
             Guard.ArgumentNotNull(fromType, "fromType");
@@ -120,9 +107,9 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyI
         /// <exception cref="T:System.Security.SecurityException">The immediate caller makes the call through a reference to the interface and does not have infrastructure permission. </exception><PermissionSet><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="Infrastructure" /></PermissionSet>
         public string TypeName
         {
-            [SecurityCritical]
+            
             get;
-            [SecurityCritical]
+            
             set;
         }
 
@@ -139,60 +126,67 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyI
         /// about the method call.</param>
         /// <returns>An <see cref="TransparentProxyMethodReturn"/> object contains the
         /// information about the target method's return value.</returns>
-        [SecurityCritical]
-        public override IMessage Invoke(IMessage msg)
+        
+        //public override IMessage Invoke(IMessage msg)
+        //{
+        //    Guard.ArgumentNotNull(msg, "msg");
+
+        //    IMethodCallMessage callMessage = (IMethodCallMessage)msg;
+
+        //    if (callMessage.MethodBase.DeclaringType == typeof(IInterceptingProxy))
+        //    {
+        //        return HandleInterceptingProxyMethod(callMessage);
+        //    }
+
+        //    TransparentProxyMethodInvocation invocation = new TransparentProxyMethodInvocation(callMessage, Target);
+        //    IMethodReturn result =
+        //        _interceptorsPipeline.Invoke(
+        //            invocation,
+        //            delegate(IMethodInvocation input, GetNextInterceptionBehaviorDelegate getNext)
+        //            {
+        //                if (callMessage.MethodBase.DeclaringType.IsAssignableFrom(Target.GetType()))
+        //                {
+        //                    try
+        //                    {
+        //                        object returnValue = callMessage.MethodBase.Invoke(Target, invocation.Arguments);
+        //                        return input.CreateMethodReturn(returnValue, invocation.Arguments);
+        //                    }
+        //                    catch (TargetInvocationException ex)
+        //                    {
+        //                        // The outer exception will always be a reflection exception; we want the inner, which is
+        //                        // the underlying exception.
+        //                        return input.CreateExceptionMethodReturn(ex.InnerException);
+        //                    }
+        //                }
+        //                return input.CreateExceptionMethodReturn(
+        //                    new InvalidOperationException(Resources.ExceptionAdditionalInterfaceNotImplemented));
+        //            });
+
+        //    return ((TransparentProxyMethodReturn)result).ToMethodReturnMessage();
+        //}
+
+        //private IMessage HandleInterceptingProxyMethod(IMethodCallMessage callMessage)
+        //{
+        //    switch (callMessage.MethodName)
+        //    {
+        //        case "AddInterceptionBehavior":
+        //            return ExecuteAddInterceptionBehavior(callMessage);
+        //    }
+        //    throw new InvalidOperationException();
+        //}
+
+        //private IMessage ExecuteAddInterceptionBehavior(IMethodCallMessage callMessage)
+        //{
+        //    IInterceptionBehavior interceptor = (IInterceptionBehavior)callMessage.InArgs[0];
+        //    AddInterceptionBehavior(interceptor);
+        //    return new ReturnMessage(null, new object[0], 0, callMessage.LogicalCallContext, callMessage);
+        //}
+
+        public IInterceptingProxy GetTransparentProxy()
         {
-            Guard.ArgumentNotNull(msg, "msg");
+            throw new NotImplementedException();
 
-            IMethodCallMessage callMessage = (IMethodCallMessage)msg;
 
-            if (callMessage.MethodBase.DeclaringType == typeof(IInterceptingProxy))
-            {
-                return HandleInterceptingProxyMethod(callMessage);
-            }
-
-            TransparentProxyMethodInvocation invocation = new TransparentProxyMethodInvocation(callMessage, Target);
-            IMethodReturn result =
-                _interceptorsPipeline.Invoke(
-                    invocation,
-                    delegate(IMethodInvocation input, GetNextInterceptionBehaviorDelegate getNext)
-                    {
-                        if (callMessage.MethodBase.DeclaringType.IsAssignableFrom(Target.GetType()))
-                        {
-                            try
-                            {
-                                object returnValue = callMessage.MethodBase.Invoke(Target, invocation.Arguments);
-                                return input.CreateMethodReturn(returnValue, invocation.Arguments);
-                            }
-                            catch (TargetInvocationException ex)
-                            {
-                                // The outer exception will always be a reflection exception; we want the inner, which is
-                                // the underlying exception.
-                                return input.CreateExceptionMethodReturn(ex.InnerException);
-                            }
-                        }
-                        return input.CreateExceptionMethodReturn(
-                            new InvalidOperationException(Resources.ExceptionAdditionalInterfaceNotImplemented));
-                    });
-
-            return ((TransparentProxyMethodReturn)result).ToMethodReturnMessage();
-        }
-
-        private IMessage HandleInterceptingProxyMethod(IMethodCallMessage callMessage)
-        {
-            switch (callMessage.MethodName)
-            {
-                case "AddInterceptionBehavior":
-                    return ExecuteAddInterceptionBehavior(callMessage);
-            }
-            throw new InvalidOperationException();
-        }
-
-        private IMessage ExecuteAddInterceptionBehavior(IMethodCallMessage callMessage)
-        {
-            IInterceptionBehavior interceptor = (IInterceptionBehavior)callMessage.InArgs[0];
-            AddInterceptionBehavior(interceptor);
-            return new ReturnMessage(null, new object[0], 0, callMessage.LogicalCallContext, callMessage);
         }
     }
 }

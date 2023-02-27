@@ -977,9 +977,6 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.VirtualMethodInt
         }
     }
 
-#if !SILVERLIGHT
-    [System.Web.AspNetHostingPermission(SecurityAction.InheritanceDemand, Level = System.Web.AspNetHostingPermissionLevel.Minimal)]
-#endif
     public class ClassWithPermissionAttribute
     {
         public virtual void Method()

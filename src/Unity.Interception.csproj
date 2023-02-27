@@ -19,43 +19,22 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>package.snk</AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
-    <TargetFrameworks>netstandard2.0;net47;net46;net45;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;netstandard2.0
+	</TargetFrameworks>
   </PropertyGroup>
-  
-  <ItemGroup>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
 
   <ItemGroup>
     <None Remove="package.snk" />
     <EmbeddedResource Include="package.snk" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0' OR '$(TargetFramework)' == 'netcoreapp2.0'">
-    <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' != 'netstandard2.0' AND '$(TargetFramework)' != 'netcoreapp2.0'">
-    
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <Compile Remove="Interceptors\InstanceInterceptors\TransparentProxyInterception\*.cs" />
   </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' != '' AND '$(TargetFramework)' != 'net40' ">
-    <Compile Remove="Utilities\net 4.0\**" />
-    <EmbeddedResource Remove="Utilities\net 4.0\**" />
-    <None Remove="Utilities\net 4.0\**" />
-  </ItemGroup>
-
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -66,7 +45,6 @@
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <DebugType>Full</DebugType>
   </PropertyGroup>
-
 
   <PropertyGroup>
     <UnityContainer>..\..\Container\src\Unity.Container.csproj</UnityContainer>
@@ -80,21 +58,19 @@
     <PackageReference Include="Unity.Container" Version="$(UnityContainerVersion)" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
   
-  <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
-    <Reference Include="System.Runtime.Remoting" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
-    <Reference Include="System.Runtime.Remoting" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net47'">
-    <Reference Include="System.Runtime.Remoting" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0' OR '$(TargetFramework)' == 'netcoreapp2.0' ">
-    <Compile Remove="Interceptors\InstanceInterceptors\TransparentProxyInterception\*.cs" />
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <!-- Sourcelink -->

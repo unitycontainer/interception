@@ -1,10 +1,6 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Runtime.Remoting.Proxies;
-using System.Security;
 using Unity.Interception.Utilities;
 
 namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyInterception
@@ -84,18 +80,17 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyI
         /// <summary>
         /// Create a proxy object that provides interception for <paramref name="target"/>.
         /// </summary>
-        /// <param name="t">Type to generate the proxy of.</param>
+        /// <param name="type">Type to generate the proxy of.</param>
         /// <param name="target">Object to create the proxy for.</param>
-        /// <param name="additionalInterfaces">Additional interfaces the proxy must implement.</param>
+        /// <param name="interfaces">Additional interfaces the proxy must implement.</param>
         /// <returns>The proxy object.</returns>
-        [SecuritySafeCritical]
-        public IInterceptingProxy CreateProxy(Type t, object target, params Type[] additionalInterfaces)
+        public IInterceptingProxy CreateProxy(Type type, object target, params Type[] interfaces)
         {
-            Guard.ArgumentNotNull(t, "t");
-            Guard.ArgumentNotNull(target, "target");
+            if (type == null) throw new ArgumentNullException(nameof(type));
+            if (target == null) throw new ArgumentNullException(nameof(target));
 
-            RealProxy realProxy = new InterceptingRealProxy(target, t, additionalInterfaces);
-            return (IInterceptingProxy)realProxy.GetTransparentProxy();
+            var proxy = new InterceptingDispatchProxy(target, type, interfaces);
+            return (IInterceptingProxy)proxy.GetTransparentProxy();
         }
     }
 }

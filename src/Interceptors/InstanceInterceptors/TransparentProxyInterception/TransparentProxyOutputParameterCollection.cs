@@ -1,8 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
-
-using System.Runtime.Remoting.Messaging;
+﻿using System.Reflection;
 using System.Security;
-using System.Security.Permissions;
 using Unity.Interception.PolicyInjection.Pipeline;
 
 namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyInterception
@@ -12,7 +9,6 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyI
     /// <see cref="IParameterCollection"/> interface.
     /// </summary>
     [SecurityCritical]
-    [SecurityPermission(SecurityAction.Demand, Flags = SecurityPermissionFlag.Infrastructure)]
     internal class TransparentProxyOutputParameterCollection : ParameterCollection
     {
         /// <summary>
@@ -21,8 +17,8 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyI
         /// </summary>
         /// <param name="callMessage">The call message.</param>
         /// <param name="arguments">The arguments.</param>
-        public TransparentProxyOutputParameterCollection(IMethodCallMessage callMessage, object[] arguments)
-            : base(arguments, callMessage.MethodBase.GetParameters(), parameterInfo => parameterInfo.ParameterType.IsByRef)
+        public TransparentProxyOutputParameterCollection(MethodInfo targetMethod, object[] arguments)
+            : base(arguments, targetMethod.GetParameters(), parameterInfo => parameterInfo.ParameterType.IsByRef)
         {
         }
     }

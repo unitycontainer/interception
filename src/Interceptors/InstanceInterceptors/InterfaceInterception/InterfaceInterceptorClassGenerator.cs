@@ -44,7 +44,9 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
             }
 
             AssemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(
-                new AssemblyName("Unity_ILEmit_InterfaceProxies") { KeyPair = new StrongNameKeyPair(pair) },
+                new AssemblyName("Unity_ILEmit_InterfaceProxies") 
+                // NET6.0 does not support this: { KeyPair = new StrongNameKeyPair(pair) }
+                ,
 #if DEBUG_SAVE_GENERATED_ASSEMBLY
                 AssemblyBuilderAccess.RunAndSave);
 #else

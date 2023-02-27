@@ -1,11 +1,7 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Runtime.Remoting.Messaging;
 using System.Security;
-using System.Security.Permissions;
 using Unity.Interception.PolicyInjection.Pipeline;
 using Unity.Interception.Utilities;
 
@@ -17,10 +13,9 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyI
     /// interface.
     /// </summary>
     [SecurityCritical]
-    [SecurityPermission(SecurityAction.Demand, Flags = SecurityPermissionFlag.Infrastructure)]
     public sealed class TransparentProxyMethodInvocation : IMethodInvocation
     {
-        private readonly IMethodCallMessage _callMessage;
+        private readonly MethodInfo _targetMethod;
         private readonly TransparentProxyInputParameterCollection _inputParams;
         private readonly ParameterCollection _allParams;
         private readonly Dictionary<string, object> _invocationContext;
@@ -34,17 +29,16 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyI
         /// </summary>
         /// <param name="callMessage">Remoting call message object.</param>
         /// <param name="target">Ultimate target of the method call.</param>
-        public TransparentProxyMethodInvocation(IMethodCallMessage callMessage, object target)
+        public TransparentProxyMethodInvocation(MethodInfo targetMethod, object target, params object[] arguments)
         {
-            Guard.ArgumentNotNull(callMessage, "callMessage");
+            Guard.ArgumentNotNull(targetMethod, "targetMethod");
 
-            _callMessage = callMessage;
+            _targetMethod = targetMethod;
             _invocationContext = new Dictionary<string, object>();
             _target = target;
-            _arguments = callMessage.Args;
-            _inputParams = new TransparentProxyInputParameterCollection(callMessage, _arguments);
-            _allParams =
-                new ParameterCollection(_arguments, callMessage.MethodBase.GetParameters(), info => true);
+            _arguments = arguments;
+            _inputParams = new TransparentProxyInputParameterCollection(targetMethod, _arguments);
+            _allParams = new ParameterCollection(_arguments, targetMethod.GetParameters(), info => true);
         }
 
         /// <summary>
@@ -95,7 +89,7 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyI
         public MethodBase MethodBase
         {
             [SecuritySafeCritical]
-            get { return _callMessage.MethodBase; }
+            get { return _targetMethod; }
         }
 
         /// <summary>
@@ -110,7 +104,7 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyI
         [SecuritySafeCritical]
         public IMethodReturn CreateMethodReturn(object returnValue, params object[] outputs)
         {
-            return new TransparentProxyMethodReturn(_callMessage, returnValue, outputs, _invocationContext);
+            return new TransparentProxyMethodReturn(_targetMethod, returnValue, outputs, _invocationContext);
         }
 
         /// <summary>
@@ -122,7 +116,7 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyI
         [SecuritySafeCritical]
         public IMethodReturn CreateExceptionMethodReturn(Exception ex)
         {
-            return new TransparentProxyMethodReturn(ex, _callMessage, _invocationContext);
+            return new TransparentProxyMethodReturn(ex, _targetMethod, _invocationContext);
         }
 
         /// <summary>

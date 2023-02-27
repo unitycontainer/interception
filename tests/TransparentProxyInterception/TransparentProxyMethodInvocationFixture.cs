@@ -1,8 +1,5 @@
-﻿
-
-using System;
+﻿using System;
 using System.Reflection;
-using System.Runtime.Remoting.Messaging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyInterception;
 using Unity.Interception.PolicyInjection.Pipeline;
@@ -21,17 +18,19 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
         [TestMethod]
         public void ShouldBeCreatable()
         {
-            MethodBase methodInfo = GetTargetMethodInfo("FirstTarget");
-            InvocationTarget target = new InvocationTarget();
-            IMethodInvocation invocation = GetInvocation(methodInfo, target);
+            var methodInfo = GetTargetMethodInfo("FirstTarget");
+            var target = new InvocationTarget();
+            var invocation = GetInvocation(methodInfo, target);
+
+            Assert.IsNotNull(invocation);
         }
 
         [TestMethod]
         public void ShouldMapInputsCorrectly()
         {
-            MethodBase methodInfo = GetTargetMethodInfo("FirstTarget");
-            InvocationTarget target = new InvocationTarget();
-            IMethodInvocation invocation = GetInvocation(methodInfo, target);
+            var methodInfo = GetTargetMethodInfo("FirstTarget");
+            var target = new InvocationTarget();
+            var invocation = GetInvocation(methodInfo, target);
 
             Assert.AreEqual(2, invocation.Inputs.Count);
             Assert.AreEqual(1, invocation.Inputs[0]);
@@ -45,9 +44,9 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
         [TestMethod]
         public void ShouldBeAbleToAddToContext()
         {
-            MethodBase methodInfo = GetTargetMethodInfo("FirstTarget");
-            InvocationTarget target = new InvocationTarget();
-            IMethodInvocation invocation = GetInvocation(methodInfo, target);
+            var methodInfo = GetTargetMethodInfo("FirstTarget");
+            var target = new InvocationTarget();
+            var invocation = GetInvocation(methodInfo, target);
 
             invocation.InvocationContext["firstItem"] = 1;
             invocation.InvocationContext["secondItem"] = "hooray!";
@@ -60,9 +59,9 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
         [TestMethod]
         public void ShouldBeAbleToChangeInputs()
         {
-            MethodBase methodInfo = GetTargetMethodInfo("FirstTarget");
-            InvocationTarget target = new InvocationTarget();
-            IMethodInvocation invocation = GetInvocation(methodInfo, target);
+            var methodInfo = GetTargetMethodInfo("FirstTarget");
+            var target = new InvocationTarget();
+            var invocation = GetInvocation(methodInfo, target);
 
             Assert.AreEqual(1, invocation.Inputs["one"]);
             invocation.Inputs["one"] = 42;
@@ -73,17 +72,15 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests
 
         #region Helper factories
 
-        private MethodBase GetTargetMethodInfo(string methodName)
+        private MethodInfo GetTargetMethodInfo(string methodName)
         {
-            return (MethodBase)(typeof(InvocationTarget).GetMember(methodName)[0]);
+            return (MethodInfo)(typeof(InvocationTarget).GetMember(methodName)[0]);
         }
 
-        private IMethodInvocation GetInvocation(MethodBase methodInfo,
-                                        InvocationTarget target)
+        private IMethodInvocation GetInvocation(MethodInfo targetMethod,
+                                                InvocationTarget target)
         {
-            IMethodCallMessage remotingMessage = new FakeMethodCallMessage(methodInfo, new object[] { 1, "two" });
-
-            return new TransparentProxyMethodInvocation(remotingMessage, target);
+            return new TransparentProxyMethodInvocation(targetMethod, target, 1, "two");
         }
 
         #endregion

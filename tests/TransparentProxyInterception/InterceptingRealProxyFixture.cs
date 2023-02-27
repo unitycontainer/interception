@@ -1,6 +1,4 @@
-﻿
-
-using System;
+﻿using System;
 using System.ComponentModel;
 using Microsoft.Practices.Unity.TestSupport;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -10,13 +8,13 @@ using Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyInter
 namespace Microsoft.Practices.Unity.InterceptionExtension.TransparaentProxyInterception.Tests
 {
     [TestClass]
-    public class InterceptingRealProxyFixture
+    public class InterceptingDispatchProxyFixture
     {
         [TestMethod]
         public void CanProxyMBROMethods()
         {
             MBROWithOneMethod original = new MBROWithOneMethod();
-            MBROWithOneMethod proxy = new InterceptingRealProxy(original, typeof(MBROWithOneMethod))
+            MBROWithOneMethod proxy = new InterceptingDispatchProxy(original, typeof(MBROWithOneMethod))
                 .GetTransparentProxy() as MBROWithOneMethod;
 
             Assert.IsNotNull(proxy);
@@ -26,7 +24,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.TransparaentProxyInter
         public void ProxyImplementsIInterceptingProxy()
         {
             MBROWithOneMethod original = new MBROWithOneMethod();
-            MBROWithOneMethod proxy = new InterceptingRealProxy(original, typeof(MBROWithOneMethod))
+            MBROWithOneMethod proxy = new InterceptingDispatchProxy(original, typeof(MBROWithOneMethod))
                 .GetTransparentProxy() as MBROWithOneMethod;
 
             Assert.IsNotNull(proxy as IInterceptingProxy);
@@ -38,7 +36,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.TransparaentProxyInter
             CallCountInterceptionBehavior interceptor = new CallCountInterceptionBehavior();
 
             MBROWithOneMethod original = new MBROWithOneMethod();
-            MBROWithOneMethod intercepted = new InterceptingRealProxy(original, typeof(MBROWithOneMethod))
+            MBROWithOneMethod intercepted = new InterceptingDispatchProxy(original, typeof(MBROWithOneMethod))
                 .GetTransparentProxy() as MBROWithOneMethod;
 
             IInterceptingProxy proxy = (IInterceptingProxy)intercepted;
@@ -58,7 +56,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.TransparaentProxyInter
                 = new CallCountInterceptionBehavior();
 
             MBROWithAnEvent original = new MBROWithAnEvent();
-            MBROWithAnEvent intercepted = new InterceptingRealProxy(original, typeof(MBROWithAnEvent))
+            MBROWithAnEvent intercepted = new InterceptingDispatchProxy(original, typeof(MBROWithAnEvent))
                 .GetTransparentProxy() as MBROWithAnEvent;
 
             ((IInterceptingProxy)intercepted).AddInterceptionBehavior(interceptor);
@@ -77,7 +75,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.TransparaentProxyInter
             CallCountInterceptionBehavior interceptor = new CallCountInterceptionBehavior();
 
             MBROWithAnEvent original = new MBROWithAnEvent();
-            MBROWithAnEvent intercepted = new InterceptingRealProxy(original, typeof(MBROWithAnEvent))
+            MBROWithAnEvent intercepted = new InterceptingDispatchProxy(original, typeof(MBROWithAnEvent))
                 .GetTransparentProxy() as MBROWithAnEvent;
 
             ((IInterceptingProxy)intercepted).AddInterceptionBehavior(interceptor);
@@ -97,7 +95,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.TransparaentProxyInter
         {
             MBROWithOneMethod original = new MBROWithOneMethod();
             MBROWithOneMethod proxy =
-                new InterceptingRealProxy(original, typeof(MBROWithOneMethod), typeof(InterfaceOne))
+                new InterceptingDispatchProxy(original, typeof(MBROWithOneMethod), typeof(InterfaceOne))
                 .GetTransparentProxy() as MBROWithOneMethod;
 
             Assert.IsTrue(proxy is InterfaceOne);
@@ -108,7 +106,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.TransparaentProxyInter
         {
             MBROWithOneMethod original = new MBROWithOneMethod();
             InterfaceOne proxy =
-                new InterceptingRealProxy(original, typeof(MBROWithOneMethod), typeof(InterfaceOne))
+                new InterceptingDispatchProxy(original, typeof(MBROWithOneMethod), typeof(InterfaceOne))
                 .GetTransparentProxy() as InterfaceOne;
 
             try
@@ -127,7 +125,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.TransparaentProxyInter
         {
             MBROWithOneMethod original = new MBROWithOneMethod();
             InterfaceOne proxy =
-                new InterceptingRealProxy(original, typeof(MBROWithOneMethod), typeof(InterfaceOne))
+                new InterceptingDispatchProxy(original, typeof(MBROWithOneMethod), typeof(InterfaceOne))
                 .GetTransparentProxy() as InterfaceOne;
             bool invoked = false;
             ((IInterceptingProxy)proxy).AddInterceptionBehavior(
@@ -144,7 +142,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.TransparaentProxyInter
         {
             MBROWithOneProperty target = new MBROWithOneProperty();
             MBROWithOneProperty proxy =
-                new InterceptingRealProxy(target, typeof(MBROWithOneProperty), typeof(INotifyPropertyChanged))
+                new InterceptingDispatchProxy(target, typeof(MBROWithOneProperty), typeof(INotifyPropertyChanged))
                 .GetTransparentProxy() as MBROWithOneProperty;
             ((IInterceptingProxy)proxy).AddInterceptionBehavior(new NaiveINotifyPropertyChangedInterceptionBehavior());
 
@@ -173,7 +171,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.TransparaentProxyInter
         {
             ObjectWithOnePropertyForImplicitlyImplementedInterface target = new ObjectWithOnePropertyForImplicitlyImplementedInterface();
             IInterfaceWithOneProperty proxy =
-                new InterceptingRealProxy(target, typeof(IInterfaceWithOneProperty), typeof(INotifyPropertyChanged))
+                new InterceptingDispatchProxy(target, typeof(IInterfaceWithOneProperty), typeof(INotifyPropertyChanged))
                 .GetTransparentProxy() as IInterfaceWithOneProperty;
             ((IInterceptingProxy)proxy).AddInterceptionBehavior(new NaiveINotifyPropertyChangedInterceptionBehavior());
 
@@ -202,7 +200,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.TransparaentProxyInter
         {
             ObjectWithOnePropertyForExplicitlyImplementedInterface target = new ObjectWithOnePropertyForExplicitlyImplementedInterface();
             IInterfaceWithOneProperty proxy =
-                new InterceptingRealProxy(target, typeof(IInterfaceWithOneProperty), typeof(INotifyPropertyChanged))
+                new InterceptingDispatchProxy(target, typeof(IInterfaceWithOneProperty), typeof(INotifyPropertyChanged))
                 .GetTransparentProxy() as IInterfaceWithOneProperty;
             ((IInterceptingProxy)proxy).AddInterceptionBehavior(new NaiveINotifyPropertyChangedInterceptionBehavior());
 
@@ -232,7 +230,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.TransparaentProxyInter
             var interceptor = new CallCountInterceptionBehavior();
 
             var original = new ObjectWithGenericMethod();
-            var intercepted = new InterceptingRealProxy(original, typeof(IInterfaceWithGenericMethod))
+            var intercepted = new InterceptingDispatchProxy(original, typeof(IInterfaceWithGenericMethod))
                 .GetTransparentProxy() as IInterfaceWithGenericMethod;
 
             IInterceptingProxy proxy = (IInterceptingProxy)intercepted;

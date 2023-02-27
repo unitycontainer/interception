@@ -1,9 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\package.props" />
-
   <PropertyGroup>
-    <TargetFramework>net47</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <IsPackable>false</IsPackable>
     <RootNamespace>Unity.Interception.Tests</RootNamespace>
   </PropertyGroup>

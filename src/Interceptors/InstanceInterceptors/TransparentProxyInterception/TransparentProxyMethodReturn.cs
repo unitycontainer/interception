@@ -1,11 +1,7 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Runtime.Remoting.Messaging;
 using System.Security;
-using System.Security.Permissions;
 using Unity.Interception.PolicyInjection.Pipeline;
 
 namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyInterception
@@ -15,10 +11,9 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyI
     /// remoting call and return messages.
     /// </summary>
     [SecurityCritical]
-    [SecurityPermission(SecurityAction.Demand, Flags = SecurityPermissionFlag.Infrastructure)]
     internal class TransparentProxyMethodReturn : IMethodReturn
     {
-        private readonly IMethodCallMessage _callMessage;
+        private readonly MethodInfo _targetMethod;
         private readonly ParameterCollection _outputs;
         private readonly IDictionary<string, object> _invocationContext;
         private readonly object[] _arguments;
@@ -34,13 +29,13 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyI
         /// <param name="arguments">Collections of arguments passed to the method (including the new
         /// values of any out params).</param>
         /// <param name="invocationContext">Invocation context dictionary passed into the call.</param>
-        public TransparentProxyMethodReturn(IMethodCallMessage callMessage, object returnValue, object[] arguments, IDictionary<string, object> invocationContext)
+        public TransparentProxyMethodReturn(MethodInfo targetMethod, object returnValue, object[] arguments, IDictionary<string, object> invocationContext)
         {
-            _callMessage = callMessage;
+            _targetMethod = targetMethod;
             _invocationContext = invocationContext;
             _arguments = arguments;
             _returnValue = returnValue;
-            _outputs = new TransparentProxyOutputParameterCollection(callMessage, arguments);
+            _outputs = new TransparentProxyOutputParameterCollection(targetMethod, arguments);
         }
 
         /// <summary>
@@ -50,9 +45,9 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyI
         /// <param name="ex">Exception that was thrown.</param>
         /// <param name="callMessage">The original call message that invoked the method.</param>
         /// <param name="invocationContext">Invocation context dictionary passed into the call.</param>
-        public TransparentProxyMethodReturn(Exception ex, IMethodCallMessage callMessage, IDictionary<string, object> invocationContext)
+        public TransparentProxyMethodReturn(Exception ex, MethodInfo targetMethod, IDictionary<string, object> invocationContext)
         {
-            _callMessage = callMessage;
+            _targetMethod = targetMethod;
             _invocationContext = invocationContext;
             _exception = ex;
             _arguments = new object[0];
@@ -123,16 +118,18 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyI
         /// infrastructure based on the contents of this object.
         /// </summary>
         /// <returns>The <see cref="IMethodReturnMessage"/> instance.</returns>
-        [SecurityCritical]
-        public IMethodReturnMessage ToMethodReturnMessage()
-        {
-            if (_exception == null)
-            {
-                return
-                    new ReturnMessage(_returnValue, _arguments, _arguments.Length,
-                        _callMessage.LogicalCallContext, _callMessage);
-            }
-            return new ReturnMessage(_exception, _callMessage);
-        }
+        //[SecurityCritical]
+        
+        // TODO: Find if required
+        //public IMethodReturnMessage ToMethodReturnMessage()
+        //{
+        //    if (_exception == null)
+        //    {
+        //        return
+        //            new ReturnMessage(_returnValue, _arguments, _arguments.Length,
+        //                _callMessage.LogicalCallContext, _callMessage);
+        //    }
+        //    return new ReturnMessage(_exception, _callMessage);
+        //}
     }
 }

@@ -44,11 +44,13 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.MatchingRules
         [TestMethod]
         public void CanMatchOnMultipleParameterTypes()
         {
-            List<string> parametersForCopyToMethod = new List<string>();
-            parametersForCopyToMethod.Add("System.Int32");
-            parametersForCopyToMethod.Add("System.Char[]");
-            parametersForCopyToMethod.Add("System.Int32");
-            parametersForCopyToMethod.Add("System.Int32");
+            List<string> parametersForCopyToMethod = new()
+            {
+                "System.Int32",
+                "System.Char[]",
+                "System.Int32",
+                "System.Int32"
+            };
 
             MethodSignatureMatchingRule matchingRule = new MethodSignatureMatchingRule(parametersForCopyToMethod);
             Assert.IsTrue(matchingRule.Matches(stringCopyToMethod));
@@ -57,11 +59,13 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.MatchingRules
         [TestMethod]
         public void MatchIsDeniedWhenASingleParameterIsWrong()
         {
-            List<string> parametersForCopyToMethod = new List<string>();
-            parametersForCopyToMethod.Add("System.Int32");
-            parametersForCopyToMethod.Add("System.Char[]");
-            parametersForCopyToMethod.Add("System.NotAnInt32");
-            parametersForCopyToMethod.Add("System.Int32");
+            List<string> parametersForCopyToMethod = new List<string>
+            {
+                "System.Int32",
+                "System.Char[]",
+                "System.NotAnInt32",
+                "System.Int32"
+            };
 
             MethodSignatureMatchingRule matchingRule = new MethodSignatureMatchingRule(parametersForCopyToMethod);
             Assert.IsFalse(matchingRule.Matches(stringCopyToMethod));

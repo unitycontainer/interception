@@ -12,22 +12,22 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.MatchingRules
     public class MethodSignatureMatchingRuleFixture
     {
         private MethodBase objectToStringMethod;
-        private MethodBase objectCtor;
         private MethodBase stringCopyToMethod;
 
         [TestInitialize]
         public void TestInitialize()
         {
             objectToStringMethod = typeof(object).GetMethod("ToString");
-            objectCtor = typeof(object).GetConstructor(new Type[0]);
-            stringCopyToMethod = typeof(string).GetMethod("CopyTo");
+            stringCopyToMethod = typeof(string).GetMethod("CopyTo", new Type[] { typeof(int), typeof(char[]), typeof(int), typeof(int) });
         }
 
         [TestMethod]
         public void MatchIsDeniedWhenParamterValuesCountDiffers()
         {
-            List<string> oneParam = new List<string>();
-            oneParam.Add("one");
+            List<string> oneParam = new()
+            {
+                "one"
+            };
 
             MethodSignatureMatchingRule matchingRule = new MethodSignatureMatchingRule(oneParam);
             Assert.IsFalse(matchingRule.Matches(objectToStringMethod));
@@ -36,7 +36,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.MatchingRules
         [TestMethod]
         public void CanMatchOnParameterlessMethods()
         {
-            List<string> parameterLess = new List<string>();
+            List<string> parameterLess = new();
             MethodSignatureMatchingRule matchingRule = new MethodSignatureMatchingRule(parameterLess);
             Assert.IsTrue(matchingRule.Matches(objectToStringMethod));
         }
@@ -59,7 +59,7 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.MatchingRules
         [TestMethod]
         public void MatchIsDeniedWhenASingleParameterIsWrong()
         {
-            List<string> parametersForCopyToMethod = new List<string>
+            List<string> parametersForCopyToMethod = new()
             {
                 "System.Int32",
                 "System.Char[]",

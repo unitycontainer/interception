@@ -1,1 +1,4 @@
 This package supports .NET Standard 2.0, and .NET 6.0
+
+TransparentProxyInterceptor - Due to discontinued support for Remoting in .NET 5.0 and up, TransparentProxyInterceptor and InterceptingRealProxy are deprecated.
+

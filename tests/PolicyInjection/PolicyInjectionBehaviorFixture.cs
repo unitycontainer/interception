@@ -3,6 +3,7 @@ using System;
 using Unity;
 using Unity.Interception;
 using Unity.Interception.ContainerIntegration;
+using Unity.Interception.Interceptors.InstanceInterceptors.InterfaceInterception;
 using Unity.Interception.Interceptors.InstanceInterceptors.TransparentProxyInterception;
 using Unity.Interception.PolicyInjection;
 using Unity.Interception.PolicyInjection.MatchingRules;
@@ -24,13 +25,13 @@ namespace Microsoft.Practices.Unity.InterceptionExtension.Tests.PolicyInjection
             Container =
                 new UnityContainer()
                     .RegisterType<BaseClass, DerivedClass>("derived",
-                        new Interceptor<TransparentProxyInterceptor>(),
+                        new Interceptor<InterfaceInterceptor>(),
                         new InterceptionBehavior<PolicyInjectionBehavior>())
                     .RegisterType<BaseClass, DerivedWithNoOverrideClass>("derived-nooverride",
-                        new Interceptor<TransparentProxyInterceptor>(),
+                        new Interceptor<InterfaceInterceptor>(),
                         new InterceptionBehavior<PolicyInjectionBehavior>())
                     .RegisterType<BaseClass>(
-                        new Interceptor<TransparentProxyInterceptor>(),
+                        new Interceptor<InterfaceInterceptor>(),
                         new InterceptionBehavior<PolicyInjectionBehavior>())
                     .AddNewExtension<Interception>()
                     .Configure<Interception>()

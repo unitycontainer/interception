@@ -1,6 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\package.props" />
+  <PropertyGroup>
+	<TargetFrameworks>net6.0;netstandard2.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <!-- Defaults -->
+
+  <PropertyGroup>
+    <Nullable>disable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Unity</RootNamespace>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <!-- Package Info -->
 
   <PropertyGroup>
     <PackageId>Unity.Interception</PackageId>
@@ -17,14 +30,6 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>package.snk</AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
-	  
-    <Version>$(VersionMajor).$(VersionMinor).$(VersionPatch)</Version>
-	<VersionBuild Condition="'$(VersionBuild)' == ''">0</VersionBuild>
-	<FileVersion>$(Version).$(VersionBuild)</FileVersion>
-    <AssemblyVersion>$(Version).$(VersionBuild)</AssemblyVersion>
-	<PackageVersion Condition="'$(VersionSuffix)' == ''">$(Version)</PackageVersion>
-    <PackageVersion Condition="'$(VersionSuffix)' != ''">$(Version)-$(VersionSuffix)</PackageVersion>
-  
   </PropertyGroup>
 
   <ItemGroup>
